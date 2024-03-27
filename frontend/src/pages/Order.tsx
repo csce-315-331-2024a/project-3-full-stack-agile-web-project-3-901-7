@@ -50,15 +50,15 @@ function OrderReceipt() {
                 <OrderReceiptItem/>
             </div>
 
-            <div className="w-full flex flex-col">
+            <div className="w-full flex flex-col font-ptserif text-base">
 
-                <div className="w-full px-4 py-2 font-ptserif flex justify-between items-center text-base">
+                <div className="w-full px-4 py-2 flex justify-between items-center">
                     <p className="text-black/60">Total</p>
                     <p className="text-black">$69.69</p>
                 </div>
 
-                <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white text-base rounded-md">
-                    <button type="button" onClick={() => alert("check out")} className="font-ptserif">Checkout</button>
+                <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
+                    <button type="button" onClick={() => alert("check out")}>Checkout</button>
                     <FaArrowRight/>
                 </div>
 
