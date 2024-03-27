@@ -26,7 +26,7 @@ CREATE TABLE Items (
   name VARCHAR,
   price DECIMAL,
   category VARCHAR,
-  ingredients VARCHAR
+  ingredients VARCHAR,
   startDate TIMESTAMP,
   endDate TIMESTAMP
 );
