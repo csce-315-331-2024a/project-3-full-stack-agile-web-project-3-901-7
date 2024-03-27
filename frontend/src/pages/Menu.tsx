@@ -14,14 +14,14 @@ export default function Menu() {
         Burgers: [
             { name: "Cheeseburger", description: "The classic cheeseburger with premium beef and American cheese slices", price: "$4.99" },
             { name: "Bacon Cheeseburger", description: "The classic bacon cheeseburger with premium bacon", price: "$8.99" },
-            // ... other burgers
+            
         ],
         Sandwiches: [
             { name: "Grilled Cheese", description: "American sliced cheese between two pieces of white bread", price: "$6.99" },
             { name: "Footlong Romeo", description: "A large footlong sandwich with special home-grown tomatoes", price: "$3.29" },
-            // ... other sandwiches
+            
         ],
-        // ... other categories
+        
     };
 
     return (
