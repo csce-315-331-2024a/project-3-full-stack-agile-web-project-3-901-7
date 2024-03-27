@@ -20,6 +20,20 @@
 
 	<dependencies>
 		<dependency>
+    		<groupId>org.apache.commons</groupId>
+    		<artifactId>commons-lang3</artifactId>
+    		<version>3.12.0</version> 
+		</dependency>
+
+		<dependency>
+			<groupId>postgresjar</groupId>
+			<artifactId>sample</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/java/com/revs/grill/postgresql-42.2.8.jar</systemPath>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
