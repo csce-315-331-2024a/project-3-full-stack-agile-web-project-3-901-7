@@ -1,0 +1,759 @@
+package com.revs.grill;
+import java.sql.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.lang3.tuple.MutablePair;
+
+@RestController
+public class DatabaseController {
+    private static Connection connection = null;
+
+	@GetMapping("/dbconnect")
+	public static boolean createConnection() {
+        String database_name = "csce331_901_04_p3_db";
+        String database_user = "csce331_901_04_user";
+        String database_password = "HPTaVfHd";
+        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
+        
+        try {
+            connection = DriverManager.getConnection(database_url, database_user, database_password);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static List<Ingredient> runIngredientQuery(PreparedStatement queryStatement) throws SQLException {
+        List<Ingredient> ingredients = new ArrayList<>();
+        
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            Ingredient ingredient = new Ingredient();
+            ingredient._id = resultSet.getInt("ingredientId");
+            ingredient.name = resultSet.getString("name");
+            ingredient.quantity = resultSet.getInt("quantity");
+            ingredient.minQuantity = resultSet.getInt("minQuantity");
+            ingredient.unitPrice = resultSet.getDouble("unitPrice");
+            ingredient.supplier = resultSet.getString("supplier");
+            ingredients.add(ingredient);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return ingredients;
+    }
+
+    private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients) throws SQLException {
+        List<Item> items = new ArrayList<>();
+        
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            Item item = new Item();
+            item._id = resultSet.getInt("itemId");
+            item.name = resultSet.getString("name");
+            item.price = resultSet.getDouble("price");
+            item.category = resultSet.getString("category");
+            item.ingredientInfo = resultSet.getString("ingredients");
+            item.startDate = resultSet.getDate("startDate");
+            item.endDate = resultSet.getDate("endDate");
+
+            if (fillIngredients) {
+                PreparedStatement ingStatement = connection.prepareStatement(
+                    "SELECT * \n" +
+                    "FROM \n" +
+                        "Items i \n" +
+                        "JOIN ItemIngredient_Junction ii ON i.itemId = ii.itemId \n" +
+                        "JOIN Ingredients ing ON ii.ingredientId = ing.ingredientId \n" +
+                    "WHERE \n" +
+                        "i.name = ?;"
+                );
+                ingStatement.setString(1, item.name);
+                item.ingredients = runIngredientQuery(ingStatement);
+            }
+
+            items.add(item);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return items;
+    }
+
+    private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        
+        ResultSet resultSet = queryStatement.executeQuery();
+        
+        while (resultSet.next()) {
+            Order order = new Order();
+            order._id = resultSet.getInt("orderId");
+            order.numItems = resultSet.getInt("numItems");
+            order.dateTime = resultSet.getDate("dateTime");
+            order.total = resultSet.getDouble("total");
+            order.orderInfo = resultSet.getString("orderInfo");
+
+            PreparedStatement orderItemStatement = connection.prepareStatement(
+                "SELECT * \n" +
+                "FROM OrderItem_Junction oij \n" + 
+                "JOIN Items i ON oij.itemId = i.itemId \n" + 
+                "WHERE oij.orderId = ?;"
+            );
+
+            orderItemStatement.setInt(1, order._id);
+            
+            ResultSet orderItemResult = orderItemStatement.executeQuery();
+            while (orderItemResult.next()) {
+                int numOfItem = orderItemResult.getInt("numOfItem");
+                int itemId = orderItemResult.getInt("itemId");
+                order.itemToQuantity.put(itemId, numOfItem);
+            }
+
+            orderItemResult.close();
+            orderItemStatement.close();
+            
+            orders.add(order);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return orders;
+    }
+
+    @GetMapping("/getallitems")
+    public static List<Item> getAllItems() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
+            return runItemQuery(statement, true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getitemsbyid")
+    public static List<Item> getItemsById(List<Integer> itemIds) {
+        try {
+            String query = "SELECT * FROM Items WHERE itemId IN " + buildPlaceholderString(itemIds.size());
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            int index = 1;
+            for (Integer itemId : itemIds) {
+                statement.setInt(index++, itemId);
+            }
+            
+            return runItemQuery(statement, true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/order/insert")
+    public static int insertOrder(Order order) {
+        try {
+            // insert item into database
+            String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime) VALUES (?, ?, ?, ?)";
+            PreparedStatement orderInsertStatement = connection.prepareStatement(orderInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            orderInsertStatement.setInt(1, order.numItems);
+            orderInsertStatement.setDouble(2, order.total);
+            orderInsertStatement.setString(3, order.orderInfo);
+            orderInsertStatement.setDate(4, order.dateTime);
+            orderInsertStatement.executeUpdate();
+            
+            // get generated id of item in database
+            ResultSet generatedKeys = orderInsertStatement.getGeneratedKeys();
+            
+            if (!generatedKeys.next()) { 
+                orderInsertStatement.close();
+                return -1; 
+            }
+
+            int orderId = generatedKeys.getInt(1);
+            
+            // add item ingredients to item-ingredient junction
+            if (order.itemToQuantity != null && !order.itemToQuantity.isEmpty()) {
+                String insertOrderItemQuery = "INSERT INTO OrderItem_Junction (numOfItem, orderId, itemId) VALUES (?, ?, ?)";
+                PreparedStatement insertOrderItemStatement = connection.prepareStatement(insertOrderItemQuery);
+                
+                String updateIngredientQuantityQuery = "" + 
+                    "UPDATE Ingredients \n" +
+                    "SET quantity = quantity - 1 \n" + 
+                    "WHERE ingredientId IN ( \n" + 
+                    "    SELECT ii.ingredientId \n" + 
+                    "    FROM OrderItem_Junction oij \n" + 
+                    "    JOIN ItemIngredient_Junction ii ON oij.itemId = ii.itemId \n" + 
+                    "    WHERE oij.itemId IN " + buildPlaceholderString(order.itemToQuantity.size()) + " \n" + 
+                    ");";
+                PreparedStatement updateIngredientQuantityStatement = connection.prepareStatement(updateIngredientQuantityQuery);
+                
+                int index = 1;
+                for (int itemId : order.itemToQuantity.keySet()) {
+                    updateIngredientQuantityStatement.setInt(index++, itemId);
+                    
+                    insertOrderItemStatement.setInt(1, order.getItemQuantity(itemId));
+                    insertOrderItemStatement.setInt(2, orderId);
+                    insertOrderItemStatement.setInt(3, itemId);
+                    insertOrderItemStatement.addBatch();
+                }
+                
+                updateIngredientQuantityStatement.executeUpdate();
+                insertOrderItemStatement.executeBatch();
+
+                updateIngredientQuantityStatement.close();
+                insertOrderItemStatement.close();
+            }
+
+            orderInsertStatement.close();
+            return orderId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    @GetMapping("/order/edit")
+    public static boolean editOrder(Order order) {
+        try {
+            // update order table
+            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ? WHERE orderId = ?";
+            PreparedStatement orderUpdateStatement = connection.prepareStatement(orderUpdateQuery);
+            orderUpdateStatement.setInt(1, order.numItems);
+            orderUpdateStatement.setDouble(2, order.total);
+            orderUpdateStatement.setString(3, order.orderInfo);
+            orderUpdateStatement.setDate(4, order.dateTime);
+            orderUpdateStatement.setInt(5, order._id);
+            orderUpdateStatement.executeUpdate();
+
+            // remove existing order-item junctions
+            String oijRemoveQuery = "DELETE FROM OrderItem_Junction WHERE orderId = ?";
+            PreparedStatement oijRemoveStatement = connection.prepareStatement(oijRemoveQuery);
+            oijRemoveStatement.setInt(1, order._id);
+            oijRemoveStatement.executeUpdate();
+
+            // add order-item junctions again
+            String insertOrderItemQuery = "INSERT INTO OrderItem_Junction (numOfItem, orderId, itemId) VALUES (?, ?, ?)";
+            PreparedStatement insertOrderItemStatement = connection.prepareStatement(insertOrderItemQuery);
+
+            for (int itemId : order.itemToQuantity.keySet()) {
+                insertOrderItemStatement.setInt(1, order.getItemQuantity(itemId));
+                insertOrderItemStatement.setInt(2, order._id);
+                insertOrderItemStatement.setInt(3, itemId);
+                insertOrderItemStatement.addBatch();
+            }
+            insertOrderItemStatement.executeBatch();
+            
+            orderUpdateStatement.close();
+            oijRemoveStatement.close();
+            insertOrderItemStatement.close();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @GetMapping("/order/delete")
+    public static boolean deleteOrder(Order order) {
+        try {
+            // delete order from order table
+            String orderDeleteQuery = "DELETE FROM Orders WHERE orderId = ?";
+            PreparedStatement orderDeleteStatement = connection.prepareStatement(orderDeleteQuery);
+            orderDeleteStatement.setInt(1, order._id);
+            orderDeleteStatement.executeUpdate();
+
+            // remove existing order-item junctions
+            String oijRemoveQuery = "DELETE FROM OrderItem_Junction WHERE orderId = ?";
+            PreparedStatement oijRemoveStatement = connection.prepareStatement(oijRemoveQuery);
+            oijRemoveStatement.setInt(1, order._id);
+            oijRemoveStatement.executeUpdate();
+
+            // close statements
+            orderDeleteStatement.close();
+            oijRemoveStatement.close();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @GetMapping("/item/insert")
+    public static int insertItem(Item item) {
+        int itemId = -1;
+
+        try {
+            // insert item into database
+            String itemInsertQuery = "INSERT INTO Items (name, price, category, ingredients, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            itemInsertStatement.setString(1, item.name);
+            itemInsertStatement.setDouble(2, item.price);
+            itemInsertStatement.setString(3, item.category);
+            itemInsertStatement.setString(4, item.ingredientInfo);
+            itemInsertStatement.setDate(5, item.startDate);
+            itemInsertStatement.setDate(6, item.endDate);
+            itemInsertStatement.executeUpdate();
+            
+            // get generated id of item in database
+            ResultSet generatedKeys = itemInsertStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                itemId = generatedKeys.getInt(1);
+                
+                // add item ingredients to item-ingredient junction
+                if (item.ingredients != null && !item.ingredients.isEmpty()) {
+                    String ingredientInsertQuery = "INSERT INTO ItemIngredient_Junction (itemId, ingredientId) VALUES (?, ?)";
+                    PreparedStatement ingredientInsertStatement = connection.prepareStatement(ingredientInsertQuery);
+                    
+                    String ingredientList = "";
+                    int i = 0;
+                    for (Ingredient ingredient : item.ingredients) {
+                        if (i < item.ingredients.size() - 1){
+                            ingredientList += ingredient.name;
+                            ingredientList += ",";
+                        }
+                        else {
+                            ingredientList += ingredient.name;
+                        }
+                        ingredientInsertStatement.setInt(1, itemId);
+                        ingredientInsertStatement.setInt(2, ingredient._id);
+                        ingredientInsertStatement.addBatch();
+                        i++;
+                    }
+                    ingredientInsertStatement.executeBatch();
+                    ingredientInsertStatement.close();
+
+                    //set the varchar in item ingredients with a list of ingredients
+                    String ingredientItemQuery = "UPDATE Items SET ingredients = ? WHERE itemId = ?";
+                    PreparedStatement ingredientItemStatement = connection.prepareStatement(ingredientItemQuery);
+                    ingredientItemStatement.setString(1, ingredientList);
+                    ingredientItemStatement.setInt(2, itemId);
+                    ingredientItemStatement.executeBatch();
+                    ingredientItemStatement.close();
+
+                }
+            }
+
+            itemInsertStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return itemId;
+    }
+
+    @GetMapping("/item/edit")
+    public static boolean editItem(Item item) {
+        try {
+            // insert item into database
+            String itemInsertQuery = "UPDATE Items SET name = ?, price = ?, category = ?, ingredients = ?, startDate = ?, endDate = ? WHERE itemId = ?";
+            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery);
+            itemInsertStatement.setString(1, item.name);
+            itemInsertStatement.setDouble(2, item.price);
+            itemInsertStatement.setString(3, item.category);
+            itemInsertStatement.setString(4, item.ingredientInfo);
+            itemInsertStatement.setDate(5, item.startDate);
+            itemInsertStatement.setDate(6, item.endDate);
+            itemInsertStatement.setInt(7, item._id);
+            itemInsertStatement.executeUpdate();
+
+            // remove existing order-item junctions
+            String iijRemoveQuery = "DELETE FROM ItemIngredient_Junction WHERE itemId = ?";
+            PreparedStatement iijRemoveStatement = connection.prepareStatement(iijRemoveQuery);
+            iijRemoveStatement.setInt(1, item._id);
+            iijRemoveStatement.executeUpdate();
+
+            // add order-item junctions again
+            String insertItemIngQuery = "INSERT INTO ItemIngredient_Junction (itemId, ingredientId) VALUES (?, ?)";
+            PreparedStatement insertItemIngStatement = connection.prepareStatement(insertItemIngQuery);
+
+            for (Ingredient ing : item.ingredients) {
+                insertItemIngStatement.setInt(1, item._id);
+                insertItemIngStatement.setInt(2, ing._id);
+                insertItemIngStatement.addBatch();
+            }
+            insertItemIngStatement.executeBatch();
+            
+            // close statements
+            insertItemIngStatement.close();
+            iijRemoveStatement.close();
+            itemInsertStatement.close();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @GetMapping("/item/delete")
+    public static boolean deleteItem(int itemId) {
+        try {
+            // delete item from database
+            String itemDeleteQuery = "DELETE FROM Items WHERE itemId = ?";
+            PreparedStatement itemDeleteStatement = connection.prepareStatement(itemDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            itemDeleteStatement.setInt(1, itemId);
+            itemDeleteStatement.executeUpdate();
+            itemDeleteStatement.close();
+
+            // delete item id relevant ingredient correlations in junction table
+            String itemIngredientDeleteQuery = "DELETE FROM ItemIngredient_Junction WHERE itemId = ?";
+            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            itemIngredientDeleteStatement.setInt(1, itemId);
+            itemIngredientDeleteStatement.executeUpdate();
+            itemIngredientDeleteStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @GetMapping("/getallingredients")
+    public static List<Ingredient> getAllIngredients() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Ingredients");
+            return runIngredientQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getingredientsbyid")
+    public static List<Ingredient> getIngredientsById(List<Integer> ingredientIds) {
+        try {
+            String query = "SELECT * FROM Ingredients WHERE ingredientId IN " + buildPlaceholderString(ingredientIds.size());
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            int index = 1;
+            for (Integer ingredientId : ingredientIds) {
+                statement.setInt(index++, ingredientId);
+            }
+            
+            return runIngredientQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getingredientsbyname")
+    public static List<Ingredient> getIngredientsByName(String testName) {
+        try {
+            String query = "SELECT * FROM Ingredients WHERE name LIKE ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + testName + "%");
+            
+            return runIngredientQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/ingredient/insert")
+    public static int insertIngredient(Ingredient ingredient) {
+        int ingredientId = -1;
+
+        try {
+            // insert ingredient into database
+            String ingInsertQuery = "INSERT INTO Ingredients (name, quantity, minQuantity, unitPrice, supplier) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement ingInsertStatement = connection.prepareStatement(ingInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            ingInsertStatement.setString(1, ingredient.name);
+            ingInsertStatement.setInt(2, ingredient.quantity);
+            ingInsertStatement.setInt(3, ingredient.minQuantity);
+            ingInsertStatement.setDouble(4, ingredient.unitPrice);
+            ingInsertStatement.setString(5, ingredient.supplier);
+            ingInsertStatement.executeUpdate();
+            
+            // get generated id of ingredient in database
+            ResultSet generatedKeys = ingInsertStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                ingredientId = generatedKeys.getInt(1);
+            }
+
+            ingInsertStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ingredientId;
+    }
+
+    @GetMapping("/ingredient/edit")
+    public static boolean editIngredient(Ingredient ingredient) {
+        try {
+            String ingredientEditQuery = "UPDATE Ingredients SET name = ?, quantity = ?, minQuantity = ?, unitPrice = ?, supplier = ? WHERE ingredientId = ?";
+            PreparedStatement ingredientEditStatement = connection.prepareStatement(ingredientEditQuery);
+            ingredientEditStatement.setString(1, ingredient.name);
+            ingredientEditStatement.setInt(2, ingredient.quantity);
+            ingredientEditStatement.setInt(3, ingredient.minQuantity);
+            ingredientEditStatement.setDouble(4, ingredient.unitPrice);
+            ingredientEditStatement.setString(5, ingredient.supplier);
+            ingredientEditStatement.setInt(6, ingredient._id);
+            ingredientEditStatement.executeUpdate();
+            ingredientEditStatement.close();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @GetMapping("/ingredient/delete")
+    public static boolean deleteIngredient(int ingredientId) {
+        try {
+            // delete item from database
+            String ingDeleteQuery = "DELETE FROM Ingredients WHERE ingredientId = ?";
+            PreparedStatement ingDeleteStatement = connection.prepareStatement(ingDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            ingDeleteStatement.setInt(1, ingredientId);
+            ingDeleteStatement.executeUpdate();
+            ingDeleteStatement.close();
+
+            // delete item id relevant ingredient correlations in junction table
+            String itemIngredientDeleteQuery = "DELETE FROM ItemIngredient_Junction WHERE ingredientId = ?";
+            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            itemIngredientDeleteStatement.setInt(1, ingredientId);
+            itemIngredientDeleteStatement.executeUpdate();
+            itemIngredientDeleteStatement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    @GetMapping("/getallorders")
+    public static List<Order> getAllOrders(int limit) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders ORDER BY dateTime DESC LIMIT ?");
+            statement.setInt(1, limit);
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getordersbydaterange")
+    public static List<Order> getOrdersByDateRange(Date start, Date end) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders WHERE dateTime >= ? AND dateTime <= ?");
+            statement.setDate(1, start);
+            statement.setDate(2, end);
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/getordersbyid")
+    public static List<Order> getOrdersById(List<Integer> orderIds) {
+        try {
+            String query = "SELECT * FROM Orders WHERE orderId IN " + buildPlaceholderString(orderIds.size());
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            int index = 1;
+            for (Integer orderId : orderIds) {
+                statement.setInt(index++, orderId);
+            }
+            
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/amtinventoryused")
+    public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end){
+        Map<String, Integer> inventoryUsed = new HashMap<>();
+        try {
+            String sql = "SELECT i.name, SUM(oi.numOfItem) AS totalUsed " +
+                         "FROM Orders o " +
+                         "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
+                         "JOIN Items it ON oi.itemId = it.itemId " +
+                         "JOIN ItemIngredient_Junction iij ON it.itemId = iij.itemId " +
+                         "JOIN Ingredients i ON iij.ingredientId = i.ingredientId " +
+                         "WHERE o.dateTime BETWEEN ? AND ? " +
+                         "GROUP BY i.name";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setDate(1, start);
+            pstmt.setDate(2, end);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String ingredientName = rs.getString("name");
+                int totalUsed = rs.getInt("totalUsed");
+                inventoryUsed.put(ingredientName, totalUsed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return inventoryUsed;
+    }
+
+    @GetMapping("/salesreport")
+    public static Map<String, Double> getSalesReport(Date start, Date end){
+        Map<String, Double> sales = new HashMap<>();
+        try {
+            String sql = "SELECT it.name AS item_name, SUM(oi.numOfItem * it.price) AS total_sales " + 
+                        "FROM Orders o " + 
+                        "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
+                        "JOIN Items it ON oi.itemId = it.itemId " +
+                        "WHERE o.dateTime BETWEEN ? AND ? " +
+                        "GROUP BY it.name; ";
+            
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setDate(1, start);
+            pstmt.setDate(2, end);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()){
+                String menuItemName = rs.getString("item_name");
+                double total = rs.getDouble("total_sales");
+                sales.put(menuItemName, total);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sales;
+    }
+
+    @GetMapping("/excessingredients")
+    public static List<Ingredient> getExcessIngredients(Date start) {
+        try {
+            Date end = new Date(System.currentTimeMillis());
+            
+            String excessQuery = "" + 
+                "SELECT DISTINCT \n" +
+                    "ing.*, \n" +
+                    "((ing.quantity_at_start - ing.quantity_at_end) / ing.quantity_at_start) * 100 AS percentage_consumed \n" +
+                "FROM ( \n" +
+                    "SELECT \n" +
+                        "i.*, \n" +
+                        "LAG(i.quantity) OVER (PARTITION BY i.ingredientId ORDER BY o.dateTime) AS quantity_at_start, \n" +
+                        "i.quantity AS quantity_at_end \n" +
+                    "FROM \n" +
+                        "Ingredients i \n" +
+                        "JOIN ItemIngredient_Junction ii ON i.ingredientId = ii.ingredientId \n" +
+                        "JOIN OrderItem_Junction oij ON ii.itemId = oij.itemId \n" +
+                        "JOIN Orders o ON oij.orderId = o.orderId \n" +
+                    "WHERE \n" +
+                        "o.dateTime BETWEEN ? AND ? \n" +
+                ") ing \n" +
+                "WHERE \n" +
+                    "ing.quantity_at_start IS NOT NULL \n" +
+                    "AND ((ing.quantity_at_start - ing.quantity_at_end) / ing.quantity_at_start) * 100 < 10;";
+            
+            PreparedStatement excessStatement = connection.prepareStatement(excessQuery);
+            excessStatement.setDate(1, start);
+            excessStatement.setDate(2, end);
+            
+
+            return runIngredientQuery(excessStatement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("/sellstog")
+    public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(Date start, Date end) {
+        List<MutablePair<MutablePair<Item, Item>, Integer>> sellsTog = new ArrayList<>();
+        try {
+            String sql = "" +
+                "WITH OrderItems AS ( \n" +
+                    "SELECT \n" +
+                        "oij1.orderId AS order1, \n" +
+                        "oij1.itemId AS item1, \n" +
+                        "oij2.orderId AS order2, \n" +
+                        "oij2.itemId AS item2 \n" +
+                    "FROM \n" +
+                        "OrderItem_Junction oij1 \n" +
+                        "JOIN OrderItem_Junction oij2 ON oij1.orderId = oij2.orderId \n" +
+                            "AND oij1.itemId < oij2.itemId \n" +
+                        "JOIN Orders o1 ON oij1.orderId = o1.orderId \n" +
+                        "JOIN Orders o2 ON oij2.orderId = o2.orderId \n" +
+                    "WHERE \n" +
+                        "o1.dateTime BETWEEN ? AND ? \n" +
+                        "AND o2.dateTime BETWEEN ? AND ? \n" +
+                ") \n" +
+                "SELECT \n" +
+                    "item1, item2, \n" +
+                    "COUNT(*) AS frequency \n" +
+                "FROM \n" +
+                    "OrderItems \n" +
+                "GROUP BY \n" +
+                    "item1, item2 \n" +
+                "ORDER BY \n" +
+                    "frequency DESC \n" +
+                "LIMIT 10;";
+
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setDate(1, start);
+            pstmt.setDate(2, end);
+            pstmt.setDate(3, start);
+            pstmt.setDate(4, end);
+            ResultSet resultSet = pstmt.executeQuery();
+            
+            while (resultSet.next()){
+                int item1Id = resultSet.getInt("item1");
+                int item2Id = resultSet.getInt("item2");
+                int frequency = resultSet.getInt("frequency");
+
+                sellsTog.add(new MutablePair<>(new MutablePair<>(Item.findOneById(item1Id), Item.findOneById(item2Id)), frequency));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sellsTog;
+    }
+
+    private static String buildPlaceholderString(int numParameters) {
+        String str = "(";
+        for (int i = 0; i < numParameters; i++) {
+            str += "?";
+            if (i < numParameters - 1) {
+                str += ",";
+            }
+        }
+        str += ")";
+        return str;
+    }
+}
