@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
 
 interface ILoginButtonProps {
     color: string;
@@ -54,22 +55,25 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     )
 }
 
-const Login = () => {
+const Login : React.FC = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const googleLogin = useGoogleLogin({
         onSuccess: user => {
             console.log('Login Success:', user);
+            navigate("/manager");
         },
         onError: error => {
-            console.error('Login Error:', error);
+            console.error("Login Error:", error);
         },
     });
 
     const handleSubmit = (e : React.FormEvent) => {
         e.preventDefault();
         console.log(email, password);
+        navigate("/manager");
     };
 
     return (
@@ -134,7 +138,5 @@ const Login = () => {
         </div>
     );
 };
-  
 
 export default Login;
-  
