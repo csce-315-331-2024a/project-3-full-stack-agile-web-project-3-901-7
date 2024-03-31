@@ -1,4 +1,16 @@
+import { useEffect, useState } from "react"
 import { FaArrowRight } from "react-icons/fa"
+import Navbar from "../components/Navbar";
+
+interface Item {
+    itemid: number;
+    name: string;
+    price: number;
+    category: string;
+    ingredients: string;
+    startdate: Date;
+    enddate: Date;
+}
 
 export default function Order() {
 
@@ -6,9 +18,57 @@ export default function Order() {
         console.log("fk u")
     }
 
+    const [items, setItems] = useState<Item[]>([])
+
+    useEffect(() => {
+
+        async function fetchItems() {
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/")
+            const data = await response.json()
+            setItems(data)
+        }
+
+        const exampleData = [
+            {
+                itemid: 1,
+                name: "Cheeseburger",
+                price: 5.99,
+                category: "Burgers",
+                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+                startdate: new Date(),
+                enddate: new Date()
+            },
+            {
+                itemid: 2,
+                name: "Cheeseburger",
+                price: 5.99,
+                category: "Burgers",
+                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+                startdate: new Date(),
+                enddate: new Date()
+            },
+            {
+                itemid: 3,
+                name: "Cheeseburger",
+                price: 5.99,
+                category: "Burgers",
+                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+                startdate: new Date(),
+                enddate: new Date()
+            }
+        ]
+
+        setItems(exampleData)
+
+        // fetchItems()
+
+    }, [])
+
     return (
         <div className="w-full h-full p-8 relative">
             
+            <Navbar/>
+
             <div className="flex flex-wrap gap-x-6 mt-14">
                 <OrderCategoryCard/>
                 <OrderCategoryCard/>
@@ -19,7 +79,8 @@ export default function Order() {
             </div>
 
             <div className="flex justify-between mt-9 w-full h-full">
-                <div className="mt-9">
+                <div className="mt-9 flex flex-wrap gap-8">
+                    {items.map((item, index) => <ItemCard key={index} itemid={item.itemid} name={item.name} price={item.price} category={item.category} ingredients={item.ingredients} startdate={item.startdate} enddate={item.enddate}/>)}
                 </div>
                 <div className="flex flex-col items-end justify-between h-full">
                     <OrderReceipt/>
@@ -72,6 +133,20 @@ function OrderReceipt() {
 function OrderReceiptItem() {
     return (
         <div className="w-[360px] h-24 flex gap-x-4 bg-black">
+
+        </div>
+    )
+}
+
+function ItemCard({name, price} : Item) {
+    return (
+        <div className="w-[280px] h-[230px] relative rounded-md">
+            <img src={""} alt="image of the item" width={280} height={196}/>
+            
+            <div className="mt-1 w-full flex justify-between items-center">
+                <p>{name}</p>
+                <p>${price}</p>
+            </div>
 
         </div>
     )
