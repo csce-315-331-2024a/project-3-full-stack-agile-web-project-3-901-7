@@ -102,11 +102,11 @@ export default function Menu() {
                 </div>
                 
                 {/* menu categories */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 px-16">
-                    {Object.entries(groupedItems).map(([category, items]) => (
-                        <div key={category} className="mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4 px-16">
+                    {Object.entries(groupedItems).map(([category, items], index) => (
+                        <div key={category} className={`mb-4 ${index % 2 === 0 ? "pr-6 md:border-r md:border-black" : "pl-6 md:border-l md:border-black"}`}>
                             <h1 className="text-4xl font-ptserif font-bold py-4 px-2 border-y-2 border-black">{category}</h1>
-                            <ul className="divide-y divide-gray-300">
+                            <ul>
                                 {items.map((item) => (
                                     <li key={item.itemid} className="py-2">
                                         <ItemCard itemid={item.itemid} name={item.name} price={item.price} category={item.category} ingredients={item.ingredients} startdate={item.startdate} enddate={item.enddate} />
