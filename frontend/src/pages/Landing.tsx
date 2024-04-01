@@ -26,7 +26,7 @@ export default function Landing() {
             </div>
             <div className="mt-12 text-center">
                 <p className="text-lg font-ptserif mb-4">
-                    This is team 901-7's (Bogo sort Enjoyers) Project 3. Theb landing page is currently work in progrss. You can view the README for our project below:
+                    This is team 901-7's (Bogo sort Enjoyers) Project 3. The landing page is currently work in progrss. You can view the README for our project below:
                 </p>
                 <a href="https://github.com/csce-315-331-2024a/project-3-full-stack-agile-web-project-3-901-7/blob/main/README.md" 
                    className="text-blue-600 hover:text-blue-800 transition-colors duration-200" 
