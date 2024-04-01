@@ -1,6 +1,5 @@
 import '../index.css';
 import { useEffect, useState } from "react"
-import { FaArrowRight } from "react-icons/fa"
 import Navbar from "../components/Navbar";
 
 interface Item {
