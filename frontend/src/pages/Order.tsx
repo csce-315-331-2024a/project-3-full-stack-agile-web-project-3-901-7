@@ -1,67 +1,58 @@
 import { useEffect, useState } from "react"
 import { FaArrowRight } from "react-icons/fa"
 import Navbar from "../components/Navbar";
-
-interface Item {
-    itemid: number;
-    name: string;
-    price: number;
-    category: string;
-    ingredients: string;
-    startdate: Date;
-    enddate: Date;
-}
+import { Item } from "../types/dbTypes";
 
 export default function Order() {
 
     function callHelp() {
-        console.log("fk u")
+        console.log("asked for help");
     }
 
-    const [items, setItems] = useState<Item[]>([])
+    const [items, setItems] = useState<Item[]>([]);
     
 
     useEffect(() => {
 
         async function fetchItems() {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/")
-            const data = await response.json()
-            setItems(data)
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
+            const data = await response.json();
+            setItems(data);
         }
 
-        const exampleData = [
-            {
-                itemid: 1,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Burgers",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 2,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Burgers",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 3,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Burgers",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            }
-        ]
+        // const exampleData = [
+        //     {
+        //         itemid: 1,
+        //         name: "Cheeseburger",
+        //         price: 5.99,
+        //         category: "Burgers",
+        //         ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+        //         startdate: new Date(),
+        //         enddate: new Date()
+        //     },
+        //     {
+        //         itemid: 2,
+        //         name: "Cheeseburger",
+        //         price: 5.99,
+        //         category: "Burgers",
+        //         ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+        //         startdate: new Date(),
+        //         enddate: new Date()
+        //     },
+        //     {
+        //         itemid: 3,
+        //         name: "Cheeseburger",
+        //         price: 5.99,
+        //         category: "Burgers",
+        //         ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
+        //         startdate: new Date(),
+        //         enddate: new Date()
+        //     }
+        // ]
 
-        setItems(exampleData)
+        // setItems(exampleData);
 
-        // fetchItems()
+        fetchItems();
 
     }, [])
 
@@ -81,7 +72,7 @@ export default function Order() {
 
             <div className="flex justify-between mt-9 w-full h-full">
                 <div className="mt-9 flex flex-wrap gap-8">
-                    {items.map((item, index) => <ItemCard key={index} itemid={item.itemid} name={item.name} price={item.price} category={item.category} ingredients={item.ingredients} startdate={item.startdate} enddate={item.enddate}/>)}
+                    {items.map((item, index) => <ItemCard key={index} _id={item._id} name={item.name} price={item.price} category={item.category} ingredientInfo={item.ingredientInfo} startDate={item.startDate} endDate={item.endDate}/>)}
                 </div>
                 <div className="flex flex-col items-end justify-between h-full">
                     <OrderReceipt/>

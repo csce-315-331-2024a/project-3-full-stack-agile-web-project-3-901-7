@@ -2,10 +2,6 @@ package com.revs.grill;
 import java.util.*;
 import java.sql.Date;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
 public class Item {
     public int _id;
     public String name;
@@ -25,8 +21,7 @@ public class Item {
         startDate = null;
         endDate = null;
     }
-
-    @GetMapping("/item/constructor")
+    
     public Item itemConstructor() {
         return new Item();
     }
@@ -39,8 +34,7 @@ public class Item {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
-    @GetMapping("/item/constructor2")
+    
     public Item itemConstructor2(String name, double price, String category, Date startDate, Date endDate) {
         return new Item(name, price, category, startDate, endDate);
     }
@@ -50,28 +44,23 @@ public class Item {
         this(name, price, category, startDate, endDate);
         this.ingredients = Ingredient.findById(ingredientIds);
     }
-
-    @GetMapping("/item/constructor3")
+    
     public Item itemConstructor3(String name, double price, String category, Date startDate, Date endDate, List<Integer> ingredientIds) {
         return new Item(name, price, category, startDate, endDate, ingredientIds);
     } 
-
-    @GetMapping("/item/onebyid")
+    
     public static Item findOneById(int id) {
         return findById(Arrays.asList(id)).get(0);
     }
-
-    @GetMapping("/item/byid")
+    
     public static List<Item> findById(List<Integer> ids) {
-        return DatabaseController.getItemsById(ids);
+        return Database.getItemsById(ids);
     }
-
-    @GetMapping("/item/removebyid")
+    
     public static boolean removeById(int itemId) {
-        return DatabaseController.deleteItem(itemId);
+        return Database.deleteItem(itemId);
     }
-
-    @GetMapping("/item/updatebyid")
+    
     public static boolean updateById(int itemId, String nameStr, String priceStr, String categoryStr, Date startDate,
             Date endDate, String ingredientStr) {
         Item currItem = findOneById(itemId);
@@ -96,10 +85,9 @@ public class Item {
             currItem.serializeItemInfo();
         }
 
-        return DatabaseController.editItem(currItem);
+        return Database.editItem(currItem);
     }
 
-    @GetMapping("/item/isavailable")
     public boolean isAvailable() {
         for (Ingredient ingredient : ingredients) {
             if (ingredient.quantity < ingredient.minQuantity) {
@@ -116,7 +104,6 @@ public class Item {
         return true;
     }
 
-    @GetMapping("/item/serializeinfo")
     public void serializeItemInfo() {
         List<String> ingNames = new ArrayList<>();
         for (Ingredient ing : ingredients)
@@ -125,18 +112,15 @@ public class Item {
         this.ingredientInfo = String.join(",", ingNames);
     }
 
-    @GetMapping("/item/write")
     public void write() {
         this.serializeItemInfo();
-        this._id = DatabaseController.insertItem(this);
+        this._id = Database.insertItem(this);
     }
 
-    @GetMapping("/item/update")
     public boolean update() {
-        return DatabaseController.editItem(this);
+        return Database.editItem(this);
     }
 
-    @GetMapping("/item/getid")
     public int getId() {
         return _id;
     }

@@ -4,13 +4,13 @@ import { FaArrowRight } from "react-icons/fa"
 import Navbar from "../components/Navbar";
 
 interface Item {
-    itemid: number;
+    _id: number;
     name: string;
     price: number;
     category: string;
-    ingredients: string;
-    startdate: Date;
-    enddate: Date;
+    ingredientInfo: string;
+    startDate: Date;
+    endDate: Date;
 }
 
 export default function Menu() {
@@ -20,62 +20,12 @@ export default function Menu() {
     useEffect(() => {
 
         async function fetchItems() {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/")
-            const data = await response.json()
-            setItems(data)
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
+            const data = await response.json();
+            setItems(data);
         }
 
-        const exampleData = [
-            {
-                itemid: 1,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Burgers",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 2,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Burgers",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 3,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Sandwiches",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 4,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Drinks",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            },
-            {
-                itemid: 4,
-                name: "Cheeseburger",
-                price: 5.99,
-                category: "Meals",
-                ingredients: "Beef patty, cheese, lettuce, tomato, onion, pickles, ketchup, mayo",
-                startdate: new Date(),
-                enddate: new Date()
-            }
-        ]
-
-        setItems(exampleData)
-
-        // fetchItems()
+        fetchItems();
 
     }, [])
 
@@ -108,8 +58,8 @@ export default function Menu() {
                             <h1 className="text-4xl font-ptserif font-bold py-4 px-2 border-y-2 border-black">{category}</h1>
                             <ul>
                                 {items.map((item) => (
-                                    <li key={item.itemid} className="py-2">
-                                        <ItemCard itemid={item.itemid} name={item.name} price={item.price} category={item.category} ingredients={item.ingredients} startdate={item.startdate} enddate={item.enddate} />
+                                    <li key={item._id} className="py-2">
+                                        <ItemCard _id={item._id} name={item.name} price={item.price} category={item.category} ingredientInfo={item.ingredientInfo} startDate={item.startDate} endDate={item.endDate} />
                                     </li>
                                 ))}
                             </ul>
@@ -121,7 +71,7 @@ export default function Menu() {
     );
 }
 
-function ItemCard({name, price, ingredients} : Item) {
+function ItemCard({name, price, ingredientInfo: ingredients} : Item) {
     return (
         <>
             <div className="flex justify-between">

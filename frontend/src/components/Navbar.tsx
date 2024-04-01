@@ -18,7 +18,7 @@ export default function Navbar() {
                     <a href="/order" className="hover:text-white">start order</a>
                 </button>
                 <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif">
-                    <a href="/login" className="hover:text-white">login</a>
+                    <a href="/login" className="hover:text-white">manager login</a>
                 </button>
                 <button onClick={changeLang} className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif">EN</button>
                 <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif">+</button>
