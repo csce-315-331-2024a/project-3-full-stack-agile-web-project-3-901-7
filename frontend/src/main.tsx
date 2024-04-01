@@ -26,9 +26,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </GoogleOAuthProvider>
 )
 
-function PlaceHolder() {
-    return (
-        <>
-        </>
-    )
-}
