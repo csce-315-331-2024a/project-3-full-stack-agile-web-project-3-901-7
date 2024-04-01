@@ -204,4 +204,120 @@
        - Cashier ordering page
 
        - Cashier information page
+       
+### Sprint 1:
+#### Standup #1: 3/26
+- **Sua Bae:**
+  - What I did yesterday:
+    - Reviewed project requirements and user stories
+  - What I plan to do today:
+    - Begin helping with drafting UI mockups of key pages
+  - Any blockers:
+    - None
+- **Andrew Beketov:**
+  - What I did yesterday:
+    - Started with reviewing project requirements and deliverables
+  - What I plan to do today:
+    - Set up the SCRUM board table and populate it with our tasks
+  - Any blockers:
+    - None
+- **Surya Jasper:**
+  - What I did yesterday:
+    - Reviewed user stories and provided feedback
+    - Conducted initial research on backend integration
+  - What I plan to do today:
+    - Collaborate with the team to prioritize tasks for the sprint
+  - Any blockers:
+    - None
+- **Shweta Kumaran:**
+  - What I did yesterday:
+    - Analyzed project requirements and deliverables
+  - What I plan to do today:
+    - Help with populating SCRUM board table and review deliverables
+  - Any blockers:
+    - None
+- **Warren Wu:**
+  - What I did yesterday:
+    - Reviewed project documentation and deliverables
+  - What I plan to do today:
+    - Begin on drafting UI mockups of key pages
+  - Any blockers:
+    - None
+
+#### Standup #2: 3/26
+- **Sua Bae:**
+  - What I did yesterday:
+    - Helped with setting up frontend
+  - What I plan to do today:
+    - Begin on implementing key pages into frontend
+  - Any blockers:
+    - None
+- **Andrew Beketov:**
+  - What I did yesterday:
+    - Continued with creating frontend UI mockups of key pages and creation of new ones such as Login page
+  - What I plan to do today:
+    - Finalize design w/ Warren
+  - Any blockers:
+    - None
+- **Surya Jasper:**
+  - What I did yesterday:
+    - Explored ideas for oath implementation
+  - What I plan to do today:
+    - Begin on oath implementation
+  - Any blockers:
+    - None
+- **Shweta Kumaran:**
+  - What I did yesterday:
+    - Began on integrating backend database
+  - What I plan to do today:
+    - Continue with integrating backend database
+  - Any blockers:
+    - None
+- **Warren Wu:**
+  - What I did yesterday:
+    - Continued with frontend UI design and setting up React
+  - What I plan to do today:
+    - Finalize frontend UI design
+  - Any blockers:
+    - None
+
+#### Standup #3: 3/31
+- **Sua Bae:**
+  - What I did yesterday:
+    - Continued working on key frontend pages such as menu
+  - What I plan to do today:
+    - Help on finalizing everything for release 1.0
+  - Any blockers:
+    - None
+- **Andrew Beketov:**
+  - What I did yesterday:
+    - Helped with getting everything set up for today's meeting
+    - Implemented key features according to our design such as Navbar
+  - What I plan to do today:
+    - Finalize all items for release 1.0
+  - Any blockers:
+    - None
+- **Surya Jasper:**
+  - What I did yesterday:
+    - Finished oath implementation
+  - What I plan to do today:
+    - Help with connecting backend to frontend implementation and finalizing for release 1.0
+  - Any blockers:
+    - None
+- **Shweta Kumaran:**
+  - What I did yesterday:
+    - Worked on setting up backend database
+  - What I plan to do today:
+    - Continue working on backend database
+    - Finalize everything for release 1.0
+  - Any blockers:
+    - None
+- **Warren Wu:**
+  - What I did yesterday:
+    - Implemented frontend pages such as order
+  - What I plan to do today:
+    - Finalize all items for release 1.0
+  - Any blockers:
+    - None
+
 
