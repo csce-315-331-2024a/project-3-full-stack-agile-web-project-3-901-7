@@ -2,10 +2,6 @@ package com.revs.grill;
 import java.util.*;
 import java.sql.Date;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
 public class Order {
     public int _id;
     public int numItems;
@@ -22,7 +18,6 @@ public class Order {
         this.total = 0;
     }
 
-    @GetMapping("/order/constructor")
     public Order orderConstructor() {
         return new Order();
     }
@@ -36,12 +31,10 @@ public class Order {
         this.total = total;
     }
 
-    @GetMapping("/order/constructor2")
     public Order orderConstrutor2(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total){
         return new Order(id, numItems, orderInfo, itemToQuantity, total);
     }
 
-    @GetMapping("/order/serializeinfo")
     public void serializeOrderInfo() {
         List<Integer> itemIds = new ArrayList<>(itemToQuantity.keySet());
         this.numItems = 0;
@@ -55,7 +48,6 @@ public class Order {
         this.orderInfo = String.join(",", itemNames);
     }
 
-    @GetMapping("/order/additem")
     public void addItem(int itemId, int addQuantity) {
         Item newItem = Item.findOneById(itemId);
         this.total += newItem.price;
@@ -65,7 +57,6 @@ public class Order {
         itemToQuantity.put(itemId, currQuantity + addQuantity);
     }
 
-    @GetMapping("/order/getitemquantity")
     public int getItemQuantity(int itemId) {
         if (this.itemToQuantity.containsKey(itemId))
             return this.itemToQuantity.get(itemId);
@@ -73,34 +64,28 @@ public class Order {
             return 0;
     }
 
-    @GetMapping("/order/write")
     public void write() {
         this.serializeOrderInfo();
         this.dateTime = new java.sql.Date(System.currentTimeMillis());
-        this._id = DatabaseController.insertOrder(this);
+        this._id = Database.insertOrder(this);
     }
 
-    @GetMapping("/order/findall")
     public static List<Order> findAll(int limit) {
-        return DatabaseController.getAllOrders(limit);
+        return Database.getAllOrders(limit);
     }
 
-    @GetMapping("/order/byid")
     public static List<Order> findById(List<Integer> orderIds) {
-        return DatabaseController.getOrdersById(orderIds);
+        return Database.getOrdersById(orderIds);
     }
 
-    @GetMapping("/order/onebyid")
     public static Order findOneById(int orderId) {
         return findById(Arrays.asList(orderId)).get(0);
     }
 
-    @GetMapping("/order/indaterange")
     public static List<Order> findInDateRange(Date start, Date end) {
-        return DatabaseController.getOrdersByDateRange(start, end);
+        return Database.getOrdersByDateRange(start, end);
     }
 
-    @GetMapping("/order/updatebyid")
     public static boolean updateById(int orderId, String numItems, String orderInfo, String total) {
         Order order = findOneById(orderId);
 
@@ -111,12 +96,11 @@ public class Order {
         if (!total.isEmpty())
             order.total = Double.parseDouble(total);
 
-        return DatabaseController.editOrder(order);
+        return Database.editOrder(order);
     }
 
-    @GetMapping("/order/removebyid")
     public static boolean removeById(int orderId) {
-        return DatabaseController.deleteOrder(Order.findOneById(orderId));
+        return Database.deleteOrder(Order.findOneById(orderId));
     }
     
     @Override
