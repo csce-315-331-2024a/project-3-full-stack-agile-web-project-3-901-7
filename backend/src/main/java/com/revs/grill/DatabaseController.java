@@ -11,10 +11,9 @@ import org.apache.commons.lang3.tuple.MutablePair;
 
 @RestController
 public class DatabaseController {
-    private static Connection connection = null;
+    public static Connection connection = null;
 
-	@GetMapping("/dbconnect")
-	public static boolean createConnection() {
+	private static void createConnection() {
         String database_name = "csce331_901_04_p3_db";
         String database_user = "csce331_901_04_user";
         String database_password = "HPTaVfHd";
@@ -22,14 +21,13 @@ public class DatabaseController {
         
         try {
             connection = DriverManager.getConnection(database_url, database_user, database_password);
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 
     private static List<Ingredient> runIngredientQuery(PreparedStatement queryStatement) throws SQLException {
+        if (connection == null) { createConnection(); }
         List<Ingredient> ingredients = new ArrayList<>();
         
         ResultSet resultSet = queryStatement.executeQuery();
@@ -52,6 +50,7 @@ public class DatabaseController {
     }
 
     private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients) throws SQLException {
+        if (connection == null) { createConnection(); }
         List<Item> items = new ArrayList<>();
         
         ResultSet resultSet = queryStatement.executeQuery();
@@ -90,6 +89,7 @@ public class DatabaseController {
     }
 
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
+        if (connection == null) { createConnection(); }
         List<Order> orders = new ArrayList<>();
         
         ResultSet resultSet = queryStatement.executeQuery();
@@ -132,6 +132,7 @@ public class DatabaseController {
 
     @GetMapping("/getallitems")
     public static List<Item> getAllItems() {
+        if (connection == null) { createConnection(); }
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
             return runItemQuery(statement, true);
@@ -144,6 +145,7 @@ public class DatabaseController {
 
     @GetMapping("/getitemsbyid")
     public static List<Item> getItemsById(List<Integer> itemIds) {
+        if (connection == null) { createConnection(); }
         try {
             String query = "SELECT * FROM Items WHERE itemId IN " + buildPlaceholderString(itemIds.size());
             PreparedStatement statement = connection.prepareStatement(query);
@@ -163,6 +165,7 @@ public class DatabaseController {
 
     @GetMapping("/order/insert")
     public static int insertOrder(Order order) {
+        if (connection == null) { createConnection(); }
         try {
             // insert item into database
             String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime) VALUES (?, ?, ?, ?)";
@@ -227,6 +230,7 @@ public class DatabaseController {
 
     @GetMapping("/order/edit")
     public static boolean editOrder(Order order) {
+        if (connection == null) { createConnection(); }
         try {
             // update order table
             String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ? WHERE orderId = ?";
@@ -270,6 +274,7 @@ public class DatabaseController {
 
     @GetMapping("/order/delete")
     public static boolean deleteOrder(Order order) {
+        if (connection == null) { createConnection(); }
         try {
             // delete order from order table
             String orderDeleteQuery = "DELETE FROM Orders WHERE orderId = ?";
@@ -297,6 +302,7 @@ public class DatabaseController {
 
     @GetMapping("/item/insert")
     public static int insertItem(Item item) {
+        if (connection == null) { createConnection(); }
         int itemId = -1;
 
         try {
@@ -361,6 +367,7 @@ public class DatabaseController {
 
     @GetMapping("/item/edit")
     public static boolean editItem(Item item) {
+        if (connection == null) { createConnection(); }
         try {
             // insert item into database
             String itemInsertQuery = "UPDATE Items SET name = ?, price = ?, category = ?, ingredients = ?, startDate = ?, endDate = ? WHERE itemId = ?";
@@ -406,6 +413,7 @@ public class DatabaseController {
 
     @GetMapping("/item/delete")
     public static boolean deleteItem(int itemId) {
+        if (connection == null) { createConnection(); }
         try {
             // delete item from database
             String itemDeleteQuery = "DELETE FROM Items WHERE itemId = ?";
@@ -431,6 +439,7 @@ public class DatabaseController {
 
     @GetMapping("/getallingredients")
     public static List<Ingredient> getAllIngredients() {
+        if (connection == null) { createConnection(); }
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Ingredients");
             return runIngredientQuery(statement);
@@ -443,6 +452,7 @@ public class DatabaseController {
 
     @GetMapping("/getingredientsbyid")
     public static List<Ingredient> getIngredientsById(List<Integer> ingredientIds) {
+        if (connection == null) { createConnection(); }
         try {
             String query = "SELECT * FROM Ingredients WHERE ingredientId IN " + buildPlaceholderString(ingredientIds.size());
             PreparedStatement statement = connection.prepareStatement(query);
@@ -462,6 +472,7 @@ public class DatabaseController {
 
     @GetMapping("/getingredientsbyname")
     public static List<Ingredient> getIngredientsByName(String testName) {
+        if (connection == null) { createConnection(); }
         try {
             String query = "SELECT * FROM Ingredients WHERE name LIKE ?";
             PreparedStatement statement = connection.prepareStatement(query);
@@ -477,6 +488,7 @@ public class DatabaseController {
 
     @GetMapping("/ingredient/insert")
     public static int insertIngredient(Ingredient ingredient) {
+        if (connection == null) { createConnection(); }
         int ingredientId = -1;
 
         try {
@@ -507,6 +519,7 @@ public class DatabaseController {
 
     @GetMapping("/ingredient/edit")
     public static boolean editIngredient(Ingredient ingredient) {
+        if (connection == null) { createConnection(); }
         try {
             String ingredientEditQuery = "UPDATE Ingredients SET name = ?, quantity = ?, minQuantity = ?, unitPrice = ?, supplier = ? WHERE ingredientId = ?";
             PreparedStatement ingredientEditStatement = connection.prepareStatement(ingredientEditQuery);
@@ -528,6 +541,7 @@ public class DatabaseController {
 
     @GetMapping("/ingredient/delete")
     public static boolean deleteIngredient(int ingredientId) {
+        if (connection == null) { createConnection(); }
         try {
             // delete item from database
             String ingDeleteQuery = "DELETE FROM Ingredients WHERE ingredientId = ?";
@@ -553,6 +567,7 @@ public class DatabaseController {
 
     @GetMapping("/getallorders")
     public static List<Order> getAllOrders(int limit) {
+        if (connection == null) { createConnection(); }
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders ORDER BY dateTime DESC LIMIT ?");
             statement.setInt(1, limit);
@@ -566,6 +581,7 @@ public class DatabaseController {
 
     @GetMapping("/getordersbydaterange")
     public static List<Order> getOrdersByDateRange(Date start, Date end) {
+        if (connection == null) { createConnection(); }
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders WHERE dateTime >= ? AND dateTime <= ?");
             statement.setDate(1, start);
@@ -580,6 +596,7 @@ public class DatabaseController {
 
     @GetMapping("/getordersbyid")
     public static List<Order> getOrdersById(List<Integer> orderIds) {
+        if (connection == null) { createConnection(); }
         try {
             String query = "SELECT * FROM Orders WHERE orderId IN " + buildPlaceholderString(orderIds.size());
             PreparedStatement statement = connection.prepareStatement(query);
@@ -599,6 +616,7 @@ public class DatabaseController {
 
     @GetMapping("/amtinventoryused")
     public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end){
+        if (connection == null) { createConnection(); }
         Map<String, Integer> inventoryUsed = new HashMap<>();
         try {
             String sql = "SELECT i.name, SUM(oi.numOfItem) AS totalUsed " +
@@ -627,6 +645,7 @@ public class DatabaseController {
 
     @GetMapping("/salesreport")
     public static Map<String, Double> getSalesReport(Date start, Date end){
+        if (connection == null) { createConnection(); }
         Map<String, Double> sales = new HashMap<>();
         try {
             String sql = "SELECT it.name AS item_name, SUM(oi.numOfItem * it.price) AS total_sales " + 
@@ -654,6 +673,7 @@ public class DatabaseController {
 
     @GetMapping("/excessingredients")
     public static List<Ingredient> getExcessIngredients(Date start) {
+        if (connection == null) { createConnection(); }
         try {
             Date end = new Date(System.currentTimeMillis());
             
@@ -693,6 +713,7 @@ public class DatabaseController {
 
     @GetMapping("/sellstog")
     public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(Date start, Date end) {
+        if (connection == null) { createConnection(); }
         List<MutablePair<MutablePair<Item, Item>, Integer>> sellsTog = new ArrayList<>();
         try {
             String sql = "" +
