@@ -7,7 +7,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import Landing from './pages/Landing' 
 import Login from './pages/Login'
 import Menu from './pages/Menu'
-import Order from './pages/Order'
+import Order from './pages/Order/Order'
 import Manager from './pages/Manager'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -22,7 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/manager" element={<Manager/>}/>
                 </Routes>
             </BrowserRouter>
-        </React.StrictMode>,
+        </React.StrictMode>
     </GoogleOAuthProvider>
 )
 
