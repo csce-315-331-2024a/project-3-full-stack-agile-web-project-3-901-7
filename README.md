@@ -244,7 +244,7 @@
   - Any blockers:
     - None
 
-#### Standup #2: 3/26
+#### Standup #2: 3/28
 - **Sua Bae:**
   - What I did yesterday:
     - Helped with setting up frontend
