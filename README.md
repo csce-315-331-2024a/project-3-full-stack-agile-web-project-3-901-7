@@ -323,9 +323,9 @@
 #### Sprint 1 Retrospective Meeting: 4/1
 **Sprint 1 Retrospective Meeting Agenda**
 
-**Date:** Monday, April 1, 2024  
-**Time:** [9:10am]  
-**Location:** [ZACH 592]  
+**Date:** 4/1 
+**Time:** 9:10am
+**Location:** ZACH 592
  
 
 **Agenda:**
@@ -439,9 +439,9 @@
 ---
 **Sprint 2 Planning Agenda**
 
-**Date:** [4/3]  
-**Time:** [9:10am]  
-**Location:** [Zach 592]  
+**Date:** 4/3
+**Time:** 9:10am 
+**Location:** Zach 592
 
 
 **Agenda:**
@@ -471,10 +471,6 @@
 ---
 
 **Sprint 2 Planning Meeting Minutes**
-
-**Date:** [4/3]  
-**Time:** [9:10am]  
-**Location:** [Zach 592]  
 
 **Attendees:**
 - Sua Bae
