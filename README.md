@@ -320,4 +320,122 @@
   - Any blockers:
     - None
 
+#### Sprint 1 Retrospective Meeting: 4/1
+**Sprint 1 Retrospective Meeting Agenda**
+
+**Date:** Monday, April 1, 2024  
+**Time:** [9:10am]  
+**Location:** [ZACH 592]  
+ 
+
+**Agenda:**
+
+1. **Conclusion of Spring 1 Discussion**
+   - Discussion about the conclusion of sprint 1
+
+
+2. **Review of Tasks completed**
+   - Goals set for Sprint 1
+   - Review of what was completed
+
+3. **Successes and Challenges**
+   - What did we do successfully?
+   - Did we encounter any major challenges?
+
+4. **Product Backlog Changes**
+   - Review of changes
+   - Why did we change?
+
+5. **Planning for Next Sprint**
+   - Sprint 2 plans
+   - Goals and strategies
+
+6. **Communication and Collaboration**
+   - Find non-Discord way of communicating
+   - Areas for improvement
+
+7. **Conclusion**
+   - Key takeaways
+   - Review of new plans/changes to plans
+
+---
+
+**Sprint 1 Retrospective Meeting Minutes**
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**1. Conclusion of Sprint 1 Discussion:**
+- Discussion about the conclusion of Sprint 1
+- We found that we were successful in what we wanted to get done
+- Everyone did a good job in communication and task completion
+
+**2. Review of Tasks Completed:**
+- Goals set for Sprint 1 were reviewed
+- We were able to complete all the tasks we wanted to
+
+**3. Successes and Challenges:**
+- We were able to complete all the tasks we set up for ourselves
+- We had an issue with backend deployment, this was the biggest challenge. SSL Certificate route didn't solve it in time so we dockerized the backend to deploy
+
+
+**4. Product Backlog Changes:**
+- Came up with a few new ideas and added them to the backlog
+- Discussed why these ideas are good
+
+**5. Planning for Next Sprint:**
+- Discussed plans and tasks for Sprint 2
+- Outlined major tasks and major goal for Sprint 2
+
+**6. Communication and Collaboration:**
+- Created an iMessage group chat as a secondary form of communication
+- Found that we overall did a good job of communicating
+
+**7. Conclusion:**
+- Summarized all key takeaways and plans
+- Discussed possible goals for implementing new backlog items
+
+### Sprint 2:
+#### Standup #1: 4/2
+- **Sua Bae:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Andrew Beketov:**
+  - What I did yesterday:
+    - Led retrospective meeting
+    - Discussed new features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Surya Jasper:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Shweta Kumaran:**
+  - What I did yesterday:
+    - Looked at possible feature implementations
+  - What I plan to do today:
+    - Discuss Sprint 2 plans
+  - Any blockers:
+    - None
+- **Warren Wu:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Begin on and discuss Sprint 2 plans
+  - Any blockers:
+    - None
+   
 
