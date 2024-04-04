@@ -358,7 +358,6 @@
    - Key takeaways
    - Review of new plans/changes to plans
 
----
 
 **Sprint 1 Retrospective Meeting Minutes**
 
@@ -398,7 +397,7 @@
 **7. Conclusion:**
 - Summarized all key takeaways and plans
 - Discussed possible goals for implementing new backlog items
-
+---
 ### Sprint 2:
 #### Standup #1: 4/2
 - **Sua Bae:**
@@ -437,5 +436,75 @@
     - Begin on and discuss Sprint 2 plans
   - Any blockers:
     - None
+---
+**Sprint 2 Planning Agenda**
+
+**Date:** [4/3]  
+**Time:** [9:10am]  
+**Location:** [Zach 592]  
+
+
+**Agenda:**
+
+- **Overview of Sprint 2**
+  - Overview of the purpose of sprint 2
+
+- **Review of Sprint 2 Goal and Backlog**
+  - Discussion about the goal for Sprint 2
+  - Review of the backlog items and their priorities
+
+- **Assignment of Tasks**
+  - Assigning tasks to team members based on priority
+  - Try to maintain more equal spread of work
+
+- **Discussion on Implementation**
+  - Discussion on how to approach the implementation of backlog items efficiently
+
+- **Communication and Collaboration**
+  - Discuss how to communicate for Sprint 2
+
+- **Conclusion and Next Steps**
+  - Summary of key points discussed
+  - Clarification of any questions
+  - Agree on a timeline
+
+---
+
+**Sprint 2 Planning Meeting Minutes**
+
+**Date:** [4/3]  
+**Time:** [9:10am]  
+**Location:** [Zach 592]  
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**Overview of Sprint 2:**
+- Provided an overview of the purpose of Sprint 2
+- Figured out that we needed to fully complete functionality
+
+
+**Review of Sprint 2 Goal and Backlog:**
+- Try to get as functional as completed Project 2
+- Review backlog items, look at new additions
+
+**Assignment of Tasks:**
+- Tasks were assigned to everyone
+- Tried to spread work out more equally
+
+**Discussion on Implementation:**
+- Discussed various approaches to efficiently implement backlog items
+
+**Communication and Collaboration:**
+- Discussion on when to communicate on Discord vs iMessages
+
+**Conclusion and Next Steps:**
+- Summarized key points discussed during the meeting
+- Addressed questions about logistics and implementation
+- Agreed on a timeline for Sprint 2 tasks
    
 
