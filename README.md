@@ -244,7 +244,7 @@
   - Any blockers:
     - None
 
-#### Standup #2: 3/26
+#### Standup #2: 3/28
 - **Sua Bae:**
   - What I did yesterday:
     - Helped with setting up frontend
@@ -320,4 +320,245 @@
   - Any blockers:
     - None
 
+#### Sprint 1 Retrospective Meeting: 4/1
+**Sprint 1 Retrospective Meeting Agenda**
+
+**Date:** 4/1 
+**Time:** 9:10am
+**Location:** ZACH 592
+ 
+
+**Agenda:**
+
+1. **Conclusion of Spring 1 Discussion**
+   - Discussion about the conclusion of sprint 1
+
+
+2. **Review of Tasks completed**
+   - Goals set for Sprint 1
+   - Review of what was completed
+
+3. **Successes and Challenges**
+   - What did we do successfully?
+   - Did we encounter any major challenges?
+
+4. **Product Backlog Changes**
+   - Review of changes
+   - Why did we change?
+
+5. **Planning for Next Sprint**
+   - Sprint 2 plans
+   - Goals and strategies
+
+6. **Communication and Collaboration**
+   - Find non-Discord way of communicating
+   - Areas for improvement
+
+7. **Conclusion**
+   - Key takeaways
+   - Review of new plans/changes to plans
+
+
+**Sprint 1 Retrospective Meeting Minutes**
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**1. Conclusion of Sprint 1 Discussion:**
+- Discussion about the conclusion of Sprint 1
+- We found that we were successful in what we wanted to get done
+- Everyone did a good job in communication and task completion
+
+**2. Review of Tasks Completed:**
+- Goals set for Sprint 1 were reviewed
+- We were able to complete all the tasks we wanted to
+
+**3. Successes and Challenges:**
+- We were able to complete all the tasks we set up for ourselves
+- We had an issue with backend deployment, this was the biggest challenge. SSL Certificate route didn't solve it in time so we dockerized the backend to deploy
+
+
+**4. Product Backlog Changes:**
+- Came up with a few new ideas and added them to the backlog
+- Discussed why these ideas are good
+
+**5. Planning for Next Sprint:**
+- Discussed plans and tasks for Sprint 2
+- Outlined major tasks and major goal for Sprint 2
+
+**6. Communication and Collaboration:**
+- Created an iMessage group chat as a secondary form of communication
+- Found that we overall did a good job of communicating
+
+**7. Conclusion:**
+- Summarized all key takeaways and plans
+- Discussed possible goals for implementing new backlog items
+---
+### Sprint 2:
+#### Standup #1: 4/2
+- **Sua Bae:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Andrew Beketov:**
+  - What I did yesterday:
+    - Led retrospective meeting
+    - Discussed new features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Surya Jasper:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Help on Sprint 2 plans
+  - Any blockers:
+    - None
+- **Shweta Kumaran:**
+  - What I did yesterday:
+    - Looked at possible feature implementations
+  - What I plan to do today:
+    - Discuss Sprint 2 plans
+  - Any blockers:
+    - None
+- **Warren Wu:**
+  - What I did yesterday:
+    - Brainstormed on how to implement new backlog features
+  - What I plan to do today:
+    - Begin on and discuss Sprint 2 plans
+  - Any blockers:
+    - None
+---
+**Sprint 2 Planning Agenda**
+
+**Date:** 4/3
+**Time:** 9:10am 
+**Location:** Zach 592
+
+
+**Agenda:**
+
+- **Overview of Sprint 2**
+  - Overview of the purpose of sprint 2
+
+- **Review of Sprint 2 Goal and Backlog**
+  - Discussion about the goal for Sprint 2
+  - Review of the backlog items and their priorities
+
+- **Assignment of Tasks**
+  - Assigning tasks to team members based on priority
+  - Try to maintain more equal spread of work
+
+- **Discussion on Implementation**
+  - Discussion on how to approach the implementation of backlog items efficiently
+
+- **Communication and Collaboration**
+  - Discuss how to communicate for Sprint 2
+
+- **Conclusion and Next Steps**
+  - Summary of key points discussed
+  - Clarification of any questions
+  - Agree on a timeline
+
+---
+
+**Sprint 2 Planning Meeting Minutes**
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**Overview of Sprint 2:**
+- Provided an overview of the purpose of Sprint 2
+- Figured out that we needed to fully complete functionality
+
+
+**Review of Sprint 2 Goal and Backlog:**
+- Try to get as functional as completed Project 2
+- Review backlog items, look at new additions
+
+**Assignment of Tasks:**
+- Tasks were assigned to everyone
+- Tried to spread work out more equally
+
+**Discussion on Implementation:**
+- Discussed various approaches to efficiently implement backlog items
+
+**Communication and Collaboration:**
+- Discussion on when to communicate on Discord vs iMessages
+
+**Conclusion and Next Steps:**
+- Summarized key points discussed during the meeting
+- Addressed questions about logistics and implementation
+- Agreed on a timeline for Sprint 2 tasks
+
+
+### Sprint 2 Plan:
+#### Goal: 
+- The goal for this sprint is to fully connect all components of our site and appeal to users while achieving all functionality goals. 
+
+#### Backlog:    
+
+| Task                                                  | Priority | Time Estimate (min) | Status      | User Story Point | Assigned To |
+|-------------------------------------------------------|----------|---------------------|-------------|------------------|-------------|
+| Search bar to search for items while taking order    | low      | 20                  | incomplete  | 5                | Warren      |
+| Order button to submit order                          | low      | 20                  | incomplete  | 4                | Warren      |
+| Order confirmation page                              | low      | 20                  | incomplete  | 5                | Warren      |
+| Set up the cashier display front end                 | medium   | 20                  | incomplete  | 5                | Warren      |
+| Cashier landing page                                 | medium   | 20                  | incomplete  | 3                | Shweta      |
+| Make the items dynamically update on menu ordering   | medium   | 20                  | incomplete  | 1                | Warren      |
+| Display weather                                      | low      | 20                  | incomplete  | 5                | Andrew      |
+| Can view suggested items based on the weather        | low      | 20                  | incomplete  | 5                | Andrew      |
+| Order button to submit order                          | low      | 20                  | incomplete  | 3                | Warren      |
+| Tip buttons                                          | low      | 20                  | incomplete  | 3                | Warren      |
+| Implement the ordering confirmation page             | medium   | 20                  | incomplete  | 3                | Warren      |
+| Include pictures of each item                        | low      | 20                  | incomplete  | 3                | Shweta      |
+| A table with a list of ingredients with its attributes | medium | 20                  | incomplete  | 4                | Sua         |
+| Restock low-stock items                              | low      | 20                  | incomplete  | 5                | Sua         |
+| View low-stock items                                 | low      | 20                  | incomplete  | 5                | Sua         |
+| Add a new ingredient                                 | medium   | 20                  | incomplete  | 4                | Sua         |
+| Update ingredient                                    | medium   | 20                  | incomplete  | 3                | Sua         |
+| Delete ingredient                                    | medium   | 20                  | incomplete  | 3                | Sua         |
+| Implement update image                               | medium   | 20                  | incomplete  | 2                | Shweta      |
+| A table with a list of orders with its attributes    | medium   | 20                  | incomplete  | 4                | Sua         |
+| Update order                                         | medium   | 20                  | incomplete  | 3                | Sua         |
+| Delete order                                         | medium   | 20                  | incomplete  | 3                | Sua         |
+| Implement date filter                                | medium   | 20                  | incomplete  | 4                | Andrew      |
+| A table with a list of orders with its attributes    | medium   | 20                  | incomplete  | 4                | Surya       |
+| Add a new menu item                                  | medium   | 20                  | incomplete  | 3                | Surya       |
+| Update menu item                                     | medium   | 20                  | incomplete  | 3                | Surya       |
+| Delete menu item                                     | medium   | 20                  | incomplete  | 3                | Surya       |
+| Product usage chart                                  | low      | 20                  | incomplete  | 5                | Andrew      |
+| Sales report                                         | low      | 20                  | incomplete  | 5                | Andrew      |
+| Excess report                                        | low      | 20                  | incomplete  | 5                | Andrew      |
+| What sells together - ordering trend report          | low      | 20                  | incomplete  | 4                | Andrew      |
+| Implement manager home page                          | low      | 20                  | incomplete  | 3                | Shweta      |
+| Add an image attribute to item in database           | high     | 20                  | incomplete  | 3                | Shweta      |
+| Add a description attribute to item in database      | high     | 20                  | incomplete  | 2                | Shweta      |
+| Set up categories for easier navigation              | medium   | 20                  | incomplete  | 3                | Shweta      |
+| Redesign the home landing page                       | low      | 20                  | incomplete  | 5                | Shweta      |
+| Redesign the login page                              | low      | 20                  | incomplete  | 4                | Surya       |
+| Redesign the menu board as separate screens          | medium   | 20                  | incomplete  | 2                | Shweta      |
+| Reimplement the menu board                           | medium   | 20                  | incomplete  | 5                | Shweta      |
+| Finish adding order functionality                    | high     | 20                  | incomplete  | 4                | Warren      |
+| Add security to the page (cannot access manager without login) | medium | 20              | incomplete  | 4                | Surya       |
+| Add cashier login functionality                      | medium   | 20                  | incomplete  | 4                | Surya       |
+| Add non-google oauth login functionality             | low      | 20                  | incomplete  | 4                | Surya       |
+| Connect to cashier home or manager home depending on login type | medium | 20            | incomplete  | 3                | Surya       |
+| SSL certificate for backend cloud hosting            | high     | 20                  | incomplete  | 1                | Surya       |
+| Set up Jacoco                                        | medium   | 20                  | incomplete  | 1                | Surya       |
+| Start backend testing                                | medium   | 20                  | incomplete  | 1                | Shweta      |
+
+   
 
