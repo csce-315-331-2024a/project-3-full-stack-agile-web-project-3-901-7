@@ -31,6 +31,8 @@ export default function Order() {
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
             const data = await response.json();
+            setOrder(null);
+            console.log(order);
             setItems(data);
         }
 
