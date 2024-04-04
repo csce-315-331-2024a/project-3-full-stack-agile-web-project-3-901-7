@@ -502,5 +502,63 @@
 - Summarized key points discussed during the meeting
 - Addressed questions about logistics and implementation
 - Agreed on a timeline for Sprint 2 tasks
+
+
+### Sprint 2 Plan:
+#### Goal: 
+- The goal for this sprint is to fully connect all components of our site and appeal to users while achieving all functionality goals. 
+
+#### Backlog:    
+
+| Task                                                  | Priority | Time Estimate (min) | Status      | User Story Point | Assigned To |
+|-------------------------------------------------------|----------|---------------------|-------------|------------------|-------------|
+| Search bar to search for items while taking order    | low      | 20                  | incomplete  | 5                | Warren      |
+| Order button to submit order                          | low      | 20                  | incomplete  | 4                | Warren      |
+| Order confirmation page                              | low      | 20                  | incomplete  | 5                | Warren      |
+| Set up the cashier display front end                 | medium   | 20                  | incomplete  | 5                | Warren      |
+| Cashier landing page                                 | medium   | 20                  | incomplete  | 3                | Shweta      |
+| Make the items dynamically update on menu ordering   | medium   | 20                  | incomplete  | 1                | Warren      |
+| Display weather                                      | low      | 20                  | incomplete  | 5                | Andrew      |
+| Can view suggested items based on the weather        | low      | 20                  | incomplete  | 5                | Andrew      |
+| Order button to submit order                          | low      | 20                  | incomplete  | 3                | Warren      |
+| Tip buttons                                          | low      | 20                  | incomplete  | 3                | Warren      |
+| Implement the ordering confirmation page             | medium   | 20                  | incomplete  | 3                | Warren      |
+| Include pictures of each item                        | low      | 20                  | incomplete  | 3                | Shweta      |
+| A table with a list of ingredients with its attributes | medium | 20                  | incomplete  | 4                | Sua         |
+| Restock low-stock items                              | low      | 20                  | incomplete  | 5                | Sua         |
+| View low-stock items                                 | low      | 20                  | incomplete  | 5                | Sua         |
+| Add a new ingredient                                 | medium   | 20                  | incomplete  | 4                | Sua         |
+| Update ingredient                                    | medium   | 20                  | incomplete  | 3                | Sua         |
+| Delete ingredient                                    | medium   | 20                  | incomplete  | 3                | Sua         |
+| Implement update image                               | medium   | 20                  | incomplete  | 2                | Shweta      |
+| A table with a list of orders with its attributes    | medium   | 20                  | incomplete  | 4                | Sua         |
+| Update order                                         | medium   | 20                  | incomplete  | 3                | Sua         |
+| Delete order                                         | medium   | 20                  | incomplete  | 3                | Sua         |
+| Implement date filter                                | medium   | 20                  | incomplete  | 4                | Andrew      |
+| A table with a list of orders with its attributes    | medium   | 20                  | incomplete  | 4                | Surya       |
+| Add a new menu item                                  | medium   | 20                  | incomplete  | 3                | Surya       |
+| Update menu item                                     | medium   | 20                  | incomplete  | 3                | Surya       |
+| Delete menu item                                     | medium   | 20                  | incomplete  | 3                | Surya       |
+| Product usage chart                                  | low      | 20                  | incomplete  | 5                | Andrew      |
+| Sales report                                         | low      | 20                  | incomplete  | 5                | Andrew      |
+| Excess report                                        | low      | 20                  | incomplete  | 5                | Andrew      |
+| What sells together - ordering trend report          | low      | 20                  | incomplete  | 4                | Andrew      |
+| Implement manager home page                          | low      | 20                  | incomplete  | 3                | Shweta      |
+| Add an image attribute to item in database           | high     | 20                  | incomplete  | 3                | Shweta      |
+| Add a description attribute to item in database      | high     | 20                  | incomplete  | 2                | Shweta      |
+| Set up categories for easier navigation              | medium   | 20                  | incomplete  | 3                | Shweta      |
+| Redesign the home landing page                       | low      | 20                  | incomplete  | 5                | Shweta      |
+| Redesign the login page                              | low      | 20                  | incomplete  | 4                | Surya       |
+| Redesign the menu board as separate screens          | medium   | 20                  | incomplete  | 2                | Shweta      |
+| Reimplement the menu board                           | medium   | 20                  | incomplete  | 5                | Shweta      |
+| Finish adding order functionality                    | high     | 20                  | incomplete  | 4                | Warren      |
+| Add security to the page (cannot access manager without login) | medium | 20              | incomplete  | 4                | Surya       |
+| Add cashier login functionality                      | medium   | 20                  | incomplete  | 4                | Surya       |
+| Add non-google oauth login functionality             | low      | 20                  | incomplete  | 4                | Surya       |
+| Connect to cashier home or manager home depending on login type | medium | 20            | incomplete  | 3                | Surya       |
+| SSL certificate for backend cloud hosting            | high     | 20                  | incomplete  | 1                | Surya       |
+| Set up Jacoco                                        | medium   | 20                  | incomplete  | 1                | Surya       |
+| Start backend testing                                | medium   | 20                  | incomplete  | 1                | Shweta      |
+
    
 
