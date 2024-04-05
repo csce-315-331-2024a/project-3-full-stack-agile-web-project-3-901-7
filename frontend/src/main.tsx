@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import Menu from './pages/Menu'
 import Order from './pages/Order/Order'
 import Manager from './pages/Manager'
+import Inventory from './pages/Manager/Inventory'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
@@ -20,6 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/menu" element={<Menu/>}/>
                     <Route path="/order" element={<Order/>}/>
                     <Route path="/manager" element={<Manager/>}/>
+                    <Route path="/inventory" element={<Inventory/>}/>
                 </Routes>
             </BrowserRouter>
         </React.StrictMode>
