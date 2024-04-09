@@ -95,7 +95,7 @@ export default function Order() {
                     </button>
                 </div>
 
-                <div className="flex justify-between mt-9 w-full h-full">
+                <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
                     
                     <OrderItemContainer 
                         items={items} 
@@ -133,7 +133,7 @@ function OrderReceipt({order, items}: OrderReceiptProps) {
     })
 
     return (
-        <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit">
+        <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
 
             <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
 
@@ -156,7 +156,7 @@ function OrderReceipt({order, items}: OrderReceiptProps) {
 
                 <div className="w-full px-4 py-2 flex justify-between items-center">
                     <p className="text-black/60">Total</p>
-                    <p className="text-black">${order.total}</p>
+                    <p className="text-black">${Math.round(order.total*100)/100}</p>
                 </div>
 
                 <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
