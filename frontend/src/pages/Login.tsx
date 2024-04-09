@@ -78,10 +78,10 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-full p-8 relative bg-white">
+        <div className="w-full h-screen p-8 relative bg-white overflow-hidden">
             <Navbar />
-            <div className="min-w-screen flex items-center justify-center bg-white py-12">
-                <div className="h-4/5 w-3/4 space-y-8 flex">
+            <div className="min-w-screen flex items-center justify-center bg-white py-12 h-full">
+                <div className="h-full w-3/4 space-y-8 flex">
                     <div className="w-1/2 pr-4">
                         <img
                             className="shadow-md rounded-3xl h-4/5 w-full object-cover"
