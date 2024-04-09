@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { useGoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 interface ILoginButtonProps {
-    color: string;
+    color?: string;
     isSubmit?: boolean;
     children?: JSX.Element | string;
-    icon: IIcon;
+    icon?: IIcon;
     onClick?: () => void;
 }
 
@@ -17,7 +18,7 @@ interface IIcon {
 
 const icons = {
     google: {
-        path: "M 0 300 C 0 134.578125 134.578125 0 300 0 C 366.808594 0 430.042969 21.496094 482.867188 62.160156 L 413.152344 152.71875 C 380.492188 127.578125 341.363281 114.285156 300 114.285156 C 197.597656 114.285156 114.285156 197.597656 114.285156 300 C 114.285156 402.402344 197.597656 485.714844 300 485.714844 C 382.476562 485.714844 452.566406 431.675781 476.71875 357.144531 L 300 357.144531 L 300 242.855469 L 600 242.855469 L 600 300 C 600 465.421875 465.421875 600 300 600 C 134.578125 600 0 465.421875 0 300 Z M 0 300", 
+        path: "M 0 300 C 0 134.578125 134.578125 0 300 0 C 366.808594 0 430.042969 21.496094 482.867188 62.160156 L 413.152344 152.71875 C 380.492188 127.578125 341.363281 114.285156 300 114.285156 C 197.597656 114.285156 114.285156 197.597656 114.285156 300 C 114.285156 402.402344 197.597656 485.714844 300 485.714844 C 382.476562 485.714844 452.566406 431.675781 476.71875 357.144531 L 300 357.144531 L 300 242.855469 L 600 242.855469 L 600 300 C 600 465.421875 465.421875 600 300 600 C 134.578125 600 0 465.421875 0 300 Z M 0 300",
         viewboxSize: 600,
     },
     signIn: {
@@ -30,110 +31,122 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     return (
         <button
             type={props.isSubmit ? "submit" : "button"}
-            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-${props.color}-600 hover:bg-${props.color}-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${props.color}-500`}
+            className={`w-full text-white bg-black group relative flex justify-center py-2 px-4 border border-black text-lg font-medium rounded-m bg-${
+                props.color || "gray"
+            }-300 hover:bg-${
+                props.color || "gray"
+            }-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${
+                props.color || "gray"
+            }-500`}
             onClick={() => props.onClick && props.onClick()}
         >
-            <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <svg
-                    className={`h-5 w-5 text-${props.color}-400 group-hover:text-${props.color}-300`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox={`0 0 ${props.icon.viewboxSize || 20} ${props.icon.viewboxSize || 20}`}
-                    fill="currentColor"
-                    aria-hidden="true"
-                >
-                    <path
-                        fillRule="evenodd"
-                        d={props.icon.path}
-                        clipRule="evenodd"
-                    />
-                </svg>
+            <span className="flex items-center">
+                {props.icon && (
+                    <span className="mr-2">
+                        <img
+                            className="h-5 w-5"
+                            src="/icons/google.png"
+                            alt="Google Icon"
+                        />
+                    </span>
+                )}
+                <span>{props.children}</span>
             </span>
-            <div>
-                {props.children}
-            </div>
         </button>
-    )
-}
+    );
+};
 
-const Login : React.FC = () => {
+const Login: React.FC = () => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const googleLogin = useGoogleLogin({
-        onSuccess: user => {
-            console.log('Login Success:', user);
+        onSuccess: (user) => {
+            console.log("Login Success:", user);
             navigate("/manager");
         },
-        onError: error => {
+        onError: (error) => {
             console.error("Login Error:", error);
         },
     });
 
-    const handleSubmit = (e : React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(email, password);
         navigate("/manager");
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Manager Login</h2>
+        <div className="w-full h-full p-8 relative bg-white">
+            <Navbar />
+            <div className="min-w-screen flex items-center justify-center bg-white py-12">
+                <div className="h-4/5 w-3/4 space-y-8 flex">
+                    <div className="w-1/2 pr-4">
+                        <img
+                            className="shadow-md rounded-3xl h-4/5 w-full object-cover"
+                            src="/icons/loginsquiggle.png"
+                            alt="Login Squiggle"
+                        />
+                    </div>
+                    <div className="items-center w-1/2 pl-4 flex flex-col justify-center">
+                        <div>
+                            <h2 className="font-ptserif text-center text-3xl font-extrabold text-gray-900">
+                                Login To Your Account
+                            </h2>
+                        </div>
+                        <form
+                            className="w-3/5 mt-8 space-y-6 mx-auto"
+                            onSubmit={handleSubmit}
+                        >
+                            <div className="w-full rounded-md shadow-sm -space-y-px">
+                                <div className="mb-4">
+                                    <input
+                                        id="email-address"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        required
+                                        value={email}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                        placeholder="Email address"
+                                    />
+                                </div>
+                                <div className="my-4" />
+                                <div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        required
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
+                                        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                        placeholder="Password"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <LoginButton isSubmit>Login</LoginButton>
+                                <div className="text-lg font-bold text-gray-500 space-y-2 text-center">
+                                    - or -
+                                </div>
+                                <LoginButton
+                                    icon={icons.google}
+                                    onClick={googleLogin}
+                                >
+                                    Sign In With Google
+                                </LoginButton>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="email-address" className="sr-only">Email address</label>
-                            <input
-                                id="email-address"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className={"appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"}
-                                placeholder="Email address"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Password"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 text-indigo-400 group-hover:text-indigo-300"></div>
-                    <div className="bg-rose-600 hover:bg-rose-700 focus:ring-rose-500 text-rose-400 group-hover:text-rose-300"></div>
-                    <div className="space-y-2">
-                        <LoginButton 
-                            color="indigo" 
-                            icon={icons.signIn} 
-                            isSubmit
-                        >
-                            Sign In
-                        </LoginButton>
-
-                        <LoginButton 
-                            color="rose" 
-                            icon={icons.google}
-                            onClick={googleLogin}
-                        >
-                            Sign In With Google
-                        </LoginButton>
-                    </div>
-                </form>
             </div>
         </div>
     );
