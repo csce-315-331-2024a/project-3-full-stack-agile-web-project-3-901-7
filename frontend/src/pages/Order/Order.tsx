@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { FaArrowRight } from "react-icons/fa"
+import { FaArrowRight, FaMinus, FaPlus } from "react-icons/fa"
 import { Item, OrderType } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
-import OrderCategoryCard from "./OrderCategoryCard";
 import Loading from "../../components/Loading";
+import OrderCategoryCard from "./OrderCategoryCard";
+import OrderItemContainer from "./OrderItemContainer";
 
 export default function Order() {
 
@@ -19,7 +20,13 @@ export default function Order() {
     ]
 
     const [items, setItems] = useState<Item[]>([]);
-    const [order, setOrder] = useState<OrderType | null>(null);
+    const [order, setOrder] = useState<OrderType>({
+        numItems: 0,
+        orderInfo: "",
+        itemToQuantity: new Map(),
+        total: 0,
+        date: new Date()
+    });
     const [currCategory, setCurrCategory] = useState<string>("Burger");
     
     function callHelp() {
@@ -31,14 +38,32 @@ export default function Order() {
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
             const data = await response.json();
-            setOrder(null);
-            console.log(order);
             setItems(data);
         }
 
         fetchItems();
 
     }, [])
+
+    function updateOrder(id:number, name:string, price:number, action: string) {
+        if (action === "add") {
+            setOrder({
+                ...order,
+                numItems: order.numItems + 1,
+                total: order.total + price,
+                orderInfo: order.orderInfo + name + " ",
+                itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+            });
+        } else {
+            setOrder({
+                ...order,
+                numItems: order.numItems - 1,
+                total: order.total - price,
+                orderInfo: order.orderInfo.replace(name + " ", ""),
+                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+            })
+        }
+    }
 
     return (
         <div className="w-full h-full p-8 relative flex flex-col">
@@ -47,7 +72,7 @@ export default function Order() {
 
             {(items.length === 0) ? <Loading/> :
             <> 
-                <div className="flex flex-wrap gap-x-6 mt-14">
+                <div className="flex flex-wrap gap-6 mt-14">
                     {categories.map((category, index) => {
                         let isActive = false
                         if (category.name === currCategory)
@@ -71,27 +96,18 @@ export default function Order() {
                 </div>
 
                 <div className="flex justify-between mt-9 w-full h-full">
-                    <div className="mt-9 flex flex-wrap gap-8">
-                        {items.map((item, index) => {
-                            const today = new Date();
-                            if (item.startDate != null && item.startDate <= today)
-                                return
-                            if (item.endDate != null && item.endDate >= today)
-                                return
-                            if (item.category !== currCategory)
-                                return
-                            return (
-                                <ItemCard 
-                                    key={index} 
-                                    name={item.name} 
-                                    price={item.price} 
-                                />
-                            )
-                        })}
-                    </div>
-                    <div className="flex flex-col items-end justify-between h-full">
-                        <OrderReceipt/>
-                    </div>
+                    
+                    <OrderItemContainer 
+                        items={items} 
+                        currCategory={currCategory}
+                        updateOrder={updateOrder}
+                    />
+
+                    <OrderReceipt
+                        items={items}
+                        order={order}
+                    />
+                
                 </div>
             </>
             }
@@ -100,23 +116,47 @@ export default function Order() {
     )
 }
 
-function OrderReceipt() {
+interface OrderReceiptProps {
+    order: OrderType;
+    items: Item[];
+}
+
+function OrderReceipt({order, items}: OrderReceiptProps) {
+
+    let receiptItem:any = []
+    order.itemToQuantity.forEach((value, key) => {
+        const itemName = items.map((item) => { if (item._id == key) return item.name }).filter((item) => item !== undefined).at(0)!;
+        const itemPrice = items.map((item) => { if (item._id == key) return item.price}).filter((item) => item !== undefined).at(0)!;
+        if (value != 0) {
+            receiptItem.push({id: key, qty: value, name: itemName, price: value*itemPrice})
+        }
+    })
+
     return (
-        <div className="p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6">
+        <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit">
 
             <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
 
             <div className="w-full flex flex-col gap-y-4">
-                <OrderReceiptItem/>
-                <OrderReceiptItem/>
-                <OrderReceiptItem/>
+                {
+                    receiptItem.map((itemInfo:any) => {
+                        return (
+                            <OrderReceiptItem 
+                                key={itemInfo.id}
+                                name={itemInfo.name}
+                                desc={""}
+                                qty={itemInfo.qty}
+                                totalPrice={itemInfo.price}
+                            />
+                        )})
+                }
             </div>
 
             <div className="w-full flex flex-col font-ptserif text-base">
 
                 <div className="w-full px-4 py-2 flex justify-between items-center">
                     <p className="text-black/60">Total</p>
-                    <p className="text-black">$69.69</p>
+                    <p className="text-black">${order.total}</p>
                 </div>
 
                 <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
@@ -131,28 +171,32 @@ function OrderReceipt() {
     )
 }
 
-function OrderReceiptItem() {
-    return (
-        <div className="w-[360px] h-24 flex gap-x-4 bg-black">
-
-        </div>
-    )
-}
-
-interface ItemCardProps {
+interface OrderReceiptItemProps {
+    img?: string;
     name: string;
-    price: number;
+    desc: string;
+    qty: number;
+    totalPrice: number;
 }
-function ItemCard({name, price} : ItemCardProps) {
-    return (
-        <div className="w-[280px] h-[230px] relative rounded-md">
-            <img src={"/item-default-img.png"} alt="image of the item" width={280} height={196}/>
-            
-            <div className="mt-2 font-bold font-ptserif text-xl w-full flex justify-between items-center">
-                <p>{name}</p>
-                <p>${price}</p>
-            </div>
 
+function OrderReceiptItem({img, name, desc, qty, totalPrice}: OrderReceiptItemProps) {
+    return (
+        <div className="w-[360px] h-24 flex items-center gap-x-4">
+            <div className="w-32 aspect-video border-2 border-black rounded-md p-2 flex items-center justify-center">
+                <img src={(img) ? img : "/item-default-img.png"} alt="image of item" className="w-full object-contain"/>
+            </div>
+            <div className="flex flex-col h-full justify-between">
+                <h4 className="font-bold text-base font-ptserif">{name}</h4>
+                <p>{desc}</p>
+                <div className="flex w-full justify-between mb-2">
+                    <div className="flex gap-x-2 items-center">
+                        <button type="button" className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaPlus/></button>
+                        <p className="font-bold font-inter">{qty}</p>
+                        <button type="button" className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaMinus/></button>
+                    </div>
+                    <p className="font-bold font-ptserif">${Math.round(totalPrice*100)/100}</p>
+                </div>
+            </div>
         </div>
     )
 }
