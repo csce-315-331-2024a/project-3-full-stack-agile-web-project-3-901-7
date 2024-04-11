@@ -11,6 +11,8 @@ public class Item {
     public List<Ingredient> ingredients;
     public java.sql.Date startDate;
     public java.sql.Date endDate;
+    public String img;
+    public String desc;
 
     public Item() {
         _id = -1;
@@ -20,33 +22,35 @@ public class Item {
         ingredients = new ArrayList<>();
         startDate = null;
         endDate = null;
+        img = "";
+        desc = "";
     }
     
     public Item itemConstructor() {
         return new Item();
     }
 
-    
-    public Item(String name, double price, String category, Date startDate, Date endDate) {
+    public Item(String name, double price, String category, Date startDate, Date endDate, String img, String desc) {
         this.name = name;
         this.price = price;
         this.category = category;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.img = img;
+        this.desc= desc;
     }
     
-    public Item itemConstructor2(String name, double price, String category, Date startDate, Date endDate) {
-        return new Item(name, price, category, startDate, endDate);
+    public Item itemConstructor2(String name, double price, String category, Date startDate, Date endDate, String img, String desc) {
+        return new Item(name, price, category, startDate, endDate, img, desc);
     }
-
     
-    public Item(String name, double price, String category, Date startDate, Date endDate, List<Integer> ingredientIds) {
-        this(name, price, category, startDate, endDate);
+    public Item(String name, double price, String category, Date startDate, Date endDate, List<Integer> ingredientIds, String img, String desc) {
+        this(name, price, category, startDate, endDate, img, desc);
         this.ingredients = Ingredient.findById(ingredientIds);
     }
     
-    public Item itemConstructor3(String name, double price, String category, Date startDate, Date endDate, List<Integer> ingredientIds) {
-        return new Item(name, price, category, startDate, endDate, ingredientIds);
+    public Item itemConstructor3(String name, double price, String category, Date startDate, Date endDate, List<Integer> ingredientIds, String img, String desc) {
+        return new Item(name, price, category, startDate, endDate, ingredientIds, img, desc);
     } 
     
     public static Item findOneById(int id) {
@@ -56,13 +60,17 @@ public class Item {
     public static List<Item> findById(List<Integer> ids) {
         return Database.getItemsById(ids);
     }
+
+    public static List<Item> findByCategory(String category) {
+        return Database.getItemsByCategory(category);
+    }
     
     public static boolean removeById(int itemId) {
         return Database.deleteItem(itemId);
     }
     
     public static boolean updateById(int itemId, String nameStr, String priceStr, String categoryStr, Date startDate,
-            Date endDate, String ingredientStr) {
+            Date endDate, String ingredientStr, String img, String desc) {
         Item currItem = findOneById(itemId);
 
         if (!nameStr.isEmpty())
@@ -83,6 +91,12 @@ public class Item {
             }
             currItem.ingredients = Ingredient.findById(ingredientIds);
             currItem.serializeItemInfo();
+        }
+        if (!img.isEmpty()) {
+            currItem.img = img;
+        }
+        if (!desc.isEmpty()) {
+            currItem.desc = desc;
         }
 
         return Database.editItem(currItem);
@@ -134,7 +148,9 @@ public class Item {
                 ", category='" + category + '\'' +
                 ", ingredients=" + ingredientInfo + '\'' +
                 ", startDate=" + startDate + '\'' +
-                ", endDate=" + endDate +
+                ", endDate=" + endDate + '\'' + 
+                ", img=" + img + '\'' +
+                ", desc=" + desc + 
                 '}';
     }
 }
