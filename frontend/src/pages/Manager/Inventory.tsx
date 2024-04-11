@@ -2,87 +2,6 @@ import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 
-// import React, { useState, useEffect } from 'react';
-// interface Ingredient {
-//   _id: number;
-//   name: string;
-//   quantity: number;
-//   minQuantity: number;
-//   unitPrice: number;
-//   supplier: string;
-// }
-
-// const Inventory = () => {
-//   // Use the Ingredient interface to type the state
-//   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-//   const [showLowStock, setShowLowStock] = useState(false);
-
-//   useEffect(() => {
-//     fetchIngredients();
-//   }, []);
-
-//   const fetchIngredients = async () => {
-//     try {
-//       // Replace the URL with your actual API endpoint
-//       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/findAll");
-//       const data = await response.json();
-//       setIngredients(data);
-//     } catch (error) {
-//       console.error('Error fetching ingredients', error);
-//     }
-//   };
-
-//   const filteredIngredients = showLowStock
-//     ? ingredients.filter(ingredient => ingredient.quantity <= ingredient.minQuantity)
-//     : ingredients;
-
-//   return (
-//     <div className="p-4">
-//       <h1 className="text-2xl font-bold mb-4">Inventory Page</h1>
-//       <div>
-//         <label htmlFor="showLowStock" className="inline-flex items-center">
-//           <input
-//             type="checkbox"
-//             id="showLowStock"
-//             checked={showLowStock}
-//             onChange={e => setShowLowStock(e.target.checked)}
-//             className="mr-2"
-//           />
-//           Show Low-Stock Only
-//         </label>
-//       </div>
-//       <div className="mt-4">
-//         <table className="w-full">
-//           <thead>
-//             <tr>
-//               <th>Item ID</th>
-//               <th>Name</th>
-//               <th>Quantity</th>
-//               <th>Min Quantity</th>
-//               <th>Unit Price</th>
-//               <th>Supplier</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {filteredIngredients.map((ingredient) => (
-//               <tr key={ingredient._id}>
-//                 <td>{ingredient._id}</td>
-//                 <td>{ingredient.name}</td>
-//                 <td>{ingredient.quantity}</td>
-//                 <td>{ingredient.minQuantity}</td>
-//                 <td>${ingredient.unitPrice.toFixed(2)}</td>
-//                 <td>{ingredient.supplier}</td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Inventory;
-
 interface Ingredient {
   _id: number;
   name: string;
@@ -95,11 +14,11 @@ interface Ingredient {
 const Inventory = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [showLowStock, setShowLowStock] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Test data
   const exampleData: Ingredient[] = [
     {
-      _id: 1,
+    _id: 1,
       name: "Flour",
       quantity: 50,
       minQuantity: 10,
@@ -125,60 +44,122 @@ const Inventory = () => {
   ];
 
   useEffect(() => {
-    // Directly use the test data
     setIngredients(exampleData);
   }, []);
 
-  const filteredIngredients = showLowStock
-    ? ingredients.filter(ingredient => ingredient.quantity <= ingredient.minQuantity)
-    : ingredients;
+  // Function to filter ingredients based on the search term
+  const filterIngredients = (searchTerm: string) => {
+    return ingredients.filter(ingredient =>
+      ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const handleRestock = () => {
+    const restockedIngredients = ingredients.map(ingredient => {
+      if (ingredient.quantity < ingredient.minQuantity) {
+        return { ...ingredient, quantity: ingredient.minQuantity };
+      }
+      return ingredient;
+    });
+    setIngredients(restockedIngredients);
+  };
+
+  const filteredIngredients = ingredients
+    .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
 
   return (
     <div className="p-4">
         <ManagerNavbar/>
-    <h1 className="text-2xl font-bold mb-4 text-center">Inventory Page</h1>
-    <div>
-        <label htmlFor="showLowStock" className="inline-flex items-center cursor-pointer">
-        <input
-            type="checkbox"
-            id="showLowStock"
-            checked={showLowStock}
-            onChange={e => setShowLowStock(e.target.checked)}
-            className="mr-2"
-        />
-        Show Low-Stock Only
-        </label>
+        <div className="flex flex-col items-center">
+      {/* <h1 className="text-2xl font-bold mb-4">Inventory Page</h1> */}
+      <div className="mb-4 flex flex-col sm:flex-row items-center justify-between w-full">
+  <div className="relative flex-grow">
+    {/* Search Icon */}
+    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <img src="icons/search-icon.png" alt="Search" className="w-5 h-5" />
     </div>
-    <div className="mt-4 overflow-x-auto">
-        <table className="w-full text-center border-collapse border border-gray-400 mt-2">
-        <thead className="bg-gray-200">
+    {/* Search Input */}
+    <input
+      type="text"
+      placeholder="search item"
+      className="block w-full pl-10 pr-3 py-2 border-b-2 border-black bg-transparent placeholder-gray-500 focus:outline-none focus:border-black focus:ring-0"
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+  </div>
+  {/* Show Low-Stock Button */}
+  <button
+    onClick={() => setShowLowStock(!showLowStock)}
+    className={`ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium ${
+      showLowStock ? 'bg-black text-white' : 'bg-white text-black'
+    }`}
+  >
+    Show Low-Stock
+  </button>
+  {/* Reorder Stock Button */}
+  <button
+    onClick={handleRestock}
+    className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black"
+  >
+    Reorder Stock
+  </button>
+</div>
+        </div>
+      <div>
+        
+      </div>
+      <div className="mt-4">
+        <table className="w-full text-sm text-center text-black border border-black">
+          <thead className="text-s text-black uppercase bg-gray-50">
             <tr>
-            <th className="border border-gray-300 p-2">Item ID</th>
-            <th className="border border-gray-300 p-2">Name</th>
-            <th className="border border-gray-300 p-2">Quantity</th>
-            <th className="border border-gray-300 p-2">Min Quantity</th>
-            <th className="border border-gray-300 p-2">Unit Price</th>
-            <th className="border border-gray-300 p-2">Supplier</th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Item ID
+              </th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Name
+              </th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Quantity
+              </th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Min Quantity
+              </th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Unit Price
+              </th>
+              <th scope="col" className="py-3 px-6 border border-black">
+                Supplier
+              </th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             {filteredIngredients.map((ingredient) => (
-            <tr key={ingredient._id} className="hover:bg-gray-100">
-                <td className="border border-gray-300 p-2">{ingredient._id}</td>
-                <td className="border border-gray-300 p-2">{ingredient.name}</td>
-                <td className="border border-gray-300 p-2">{ingredient.quantity}</td>
-                <td className="border border-gray-300 p-2">{ingredient.minQuantity}</td>
-                <td className="border border-gray-300 p-2">${ingredient.unitPrice.toFixed(2)}</td>
-                <td className="border border-gray-300 p-2">{ingredient.supplier}</td>
-            </tr>
+              <tr key={ingredient._id} className="bg-white border-b">
+                <th scope="row" className="py-4 px-6 font-medium text-black whitespace-nowrap border border-black">
+                  {ingredient._id}
+                </th>
+                <td className="py-4 px-6 border border-black">
+                  {ingredient.name}
+                </td>
+                <td className="py-4 px-6 border border-black">
+                  {ingredient.quantity}
+                </td>
+                <td className="py-4 px-6 border border-black">
+                  {ingredient.minQuantity}
+                </td>
+                <td className="py-4 px-6 border border-black">
+                  ${ingredient.unitPrice.toFixed(2)}
+                </td>
+                <td className="py-4 px-6 border border-black">
+                  {ingredient.supplier}
+                </td>
+              </tr>
             ))}
-        </tbody>
+          </tbody>
         </table>
+      </div>
     </div>
-    </div>
-
   );
 };
 
 export default Inventory;
-

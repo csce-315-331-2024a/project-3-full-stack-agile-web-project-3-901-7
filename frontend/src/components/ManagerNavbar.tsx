@@ -89,7 +89,7 @@ export default function Navbar() {
                 </a>
             </button>
             <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-                <a href="/order" className="hover:text-white">
+                <a href="/orderhistory" className="hover:text-white">
                     order history
                 </a>
             </button>
@@ -104,7 +104,7 @@ export default function Navbar() {
                 </a>
             </button>
             <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-                <a href="/login" className="hover:text-white">
+                <a href="/inventory" className="hover:text-white">
                     inventory
                 </a>
             </button>
