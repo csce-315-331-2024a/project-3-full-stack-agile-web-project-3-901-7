@@ -2,14 +2,13 @@ import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 
-const OrderHistory = () => {
+const EditOrderHistory = () => {
     return (
         <div>
         <ManagerNavbar />
-        <h1>Order History</h1>
+        <h1>Edit Order History</h1>
         </div>
     );
 }
 
-export default OrderHistory;
-
+export default EditOrderHistory;
