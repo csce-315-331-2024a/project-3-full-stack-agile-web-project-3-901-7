@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import { FaArrowRight, FaMinus, FaPlus } from "react-icons/fa"
 import { Item, OrderType } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 import Loading from "../../components/Loading";
 import OrderCategoryCard from "./OrderCategoryCard";
 import OrderItemContainer from "./OrderItemContainer";
+import OrderReceipt from "./OrderReceipt";
 
 export default function Order() {
 
@@ -28,10 +28,7 @@ export default function Order() {
         date: new Date()
     });
     const [currCategory, setCurrCategory] = useState<string>("Burger");
-    
-    function callHelp() {
-        console.log("asked for help");
-    }
+    const [getHelp, setGetHelp] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -89,7 +86,7 @@ export default function Order() {
                     })}
                     <button 
                         type="button" 
-                        onClick={callHelp} 
+                        onClick={() => setGetHelp(true)} 
                         className="px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]">
                             Call Help
                     </button>
@@ -112,91 +109,24 @@ export default function Order() {
             </>
             }
 
-        </div>
-    )
-}
+            <div className={`w-screen h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md flex justify-center items-center ${(getHelp) ? "flex":"hidden"}`}>
 
-interface OrderReceiptProps {
-    order: OrderType;
-    items: Item[];
-}
 
-function OrderReceipt({order, items}: OrderReceiptProps) {
-
-    let receiptItem:any = []
-    order.itemToQuantity.forEach((value, key) => {
-        const itemName = items.map((item) => { if (item._id == key) return item.name }).filter((item) => item !== undefined).at(0)!;
-        const itemPrice = items.map((item) => { if (item._id == key) return item.price}).filter((item) => item !== undefined).at(0)!;
-        if (value != 0) {
-            receiptItem.push({id: key, qty: value, name: itemName, price: value*itemPrice})
-        }
-    })
-
-    return (
-        <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
-
-            <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
-
-            <div className="w-full flex flex-col gap-y-4">
-                {
-                    receiptItem.map((itemInfo:any) => {
-                        return (
-                            <OrderReceiptItem 
-                                key={itemInfo.id}
-                                name={itemInfo.name}
-                                desc={""}
-                                qty={itemInfo.qty}
-                                totalPrice={itemInfo.price}
-                            />
-                        )})
-                }
-            </div>
-
-            <div className="w-full flex flex-col font-ptserif text-base">
-
-                <div className="w-full px-4 py-2 flex justify-between items-center">
-                    <p className="text-black/60">Total</p>
-                    <p className="text-black">${Math.round(order.total*100)/100}</p>
+                <div className="bg-white rounded-md p-4 flex flex-col font-ptserif font-bold text-lg gap-y-4">
+                    An employee will be with you shortly.
+                    <br/>
+                    Please wait...
+                    <button 
+                        type="button" 
+                        onClick={() => setGetHelp(false)}
+                        className="px-3 py-2 font-inter text-white bg-red-400 rounded-md hover:bg-red-500 duration-500 transition"
+                    >
+                        cancel
+                    </button>
                 </div>
 
-                <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
-                    <button type="button" onClick={() => alert("check out")}>Checkout</button>
-                    <FaArrowRight/>
-                </div>
-
-
             </div>
 
-        </div>
-    )
-}
-
-interface OrderReceiptItemProps {
-    img?: string;
-    name: string;
-    desc: string;
-    qty: number;
-    totalPrice: number;
-}
-
-function OrderReceiptItem({img, name, desc, qty, totalPrice}: OrderReceiptItemProps) {
-    return (
-        <div className="w-[360px] h-24 flex items-center gap-x-4">
-            <div className="w-32 aspect-video border-2 border-black rounded-md p-2 flex items-center justify-center">
-                <img src={(img) ? img : "/item-default-img.png"} alt="image of item" className="w-full object-contain"/>
-            </div>
-            <div className="flex flex-col h-full justify-between">
-                <h4 className="font-bold text-base font-ptserif">{name}</h4>
-                <p>{desc}</p>
-                <div className="flex w-full justify-between mb-2">
-                    <div className="flex gap-x-2 items-center">
-                        <button type="button" className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaPlus/></button>
-                        <p className="font-bold font-inter">{qty}</p>
-                        <button type="button" className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaMinus/></button>
-                    </div>
-                    <p className="font-bold font-ptserif">${Math.round(totalPrice*100)/100}</p>
-                </div>
-            </div>
         </div>
     )
 }
