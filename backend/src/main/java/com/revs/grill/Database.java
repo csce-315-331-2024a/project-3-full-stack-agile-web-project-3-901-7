@@ -65,8 +65,8 @@ public class Database {
             item.ingredientInfo = resultSet.getString("ingredients");
             item.startDate = resultSet.getDate("startDate");
             item.endDate = resultSet.getDate("endDate");
-            item.img = resultSet.getString("picture");
-            item.desc = resultSet.getString("itemDesc");
+            item.picture = resultSet.getString("picture");
+            item.itemDesc = resultSet.getString("itemDesc");
 
             if (fillIngredients) {
                 PreparedStatement ingStatement = connection.prepareStatement(
@@ -318,8 +318,8 @@ public class Database {
             itemInsertStatement.setString(4, item.ingredientInfo);
             itemInsertStatement.setDate(5, item.startDate);
             itemInsertStatement.setDate(6, item.endDate);
-            itemInsertStatement.setString(7, item.img);
-            itemInsertStatement.setString(8, item.desc);
+            itemInsertStatement.setString(7, item.picture);
+            itemInsertStatement.setString(8, item.itemDesc);
             itemInsertStatement.executeUpdate();
             
             // get generated id of item in database
@@ -381,8 +381,8 @@ public class Database {
             itemInsertStatement.setString(4, item.ingredientInfo);
             itemInsertStatement.setDate(5, item.startDate);
             itemInsertStatement.setDate(6, item.endDate);
-            itemInsertStatement.setString(7, item.img);
-            itemInsertStatement.setString(8, item.desc);
+            itemInsertStatement.setString(7, item.picture);
+            itemInsertStatement.setString(8, item.itemDesc);
             itemInsertStatement.setInt(9, item._id);
             itemInsertStatement.executeUpdate();
 
