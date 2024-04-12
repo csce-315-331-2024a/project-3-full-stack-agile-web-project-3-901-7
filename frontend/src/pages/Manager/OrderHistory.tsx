@@ -27,6 +27,38 @@ const mockOrders: Order[] = [
       total: 14.99,
       date: '12/12/2024'
     },
+    {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger(2),Fries(3)",
+        itemToQuantity: [{ itemId: 1, quantity: 2 }, { itemId: 2, quantity: 3 }],
+        total: 14.99,
+        date: '12/12/2024'
+      },
+      {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger(2),Fries(3)",
+        itemToQuantity: [{ itemId: 1, quantity: 2 }, { itemId: 2, quantity: 3 }],
+        total: 14.99,
+        date: '12/12/2024'
+      },
+      {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger(2),Fries(3)",
+        itemToQuantity: [{ itemId: 1, quantity: 2 }, { itemId: 2, quantity: 3 }],
+        total: 14.99,
+        date: '12/12/2024'
+      },
+      {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger(2),Fries(3)",
+        itemToQuantity: [{ itemId: 1, quantity: 2 }, { itemId: 2, quantity: 3 }],
+        total: 14.99,
+        date: '12/12/2024'
+      },
   ];
   
   const OrderCard = ({ order }: { order: Order }) => {
@@ -56,7 +88,7 @@ const mockOrders: Order[] = [
       }, [order]);
       
   return(
-    <div className="border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px' }}>
+    <div className="border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0}}>
       <div className="text-lg font-bold font-ptserif mb-2">order #{order._id}</div>
       <div className="flex-grow overflow-y-auto">
         <table className="w-full text-sm font-ptserif">
@@ -69,13 +101,15 @@ const mockOrders: Order[] = [
           </thead>
           <tbody>
             {order.itemToQuantity.map((item, index) => (
-              <tr key={index} className="border-b">
+                <tr key={index} className="border-b">
                 <td className="p-1 font-ptserif pl-2">{item.quantity}</td>
                 <td className="p-1 font-ptserif">{itemsDetails[item.itemId]?.name}</td>
-                <td className="p-1 font-ptserif">${itemsDetails[item.itemId]?.price.toFixed(2)}</td>
-              </tr>
+                <td className="p-1 font-ptserif">
+                    ${(itemsDetails[item.itemId]?.price * item.quantity).toFixed(2)}
+                </td>
+                </tr>
             ))}
-          </tbody>
+            </tbody>
         </table>
       </div>
       <div className="mt-2 pt-2 border-t flex justify-between items-center">
@@ -90,11 +124,12 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    // async function fetchOrders() {
-    //     const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/findAll");
-    //     const data = await response.json();
-    //     setOrders(data);
-    // }
+    async function fetchOrders() {
+        const orderLimit = 10; 
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
+        const data = await response.json();
+        setOrders(data);
+    }
 
     // fetchOrders();
 
@@ -104,8 +139,8 @@ const OrderHistory = () => {
   return (
     <div className="p-4">
       <ManagerNavbar />
-      <h1 className="mt-8 ml-8 text-4xl font-bold font-ptserif my-4 font-ptserif">recent orders</h1>
-      <div className="flex overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
+      <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
+      <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
         {orders.map(order => (
           <OrderCard key={order._id} order={order} />
         ))}
@@ -113,5 +148,4 @@ const OrderHistory = () => {
     </div>
   );
 };
-
 export default OrderHistory;
