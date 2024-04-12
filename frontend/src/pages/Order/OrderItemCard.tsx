@@ -31,7 +31,7 @@ export default function OrderItemCard({id, name, price, picture, updateOrder} : 
                 <button 
                     type="button"
                     onClick={addQuantity}
-                    className="p-1 border-2 border-black text-black rounded-md hover:bg-black duration-300 hover:text-white"
+                    className="p-1 border-2 border-black text-black font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
                 >
                     <FaPlus />
                 </button>
@@ -39,7 +39,7 @@ export default function OrderItemCard({id, name, price, picture, updateOrder} : 
                 <button
                     type="button"
                     onClick={subtractQuantity}
-                    className="p-1 border-2 border-black text-black rounded-md hover:bg-black duration-300 hover:text-white"
+                    className="p-1 border-2 border-black text-black font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
                 >
                     <FaMinus />
                 </button>
@@ -50,8 +50,8 @@ export default function OrderItemCard({id, name, price, picture, updateOrder} : 
             </div>
 
             <div className="absolute bottom-0 w-full px-4 pb-2 flex justify-between items-center">
-                <p className="font-bold text-xl">{name}</p>
-                <p className="font-bold text-xl">${price.toFixed(2)}</p>
+                <p className="font-ptserif text-xl">{name}</p>
+                <p className="font-ptserif text-xl">${price.toFixed(2)}</p>
             </div>
 
         </div>

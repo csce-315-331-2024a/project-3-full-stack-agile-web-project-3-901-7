@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 public class Database {
     public static Connection connection = null;
 
-	public static void createConnection() {
+    public static void createConnection() {
         if (connection != null)
             return;
 

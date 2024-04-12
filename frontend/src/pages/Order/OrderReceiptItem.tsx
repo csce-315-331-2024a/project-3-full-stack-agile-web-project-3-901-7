@@ -5,14 +5,15 @@ interface OrderReceiptItemProps {
     name: string;
     desc: string;
     qty: number;
+    picture: string;
     totalPrice: number;
 }
 
-export default function OrderReceiptItem({img, name, desc, qty, totalPrice}: OrderReceiptItemProps) {
+export default function OrderReceiptItem({img, name, desc, qty, picture, totalPrice}: OrderReceiptItemProps) {
     return (
         <div className="w-[360px] h-24 flex items-center gap-x-4">
-            <div className="w-32 aspect-video border-2 border-black rounded-md p-2 flex items-center justify-center">
-                <img src={(img) ? img : "/item-default-img.png"} alt="image of item" className="w-full object-contain"/>
+            <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black rounded-md p-2 flex items-center justify-center">
+                <img src={picture === "" ? "/no-image-icon.png" : picture} alt={`image of ${name}`} className="object-contain h-[100%] max-h-[100%]" />
             </div>
             <div className="flex flex-col h-full justify-between">
                 <h4 className="font-bold text-base font-ptserif">{name}</h4>
