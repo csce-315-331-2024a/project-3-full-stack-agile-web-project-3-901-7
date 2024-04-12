@@ -9,7 +9,6 @@ export interface Item {
 }
 
 export interface OrderType {
-    _id: number;
     numItems: number;
     orderInfo: string;
     itemToQuantity: Map<number, number>;

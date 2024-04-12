@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import { FaArrowRight } from "react-icons/fa"
 import { Item, OrderType } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
-import OrderCategoryCard from "./OrderCategoryCard";
 import Loading from "../../components/Loading";
+import OrderCategoryCard from "./OrderCategoryCard";
+import OrderItemContainer from "./OrderItemContainer";
+import OrderReceipt from "./OrderReceipt";
 
 export default function Order() {
 
@@ -19,12 +20,15 @@ export default function Order() {
     ]
 
     const [items, setItems] = useState<Item[]>([]);
-    const [order, setOrder] = useState<OrderType | null>(null);
+    const [order, setOrder] = useState<OrderType>({
+        numItems: 0,
+        orderInfo: "",
+        itemToQuantity: new Map(),
+        total: 0,
+        date: new Date()
+    });
     const [currCategory, setCurrCategory] = useState<string>("Burger");
-    
-    function callHelp() {
-        console.log("asked for help");
-    }
+    const [getHelp, setGetHelp] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -38,6 +42,26 @@ export default function Order() {
 
     }, [])
 
+    function updateOrder(id:number, name:string, price:number, action: string) {
+        if (action === "add") {
+            setOrder({
+                ...order,
+                numItems: order.numItems + 1,
+                total: order.total + price,
+                orderInfo: order.orderInfo + name + " ",
+                itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+            });
+        } else {
+            setOrder({
+                ...order,
+                numItems: order.numItems - 1,
+                total: order.total - price,
+                orderInfo: order.orderInfo.replace(name + " ", ""),
+                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+            })
+        }
+    }
+
     return (
         <div className="w-full h-full p-8 relative flex flex-col">
             
@@ -45,7 +69,7 @@ export default function Order() {
 
             {(items.length === 0) ? <Loading/> :
             <> 
-                <div className="flex flex-wrap gap-x-6 mt-14">
+                <div className="flex flex-wrap gap-6 mt-14">
                     {categories.map((category, index) => {
                         let isActive = false
                         if (category.name === currCategory)
@@ -62,93 +86,45 @@ export default function Order() {
                     })}
                     <button 
                         type="button" 
-                        onClick={callHelp} 
+                        onClick={() => setGetHelp(true)} 
                         className="px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]">
                             Call Help
                     </button>
                 </div>
 
-                <div className="flex justify-between mt-9 w-full h-full">
-                    <div className="mt-9 flex flex-wrap gap-8">
-                        {items.map((item, index) => {
-                            const today = new Date();
-                            if (item.startDate != null && item.startDate <= today)
-                                return
-                            if (item.endDate != null && item.endDate >= today)
-                                return
-                            if (item.category !== currCategory)
-                                return
-                            return (
-                                <ItemCard 
-                                    key={index} 
-                                    name={item.name} 
-                                    price={item.price} 
-                                />
-                            )
-                        })}
-                    </div>
-                    <div className="flex flex-col items-end justify-between h-full">
-                        <OrderReceipt/>
-                    </div>
+                <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
+                    
+                    <OrderItemContainer 
+                        items={items} 
+                        currCategory={currCategory}
+                        updateOrder={updateOrder}
+                    />
+
+                    <OrderReceipt
+                        items={items}
+                        order={order}
+                    />
+                
                 </div>
             </>
             }
 
-        </div>
-    )
-}
+            <div className={`w-screen h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md flex justify-center items-center ${(getHelp) ? "flex":"hidden"}`}>
 
-function OrderReceipt() {
-    return (
-        <div className="p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6">
 
-            <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
-
-            <div className="w-full flex flex-col gap-y-4">
-                <OrderReceiptItem/>
-                <OrderReceiptItem/>
-                <OrderReceiptItem/>
-            </div>
-
-            <div className="w-full flex flex-col font-ptserif text-base">
-
-                <div className="w-full px-4 py-2 flex justify-between items-center">
-                    <p className="text-black/60">Total</p>
-                    <p className="text-black">$69.69</p>
+                <div className="bg-white rounded-md p-4 flex flex-col font-ptserif font-bold text-lg gap-y-4">
+                    An employee will be with you shortly.
+                    <br/>
+                    Please wait...
+                    <button 
+                        type="button" 
+                        onClick={() => setGetHelp(false)}
+                        className="px-3 py-2 font-inter text-white bg-red-400 rounded-md hover:bg-red-500 duration-500 transition"
+                    >
+                        cancel
+                    </button>
                 </div>
 
-                <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
-                    <button type="button" onClick={() => alert("check out")}>Checkout</button>
-                    <FaArrowRight/>
-                </div>
-
-
-            </div>
-
-        </div>
-    )
-}
-
-function OrderReceiptItem() {
-    return (
-        <div className="w-[360px] h-24 flex gap-x-4 bg-black">
-
-        </div>
-    )
-}
-
-interface ItemCardProps {
-    name: string;
-    price: number;
-}
-function ItemCard({name, price} : ItemCardProps) {
-    return (
-        <div className="w-[280px] h-[230px] relative rounded-md">
-            <img src={"/item-default-img.png"} alt="image of the item" width={280} height={196}/>
-            
-            <div className="mt-2 font-bold font-ptserif text-xl w-full flex justify-between items-center">
-                <p>{name}</p>
-                <p>${price}</p>
             </div>
 
         </div>
