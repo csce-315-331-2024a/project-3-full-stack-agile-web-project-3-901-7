@@ -44,7 +44,6 @@ const Inventory = () => {
   ];
 
   useEffect(() => {
-    // setIngredients(exampleData);
 
     async function fetchIngredients() {
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/findAll");
