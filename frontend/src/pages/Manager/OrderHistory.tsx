@@ -29,41 +29,63 @@ const mockOrders: Order[] = [
     },
   ];
   
-  const OrderCard = ({ order }: { order: Order }) => (
+  const OrderCard = ({ order }: { order: Order }) => {
+    const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
+
+    useEffect(() => {
+        const fetchItemDetails = async () => {
+          const details: { [key: number]: { name: string, price: number } } = {};
+      
+          for (const item of order.itemToQuantity) {
+            try {
+              const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${item.itemId}`);
+              if (!response.ok) {
+                throw new Error('Failed to fetch');
+              }
+              const data = await response.json();
+              details[item.itemId] = { name: data.name, price: data.price };
+            } catch (error) {
+              console.error('Fetch error:', error);
+            }
+          }
+      
+          setItemsDetails(details);
+        };
+      
+        fetchItemDetails();
+      }, [order]);
+      
+  return(
     <div className="border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px' }}>
-      <div className="text-lg font-bold mb-2">order #{order._id}</div>
+      <div className="text-lg font-bold font-ptserif mb-2">order #{order._id}</div>
       <div className="flex-grow overflow-y-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm font-ptserif">
           <thead>
             <tr className="border-b-2">
-              <th className="p-1 text-left">qty</th>
-              <th className="p-1 text-left">item</th>
-              <th className="p-1 text-left">price</th>
+              <th className="p-1 text-left font-ptserif">qty</th>
+              <th className="p-1 text-left font-ptserif">item</th>
+              <th className="p-1 text-left font-ptserif">price</th>
             </tr>
           </thead>
           <tbody>
             {order.itemToQuantity.map((item, index) => (
               <tr key={index} className="border-b">
-                <td className="p-1">{item.quantity}</td>
-                <td className="p-1">{/* Item name here based on itemId */}</td>
-                <td className="p-1">${/* Item price here based on itemId */}</td>
+                <td className="p-1 font-ptserif pl-2">{item.quantity}</td>
+                <td className="p-1 font-ptserif">{itemsDetails[item.itemId]?.name}</td>
+                <td className="p-1 font-ptserif">${itemsDetails[item.itemId]?.price.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <div className="mt-2 pt-2 border-t flex justify-between items-center">
-        <span className="font-bold">total: ${order.total.toFixed(2)}</span>
-        <span>{order.date}</span>
+        <span className="font-bold font-ptserif">total: ${order.total.toFixed(2)}</span>
+        <span className="font-ptserif">{order.date}</span>
       </div>
     </div>
   );
+            };
   
-  
-  
-  
-  
-
 const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
