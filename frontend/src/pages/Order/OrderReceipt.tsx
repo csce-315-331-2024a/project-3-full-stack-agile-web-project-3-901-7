@@ -13,8 +13,9 @@ export default function OrderReceipt({order, items}: OrderReceiptProps) {
     order.itemToQuantity.forEach((value, key) => {
         const itemName = items.map((item) => { if (item._id == key) return item.name }).filter((item) => item !== undefined).at(0)!;
         const itemPrice = items.map((item) => { if (item._id == key) return item.price}).filter((item) => item !== undefined).at(0)!;
+        const itemPicture = items.map((item) => { if (item._id == key) return item.picture}).filter((item) => item !== undefined).at(0)!;
         if (value != 0) {
-            receiptItem.push({id: key, qty: value, name: itemName, price: value*itemPrice})
+            receiptItem.push({id: key, qty: value, name: itemName, price: value*itemPrice, picture: itemPicture})
         }
     })
 
@@ -32,6 +33,7 @@ export default function OrderReceipt({order, items}: OrderReceiptProps) {
                                 name={itemInfo.name}
                                 desc={""}
                                 qty={itemInfo.qty}
+                                picture={itemInfo.picture}
                                 totalPrice={itemInfo.price}
                             />
                         )})
