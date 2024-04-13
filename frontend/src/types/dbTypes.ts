@@ -6,6 +6,8 @@ export interface Item {
     ingredientInfo: string;
     startDate: Date;
     endDate: Date;
+    picture: string;
+    itemDesc: string;
 }
 
 export interface OrderType {
