@@ -45,10 +45,9 @@ const ManagerMenu = () => {
         <ManagerSearchbar 
           searchPlaceholder='search item'
           onSearch={setSearchQuery}
-          conditions={[
-          ]}
+          conditions={[]}
           actions={[
-            { title: 'New Item', callback: () => {} },
+            { title: 'New Item', callback: () => {window.location.href = '/newmenuitem'} },
           ]}
           fill
         />

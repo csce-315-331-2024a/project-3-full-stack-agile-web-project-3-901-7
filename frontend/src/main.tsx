@@ -18,6 +18,7 @@ import EditOrderHistory from './pages/Manager/EditOrderHistory'
 import AdminOrder from './pages/AdminOrder'
 import Weather from './pages/Weather'
 import ManagerMenu from './pages/Manager/Menu/ManagerMenu'
+import NewMenuItemPage from './pages/Manager/Menu/NewMenuItem'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/inventory" element={<Inventory/>}/>
                     <Route path="/editinventory" element={<EditInventory/>}/>
                     <Route path="/editmenu" element={<ManagerMenu/>}/>
+                    <Route path="/newmenuitem" element={<NewMenuItemPage/>}/>
                     <Route path="/orderhistory" element={<OrderHistory/>}/>
                     <Route path="/editorderhistory" element={<EditOrderHistory/>}/>
                     <Route path="/admin/order" element={<AdminOrder/>}/>

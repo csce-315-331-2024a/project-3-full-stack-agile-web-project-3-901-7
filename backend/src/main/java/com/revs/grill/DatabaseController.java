@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -53,7 +54,7 @@ public class DatabaseController {
     }
     
     @PostMapping("/item/insert")
-    public static ResponseStatus insertItem(@RequestParam("item") Item item) {
+    public static ResponseStatus insertItem(@RequestBody Item item) {
         return new ResponseStatus(Database.insertItem(item));
     }
     

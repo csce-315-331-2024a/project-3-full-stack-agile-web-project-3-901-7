@@ -10,6 +10,15 @@ export interface Item {
     itemDesc: string;
 }
 
+export interface Ingredient {
+    _id: number;
+    name: string;
+    quantity: number;
+    minQuantity: number;
+    unitPrice: number;
+    supplier: string;
+}
+
 export interface OrderType {
     numItems: number;
     orderInfo: string;

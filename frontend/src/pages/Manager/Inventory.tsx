@@ -2,15 +2,7 @@ import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
-
-interface Ingredient {
-  _id: number;
-  name: string;
-  quantity: number;
-  minQuantity: number;
-  unitPrice: number;
-  supplier: string;
-}
+import { Ingredient } from '../../types/dbTypes';
 
 const Inventory = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
