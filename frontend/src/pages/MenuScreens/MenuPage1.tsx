@@ -10,11 +10,9 @@ interface Item {
     ingredientInfo: string;
     startDate: Date;
     endDate: Date;
-    picture: string;
-    itemDesc: string;
 }
 
-export default function Menu() {
+export default function MenuPage1() {
     const [menuItems, setItems] = useState<Item[]>([]);
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
 
@@ -60,7 +58,7 @@ export default function Menu() {
                             <ul>
                                 {items.map((item) => (
                                     <li key={item._id} className="py-2">
-                                        <ItemCard name={item.name} price={item.price} itemDesc={item.itemDesc}/>
+                                        <ItemCard _id={item._id} name={item.name} price={item.price} category={item.category} ingredientInfo={item.ingredientInfo} startDate={item.startDate} endDate={item.endDate} />
                                     </li>
                                 ))}
                             </ul>
@@ -72,15 +70,14 @@ export default function Menu() {
     );
 }
 
-function ItemCard({name, price, itemDesc} : Item) {
+function ItemCard({name, price, ingredientInfo: ingredients} : Item) {
     return (
         <>
             <div className="flex justify-between">
                 <div className="text-2xl font-bold font-ptserif pt-4 pb-2 pl-2">{name}</div>
                 <div className="text-2xl font-bold font-ptserif pt-4 pb-2 pr-2">{price}</div>
             </div>
-            <div className="text-gray-700 text-xl font-ptserif pt-2 pb-4 pr-64 pl-2">{itemDesc}</div>
+            {ingredients && <div className="text-gray-700 text-xl font-ptserif pt-2 pb-4 pr-64 pl-2">{ingredients}</div>}
         </>
     )
 }
-
