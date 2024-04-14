@@ -1,7 +1,7 @@
+import Navbar from "../components/ManagerNavbar";
+
 export default function Manager() {
     return (
-        <>
-            Manager Page
-        </>
+        <Navbar />
     )
 }
