@@ -4,6 +4,15 @@ import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Item } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
 
+const MenuItemCard : React.FC<{item: Item}> = ({item}) => {
+  return (
+    <div >
+      <img width={50} height={50} src={item.picture} />
+      <h2>{item.name}</h2>
+    </div>
+  );
+}
+
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -38,9 +47,7 @@ const ManagerMenu = () => {
           ]}
         />
         {getFilteredItems(items, searchQuery).map(item => 
-          <div>
-            {item.name}
-          </div>
+          <MenuItemCard item={item}/>
         )}
       </div>
     </>
