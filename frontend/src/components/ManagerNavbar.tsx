@@ -56,6 +56,11 @@ export default function Navbar() {
                     inventory
                 </a>
             </button>
+            <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
+                <a href="/editmenu" className="hover:text-white">
+                    menu
+                </a>
+            </button>
         </div>
       </nav>
     );
