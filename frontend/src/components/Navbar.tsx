@@ -6,9 +6,9 @@ export default function Navbar() {
     }
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-    const buttonRef = useRef(null);
-    const initialButtonWidth = useRef(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const initialButtonWidth = useRef<number | null>(null);
 
     function toggleDropdown() {
         setIsDropdownOpen(!isDropdownOpen);
@@ -19,12 +19,12 @@ export default function Navbar() {
             initialButtonWidth.current = buttonRef.current.offsetWidth;
         }
 
-        function handleClickOutside(event) {
+        function handleClickOutside(event: MouseEvent) {
             if (
                 buttonRef.current &&
-                !buttonRef.current.contains(event.target) &&
+                !buttonRef.current.contains(event.target as Node) &&
                 dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
+                !dropdownRef.current.contains(event.target as Node)
             ) {
                 setIsDropdownOpen(false);
             }
@@ -39,17 +39,15 @@ export default function Navbar() {
     useEffect(() => {
         if (isDropdownOpen) {
             requestAnimationFrame(() => {
-                if (dropdownRef.current && buttonRef.current) {
+                if (dropdownRef.current && buttonRef.current && initialButtonWidth.current !== null) {
                     const dropdownWidth = dropdownRef.current.offsetWidth;
                     if (dropdownWidth > initialButtonWidth.current) {
-                        buttonRef.current.style.width = `${
-                            dropdownWidth + 20
-                        }px`;
+                        buttonRef.current.style.width = `${dropdownWidth + 20}px`;
                     }
                 }
             });
         } else {
-            if (buttonRef.current) {
+            if (buttonRef.current && initialButtonWidth.current !== null) {
                 buttonRef.current.style.width = `${initialButtonWidth.current}px`;
             }
         }
@@ -59,7 +57,7 @@ export default function Navbar() {
         <nav className="text-black pb-2 flex justify-between items-center shadow-sm border-hidden rounded px-3">
             <div className="flex items-center flex-1">
                 <div className="square-black border-black border-[2px] rounded">
-                    <img src="./logo.png" alt="Logo"></img>
+                    <img src="./logo.png" alt="Logo" />
                 </div>
                 <span className="font-bold text-4xl ml-2 font-ptserif">
                     Welcome to Rev's Grill
@@ -105,7 +103,6 @@ export default function Navbar() {
                             ref={dropdownRef}
                             className="absolute right-0 mt-2 py-2 w-auto bg-white shadow-xl border rounded-md transition-all duration-300"
                         >
-                            {/* TODO: perhaps have the + icon be a weather symbol icon of the current weather (possible via api). Dropdown menu will have: view weather forecast and "recommend me an item based on the weather" options */}
                             <a
                                 href="/weather"
                                 className="block px-4 py-2 text-black hover:bg-gray-100"
