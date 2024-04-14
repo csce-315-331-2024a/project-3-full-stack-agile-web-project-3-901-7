@@ -3,8 +3,9 @@ import { useEffect, useState } from "react"
 import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Item } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
+import ManagerTable from './ManagerTable';
 
-const MenuItemCard : React.FC<{item: Item}> = ({item}) => {
+const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
   return (
     <div >
       <img width={50} height={50} src={item.picture} />
@@ -28,27 +29,38 @@ const ManagerMenu = () => {
   }, []);
 
   const getFilteredItems = (items: Item[], query : string) => {
+    const compare = (a : string, b : string) => a.toLowerCase().includes(b.toLowerCase());
+
     return items.filter(item => 
-      item.name.toLowerCase().includes(query.toLowerCase())
+      compare(item.name, query) || 
+      compare(item.itemDesc, query) || 
+      compare(item.ingredientInfo, query)
     );
   }
 
   return (
     <>
       <ManagerNavbar />
-      <div className='p-4'>
+      <div className='pl-4 pr-4 pb-4'>
         <ManagerSearchbar 
           searchPlaceholder='search item'
           onSearch={setSearchQuery}
           conditions={[
           ]}
           actions={[
-            { title: 'New Item', callback: () => {} }
+            { title: 'New Item', callback: () => {} },
           ]}
+          fill
         />
-        {getFilteredItems(items, searchQuery).map(item => 
-          <MenuItemCard item={item}/>
-        )}
+        <ManagerTable 
+          headerColumns={[
+            "ID", "Name", "Price", "Category", "Ingredients", "Start", "End", "Description"
+          ]}
+          data={getFilteredItems(items, searchQuery).map(item => [
+            item._id, item.name, item.price, item.category, item.ingredientInfo, item.startDate, item.endDate, item.itemDesc,
+          ])}
+          thumbnails={getFilteredItems(items, searchQuery).map(item => item.picture)}
+        />
       </div>
     </>
   );

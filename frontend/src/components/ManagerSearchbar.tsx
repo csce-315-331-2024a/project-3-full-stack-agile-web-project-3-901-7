@@ -15,6 +15,7 @@ interface IManagerSearchbarProps {
   onSearch: (query: string) => void;
   actions: ISearchbarAction[];
   conditions: ISearchbarCondition[];
+  fill?: boolean;
 }
 
 const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
@@ -33,7 +34,7 @@ const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="pl-4 pr-64 mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between w-full">
+      <div className={`pl-4  ${props.fill ? 'pr-4' : 'pr-64'} mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between w-full`}>
         <div className="relative flex-grow">
             {/* Search Icon */}
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
