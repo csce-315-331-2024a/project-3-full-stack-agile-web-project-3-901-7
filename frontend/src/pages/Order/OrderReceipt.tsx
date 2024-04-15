@@ -8,6 +8,9 @@ interface OrderReceiptProps {
     updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
+// TODO: fix duplicate item in orderInfo
+// TODO: add better UI for order confirmation
+
 export default function OrderReceipt({order, items, updateOrder}: OrderReceiptProps) {
 
     let receiptItem:any = []
@@ -19,6 +22,30 @@ export default function OrderReceipt({order, items, updateOrder}: OrderReceiptPr
             receiptItem.push({id: key, qty: value, name: itemName, itemPrice:itemPrice, price: value*itemPrice, picture: itemPicture})
         }
     })
+
+    function mapToObj(map: Map<number, number>) {
+        let obj = Object.create(null);
+        for (let [k,v] of map) {
+            obj[k] = v;
+        }
+        return obj;
+    }
+
+    async function sendOrder() {
+        const body = {
+            numItems: order.numItems,
+            orderInfo: order.orderInfo,
+            itemToQuantity: mapToObj(order.itemToQuantity),
+            total: order.total,
+            dateTime: order.date
+        }
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
+        const data = await response.json();
+        if(data.success === true)
+            alert("Order Successfully Processed!")
+        else
+            alert("Uh oh something went wrong :(")
+    }
 
     return (
         <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
@@ -53,7 +80,7 @@ export default function OrderReceipt({order, items, updateOrder}: OrderReceiptPr
 
                 <button
                     type="button"
-                    onClick={() => console.log("testing")}
+                    onClick={sendOrder}
                     className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
                     <p>Checkout</p>
                     <FaArrowRight/>

@@ -28,6 +28,30 @@ export default function AdminOrder() {
 
     }, [])
 
+    function mapToObj(map: Map<number, number>) {
+        let obj = Object.create(null);
+        for (let [k,v] of map) {
+            obj[k] = v;
+        }
+        return obj;
+    }
+
+    async function sendOrder() {
+        const body = {
+            numItems: order.numItems,
+            orderInfo: order.orderInfo,
+            itemToQuantity: mapToObj(order.itemToQuantity),
+            total: order.total,
+            dateTime: order.date
+        }
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
+        const data = await response.json();
+        if(data.success === true)
+            alert("Order Successfully Processed!")
+        else
+            alert("Uh oh something went wrong :(")
+    }
+
     return (
         <div className="w-full h-full p-8 flex flex-col gap-y-8">
 
@@ -44,7 +68,7 @@ export default function AdminOrder() {
                 </div>
                 <button
                     type="button"
-                    onClick={() => console.log("order submitted")}
+                    onClick={sendOrder}
                     className="px-4 py-3 bg-black rounded-md font-ptserif font-lg text-white"
                 >
                     submit order
@@ -83,7 +107,7 @@ function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItem
             ...order,
             numItems: order.numItems + 1,
             total: order.total + price,
-            orderInfo: order.orderInfo + name + " ",
+            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
             itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
         })
     }
@@ -113,20 +137,20 @@ function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItem
                             <div className="flex gap-x-2 items-center font-bold">
                                 <button
                                     type="button"
-                                    onClick={() => increaseItem(item.price, item.name, item._id)}
+                                    onClick={() => decreaseItem(item.price, item.name, item._id)}
                                     className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center p-1"
                                 >
-                                    <FaPlus/>
+                                    <FaMinus/>
                                 </button>
                                 <p>
                                     {(order.itemToQuantity.has(item._id)) ? order.itemToQuantity.get(item._id) : 0}
                                 </p>
                                 <button
                                     type="button"
-                                    onClick={() => decreaseItem(item.price, item.name, item._id)}
+                                    onClick={() => increaseItem(item.price, item.name, item._id)}
                                     className="w-5 h-5 border-2 border-black rounded-full flex items-center justify-center p-1"
                                 >
-                                    <FaMinus/>
+                                    <FaPlus/>
                                 </button>
                             </div>
                             <p className="font-bold">${item.price}</p>

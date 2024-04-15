@@ -1,15 +1,9 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
-
-interface Ingredient {
-  _id: number;
-  name: string;
-  quantity: number;
-  minQuantity: number;
-  unitPrice: number;
-  supplier: string;
-}
+import ManagerSearchbar from '../../components/ManagerSearchbar';
+import { Ingredient } from '../../types/dbTypes';
+import { getUserAuth, UserInfo } from '../Login';
 
 interface EditableCellProps {
     value: string | number;
@@ -236,7 +230,7 @@ const Inventory = () => {
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
 
-  return (
+  return (userProfile &&
     <div className="p-4">
         <ManagerNavbar/>
         <div className="flex flex-col items-center">
