@@ -1,13 +1,14 @@
-import { Item } from "../../types/dbTypes";
+import { Item, OrderType } from "../../types/dbTypes";
 import OrderItemCard from "./OrderItemCard";
 
 interface OrderItemContainerProps {
     items: Item[];
     currCategory: string;
+    order: OrderType;
     updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-export default function OrderItemContainer({items, currCategory, updateOrder}: OrderItemContainerProps) {
+export default function OrderItemContainer({items, currCategory, order, updateOrder}: OrderItemContainerProps) {
     return (
         <div className="flex gap-8 flex-wrap h-fit">
             {items.map((item, index) => {
@@ -20,6 +21,7 @@ export default function OrderItemContainer({items, currCategory, updateOrder}: O
                         name={item.name} 
                         price={item.price} 
                         picture={item.picture}
+                        order={order}
                         updateOrder={updateOrder}
                     />
                 )

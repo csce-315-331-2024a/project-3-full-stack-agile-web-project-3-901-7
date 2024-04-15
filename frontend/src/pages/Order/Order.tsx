@@ -48,7 +48,7 @@ export default function Order() {
                 ...order,
                 numItems: order.numItems + 1,
                 total: order.total + price,
-                orderInfo: order.orderInfo + name + " ",
+                orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
                 itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
             });
         } else {
@@ -97,12 +97,14 @@ export default function Order() {
                     <OrderItemContainer 
                         items={items} 
                         currCategory={currCategory}
+                        order={order}
                         updateOrder={updateOrder}
                     />
 
                     <OrderReceipt
                         items={items}
                         order={order}
+                        updateOrder={updateOrder}
                     />
                 
                 </div>
