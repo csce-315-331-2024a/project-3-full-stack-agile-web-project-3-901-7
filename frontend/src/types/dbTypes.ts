@@ -5,9 +5,18 @@ export interface Item {
     category: string;
     ingredientInfo: string;
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null;
     picture: string;
     itemDesc: string;
+}
+
+export interface Ingredient {
+    _id: number;
+    name: string;
+    quantity: number;
+    minQuantity: number;
+    unitPrice: number;
+    supplier: string;
 }
 
 export interface OrderType {
