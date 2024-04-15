@@ -1,20 +1,21 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
-
-interface Ingredient {
-  _id: number;
-  name: string;
-  quantity: number;
-  minQuantity: number;
-  unitPrice: number;
-  supplier: string;
-}
+import ManagerSearchbar from '../../components/ManagerSearchbar';
+import { Ingredient } from '../../types/dbTypes';
+import { getUserAuth, UserInfo } from '../Login';
 
 const Inventory = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [showLowStock, setShowLowStock] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   const exampleData: Ingredient[] = [
     {
@@ -44,9 +45,9 @@ const Inventory = () => {
   ];
 
   useEffect(() => {
-    // setIngredients(exampleData);
 
     async function fetchIngredients() {
+        console.log(import.meta.env.VITE_BACKEND_URL);
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/findAll");
         const data = await response.json();
         setIngredients(data);
@@ -75,50 +76,21 @@ const Inventory = () => {
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
 
-  return (
+  return (userProfile &&
     <div className="p-4">
-        <ManagerNavbar/>
-        <div className="flex flex-col items-center">
-      {/* <h1 className="text-2xl font-bold mb-4">Inventory Page</h1> */}
-      <div className="pl-4 pr-64 mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between w-full">
-  <div className="relative flex-grow">
-    {/* Search Icon */}
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <img src="icons/search-icon.png" alt="Search" className="w-5 h-5" />
-    </div>
-    {/* Search Input */}
-    <input
-      type="text"
-      placeholder="search item"
-      className="text-xl font-ptserif block w-full pl-10 pr-3 py-2 border-b-2 border-black bg-transparent placeholder-gray-500 focus:outline-none focus:border-black focus:ring-0"
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
-  </div>
-  {/* Show Low-Stock Button */}
-  <button
-    onClick={() => setShowLowStock(!showLowStock)}
-    className={`ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium font-ptserif ${
-      showLowStock ? 'bg-black text-white' : 'bg-white text-black'
-    }`}
-  >
-    Show Low-Stock
-  </button>
-  {/* Reorder Stock Button */}
-  <button
-    onClick={handleRestock}
-    className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black font-ptserif hover:bg-black hover:text-white"
-  >
-    Reorder Stock
-  </button>
-  <button
-  onClick={() => window.location.href = '/editinventory'}
-  className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
->
-  Edit Ingredient
-</button>
+        <ManagerNavbar userInfo={userProfile}/>
 
-</div>
-        </div>
+        <ManagerSearchbar 
+          searchPlaceholder='search ingredient'
+          onSearch={setSearchTerm}
+          conditions={[
+            { title: "Show Low-Stock", callback: setShowLowStock },
+          ]}
+          actions={[
+            { title: "Reorder Stock", callback: handleRestock },
+            { title: "Edit Ingredient", callback: () => window.location.href = '/editinventory' },
+          ]}
+        />
       <div>
         
       </div>

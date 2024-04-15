@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 import Landing from './pages/Landing' 
-import Login from './pages/Login'
+import { Login } from './pages/Login'
 import Menu from './pages/Menu'
 import Order from './pages/Order/Order'
 import Manager from './pages/Manager'
@@ -13,10 +13,14 @@ import Manager from './pages/Manager'
 import Inventory from './pages/Manager/Inventory'
 import EditInventory from './pages/Manager/EditInventory'
 import OrderHistory from './pages/Manager/OrderHistory' 
-import EditOrderHistory from './pages/Manager/EditOrderHistory' 
+import EditOrderHistory from './pages/Manager/EditOrderHistory'
+import SalesTrends from './pages/Manager/SalesTrends'
 
 import AdminOrder from './pages/AdminOrder'
 import Weather from './pages/Weather'
+import ManagerMenu from './pages/Manager/Menu/ManagerMenu'
+import NewMenuItemPage from './pages/Manager/Menu/NewMenuItem'
+import EditMenuItemPage from './pages/Manager/Menu/EditMenuItem'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -31,9 +35,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/manager" element={<Manager/>}/>
                     <Route path="/inventory" element={<Inventory/>}/>
                     <Route path="/editinventory" element={<EditInventory/>}/>
+                    <Route path="/editmenu" element={<ManagerMenu/>}/>
+                    <Route path="/newmenuitem" element={<NewMenuItemPage/>}/>
+                    <Route path="/editmenuitem/:itemId" element={<EditMenuItemPage/>}/>
                     <Route path="/orderhistory" element={<OrderHistory/>}/>
                     <Route path="/editorderhistory" element={<EditOrderHistory/>}/>
                     <Route path="/admin/order" element={<AdminOrder/>}/>
+                    <Route path="/salestrends" element={<SalesTrends/>}/>
                     <Route path="/weather" element={<Weather/>}/>
                 </Routes>
             </BrowserRouter>

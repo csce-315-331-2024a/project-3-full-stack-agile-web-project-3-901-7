@@ -320,8 +320,7 @@ public class Database {
         try {
             // insert item into database
             String itemInsertQuery = "INSERT INTO Items (name, price, category, ingredients, startDate, endDate, picture, itemDesc) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery,
-                    Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery, Statement.RETURN_GENERATED_KEYS);
             itemInsertStatement.setString(1, item.name);
             itemInsertStatement.setDouble(2, item.price);
             itemInsertStatement.setString(3, item.category);

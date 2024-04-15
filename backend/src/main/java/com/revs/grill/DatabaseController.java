@@ -55,12 +55,12 @@ public class DatabaseController {
     }
 
     @PostMapping("/item/insert")
-    public static ResponseStatus insertItem(@RequestParam("item") Item item) {
+    public static ResponseStatus insertItem(@RequestBody Item item) {
         return new ResponseStatus(Database.insertItem(item));
     }
 
     @PostMapping("/item/edit")
-    public static ResponseStatus editItem(@RequestParam("item") Item item) {
+    public static ResponseStatus editItem(@RequestBody Item item) {
         return new ResponseStatus(Database.editItem(item));
     }
 
