@@ -51,10 +51,13 @@ export default function OrderReceipt({order, items, updateOrder}: OrderReceiptPr
                     <p className="text-black">${Math.round(order.total*100)/100}</p>
                 </div>
 
-                <div className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
-                    <button type="button" onClick={() => alert("check out")}>Checkout</button>
+                <button
+                    type="button"
+                    onClick={() => console.log("testing")}
+                    className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
+                    <p>Checkout</p>
                     <FaArrowRight/>
-                </div>
+                </button>
 
 
             </div>
