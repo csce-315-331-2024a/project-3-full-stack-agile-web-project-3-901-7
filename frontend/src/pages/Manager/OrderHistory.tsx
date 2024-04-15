@@ -100,11 +100,16 @@ const OrderCard = ({ order }: { order: Order }) => {
 const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
+  const deleteOrder = (orderId: number) => {
+    setOrders(orders.filter(order => order._id !== orderId));
+  };
+
   useEffect(() => {
     async function fetchOrders() {
         const orderLimit = 10; 
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
         const data = await response.json();
+        console.log(data);
         setOrders(data);
     }
 
