@@ -104,6 +104,7 @@ export default function Order() {
                     <OrderReceipt
                         items={items}
                         order={order}
+                        updateOrder={updateOrder}
                     />
                 
                 </div>
