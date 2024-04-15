@@ -59,7 +59,7 @@ public class DatabaseController {
     }
     
     @PostMapping("/item/edit")
-    public static ResponseStatus editItem(@RequestParam("item") Item item) {
+    public static ResponseStatus editItem(@RequestBody Item item) {
         return new ResponseStatus(Database.editItem(item));
     }
     

@@ -5,7 +5,7 @@ export interface Item {
     category: string;
     ingredientInfo: string;
     startDate: Date;
-    endDate: Date;
+    endDate: Date | null;
     picture: string;
     itemDesc: string;
 }

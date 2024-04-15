@@ -59,6 +59,9 @@ const ManagerMenu = () => {
             item._id, item.name, item.price, item.category, item.ingredientInfo, item.startDate, item.endDate, item.itemDesc,
           ])}
           thumbnails={getFilteredItems(items, searchQuery).map(item => item.picture)}
+          onEdit={(itemId) => { 
+            window.location.href = '/editmenuitem/' + itemId; 
+          }}
         />
       </div>
     </>
