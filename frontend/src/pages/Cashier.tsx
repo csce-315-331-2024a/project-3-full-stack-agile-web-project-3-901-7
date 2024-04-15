@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ManagerNavbar from "../components/ManagerNavbar";
+import CashierNavbar from "../components/CashierNavbar";
 import { getUserAuth, UserInfo } from "./Login";
 
 export default function Manager() {
@@ -12,6 +12,6 @@ export default function Manager() {
     }, [])
     
     return (userProfile &&
-        <ManagerNavbar userInfo={userProfile} />
+        <CashierNavbar userInfo={userProfile} />
     )
 }

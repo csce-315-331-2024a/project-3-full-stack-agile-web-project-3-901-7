@@ -1,57 +1,219 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
+import ManagerSearchbar from '../../components/ManagerSearchbar';
+import { Ingredient } from '../../types/dbTypes';
+import { getUserAuth, UserInfo } from '../Login';
 
-interface Ingredient {
-  _id: number;
-  name: string;
-  quantity: number;
-  minQuantity: number;
-  unitPrice: number;
-  supplier: string;
+interface EditableCellProps {
+    value: string | number;
+    onEdit: (id: number, field: keyof Ingredient, newValue: string | number) => void;
+    field: keyof Ingredient;
+    ingredientId: number;
+    placeholder?: string;
+    isEditable?: boolean;
 }
 
-const Inventory = () => {
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [showLowStock, setShowLowStock] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+const EditableCell: React.FC<EditableCellProps> = ({
+    value,
+    onEdit,
+    field,
+    ingredientId,
+    placeholder = "",
+    isEditable = true  // Ensuring this allows entering edit mode
+}) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentValue, setCurrentValue] = useState(value.toString());
 
-  const exampleData: Ingredient[] = [
-    {
-    _id: 1,
-      name: "Flour",
-      quantity: 50,
-      minQuantity: 10,
-      unitPrice: 2.5,
-      supplier: "Supplier A",
-    },
-    {
-      _id: 2,
-      name: "Sugar",
-      quantity: 5,
-      minQuantity: 10,
-      unitPrice: 1.5,
-      supplier: "Supplier B",
-    },
-    {
-      _id: 3,
-      name: "Eggs",
-      quantity: 30,
-      minQuantity: 20,
-      unitPrice: 0.2,
-      supplier: "Supplier C",
-    },
-  ];
+    const handleEditStart = () => {
+        if (isEditable) {  // Only allow editing if editable
+            setIsEditing(true);
+        }
+    };
+
+    const handleBlur = () => {
+        if (currentValue !== value.toString()) {
+            onEdit(ingredientId, field, ['quantity', 'minQuantity', 'unitPrice'].includes(field) ? Number(currentValue) : currentValue);
+        }
+        setIsEditing(false);
+    };
+
+    useEffect(() => {
+        setCurrentValue(value.toString());  
+    }, [value]);
+
+    return (
+        <td className="py-4 px-6 border border-black font-ptserif">
+            {isEditing ? (
+                <input
+                    type="text"
+                    autoFocus
+                    className="font-ptserif p-1 w-full"
+                    value={currentValue}
+                    onChange={(e) => setCurrentValue(e.target.value)}
+                    onBlur={handleBlur}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            handleBlur();
+                        }
+                    }}
+                />
+            ) : (
+                <span onDoubleClick={handleEditStart}>
+                    {value || placeholder}
+                </span>
+            )}
+        </td>
+    );
+};
+
+
+
+const Inventory = () => {
+    const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+    const [showLowStock, setShowLowStock] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isAddingNew, setIsAddingNew] = useState(false);
+    const [newIngredient, setNewIngredient] = useState<Ingredient>({
+        _id: -1,
+        name: 'Enter name',
+        quantity: 0,
+        minQuantity: 0,
+        unitPrice: 0.00,
+        supplier: 'Enter supplier',
+    });
+    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+    useEffect(() => {
+      getUserAuth()
+        .then(setUserProfile)
+        .catch(console.error);
+    }, [])
+
+    const handleAddClick = () => {
+        setIsAddingNew(true);
+        setNewIngredient({
+            _id: -1, // Temporary ID until saved
+            name: '',
+            quantity: 0,
+            minQuantity: 0,
+            unitPrice: 0,
+            supplier: '',
+        });
+    };
+    
+
+  const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
+    const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
+    console.log(ingredientToEdit);
+    console.log(id, field, newValue);
+
+    if (ingredientToEdit) {
+        console.log("ingredientToEdit", ingredientToEdit);
+        const updatedIngredient = { ...ingredientToEdit, [field]: newValue };
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/edit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedIngredient),
+            });
+            const data = await response.json();
+
+            setIngredients(ingredients.map(ingredient =>
+                ingredient._id === id ? updatedIngredient : ingredient
+            ));
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setIngredients(ingredients);
+        }
+    }
+  };
+
+  const handleAddIngredient = async () => {
+    if (newIngredient) {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/insert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newIngredient),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.ingredientId) {
+        setIngredients([...ingredients, { ...newIngredient, _id: data.ingredientId }]);
+        setIsAddingNew(false);
+      } else {
+        alert("Failed to add ingredient");
+      }
+    } else {
+      alert("Please fill all fields");
+    }
+  };
+
+  
+  const handleDeleteIngredient = async (id: number) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${id}`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      if (data) {
+        setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
+      } else {
+        throw new Error('Failed to delete the ingredient');
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+
+  const handleCancelNewIngredient = () => {
+    setIsAddingNew(false);
+  };
+
+
+  const handleSaveNewIngredient = async () => {
+    const ingredientToSave = {
+      name: newIngredient.name,
+      quantity: Number(newIngredient.quantity),
+      minQuantity: Number(newIngredient.minQuantity),
+      unitPrice: Number(newIngredient.unitPrice),
+      supplier: newIngredient.supplier,
+    };
+  
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/insert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ingredientToSave)
+      });
+      const ingredientId = await response.json();
+      
+      setIngredients([...ingredients, { ...ingredientToSave, _id: ingredientId }]);
+      setIsAddingNew(false);
+    } catch (error) {
+      console.error('Error saving new ingredient:', error);
+      alert('Failed to save new ingredient');
+    }
+  };
 
   useEffect(() => {
-
     async function fetchIngredients() {
-        console.log(import.meta.env.VITE_BACKEND_URL);
-        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/findAll");
+      console.log(import.meta.env.VITE_BACKEND_URL);
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findAll`);
         const data = await response.json();
-        setIngredients(data);
+        if (response.ok) {
+          const sortedData = data.sort((a: Ingredient, b: Ingredient) => a._id - b._id);
+          setIngredients(sortedData);
+        } else {
+          throw new Error('Failed to fetch ingredients');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
     }
-
+  
     fetchIngredients();
   }, []);
 
@@ -75,86 +237,82 @@ const Inventory = () => {
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
 
-  return (
+  return (userProfile &&
     <div className="p-4">
-        <ManagerNavbar/>
-        <div className="flex flex-col items-center">
-      {/* <h1 className="text-2xl font-bold mb-4">Inventory Page</h1> */}
-      <div className="pl-4 pr-64 mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between w-full">
-  <div className="relative flex-grow">
-    {/* Search Icon */}
-    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <img src="icons/search-icon.png" alt="Search" className="w-5 h-5" />
-    </div>
-    {/* Search Input */}
-    <input
-      type="text"
-      placeholder="search item"
-      className="text-xl font-ptserif block w-full pl-10 pr-3 py-2 border-b-2 border-black bg-transparent placeholder-gray-500 focus:outline-none focus:border-black focus:ring-0"
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
-  </div>
-  {/* Show Low-Stock Button */}
-  <button
-    onClick={() => setShowLowStock(!showLowStock)}
-    className={`ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium font-ptserif ${
-      showLowStock ? 'bg-black text-white' : 'bg-white text-black'
-    }`}
-  >
-    Show Low-Stock
-  </button>
-  {/* Reorder Stock Button */}
-  <button
-    onClick={handleRestock}
-    className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black font-ptserif hover:bg-black hover:text-white"
-  >
-    Reorder Stock
-  </button>
-  <button
-  onClick={() => window.location.href = '/editinventory'}
-  className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
->
-  Edit Ingredient
-</button>
-
-</div>
-        </div>
-      <div>
+      <ManagerNavbar userInfo={userProfile}/>
+      <ManagerSearchbar 
+        searchPlaceholder='search ingredient'
+        onSearch={setSearchTerm}
+        conditions={[
+          { title: "Show Low-Stock", callback: setShowLowStock },
+        ]}
+        actions={[
+          { title: "Reorder Stock", callback: handleRestock },
+          { title: "+", callback: handleAddClick },
+        ]}
+      />
+    <div>
         
       </div>
       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
         <table className="overflow-scroll w-full text-sm text-center text-black border border-black font-ptserif">
-          <thead className="text-s text-black bg-gray-50 font-ptserif">
+          <thead className="text-m text-black bg-gray-50 font-ptserif">
             <tr>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif">
                 Ingredient ID
               </th>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Name
               </th>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Quantity
               </th>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Min Quantity
               </th>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Unit Price
               </th>
-              <th scope="col" className="py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Supplier
+              </th>
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+                Action
               </th>
             </tr>
           </thead>
           <tbody>
+          {isAddingNew && newIngredient && (
+              <tr>
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
+                  New
+                </td>
+                <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} placeholder="Enter name"/>
+                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="0.00"/>
+                <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} placeholder="Enter supplier" />
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
+                  <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mr-2 rounded">
+                    Save
+                  </button>
+                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                    Cancel
+                  </button>
+                </td>
+              </tr>
+            )}
             {filteredIngredients.map((ingredient) => (
               <tr key={ingredient._id} className="bg-white border-b">
                 <th scope="row" className="py-4 px-6 font-medium text-black whitespace-nowrap border border-black font-ptserif">
                   {ingredient._id}
                 </th>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.name}
-                </td>
+                <EditableCell
+                    value={ingredient.name}
+                    onEdit={handleEdit}
+                    field="name"
+                    ingredientId={ingredient._id}
+                />
                 <td className="py-4 px-6 border border-black font-ptserif">
                   {ingredient.quantity}
                 </td>
@@ -167,8 +325,14 @@ const Inventory = () => {
                 <td className="py-4 px-6 border border-black font-ptserif">
                   {ingredient.supplier}
                 </td>
+                <td className="py-4 px-6 border border-black font-ptserif">
+                <button onClick={() => handleDeleteIngredient(ingredient._id)} className=" border-2 border-black px-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
+                    -
+                </button>
+                </td>
               </tr>
             ))}
+            
           </tbody>
         </table>
       </div>
