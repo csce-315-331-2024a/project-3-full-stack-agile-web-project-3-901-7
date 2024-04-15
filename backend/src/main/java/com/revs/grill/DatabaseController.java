@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -128,12 +129,12 @@ public class DatabaseController {
     }
 
     @PostMapping("/ingredient/insert")
-    public static int insertIngredient(@RequestParam("ingredient") Ingredient ingredient) {
+    public static int insertIngredient(@RequestBody Ingredient ingredient) {
         return Database.insertIngredient(ingredient);
     }
 
     @PostMapping("/ingredient/edit")
-    public static boolean editIngredient(@RequestParam("ingredient") Ingredient ingredient) {
+    public static boolean editIngredient(@RequestBody Ingredient ingredient) {
         return Database.editIngredient(ingredient);
     }
 
