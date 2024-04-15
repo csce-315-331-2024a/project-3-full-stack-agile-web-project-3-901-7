@@ -11,7 +11,6 @@ import Order from './pages/Order/Order'
 import Manager from './pages/Manager'
 
 import Inventory from './pages/Manager/Inventory'
-import EditInventory from './pages/Manager/EditInventory'
 import OrderHistory from './pages/Manager/OrderHistory' 
 import EditOrderHistory from './pages/Manager/EditOrderHistory' 
 
@@ -30,7 +29,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/order" element={<Order/>}/>
                     <Route path="/manager" element={<Manager/>}/>
                     <Route path="/inventory" element={<Inventory/>}/>
-                    <Route path="/editinventory" element={<EditInventory/>}/>
                     <Route path="/orderhistory" element={<OrderHistory/>}/>
                     <Route path="/editorderhistory" element={<EditOrderHistory/>}/>
                     <Route path="/admin/order" element={<AdminOrder/>}/>
