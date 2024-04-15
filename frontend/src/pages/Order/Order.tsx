@@ -97,12 +97,14 @@ export default function Order() {
                     <OrderItemContainer 
                         items={items} 
                         currCategory={currCategory}
+                        order={order}
                         updateOrder={updateOrder}
                     />
 
                     <OrderReceipt
                         items={items}
                         order={order}
+                        updateOrder={updateOrder}
                     />
                 
                 </div>
