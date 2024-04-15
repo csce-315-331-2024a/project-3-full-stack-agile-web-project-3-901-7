@@ -46,6 +46,11 @@ public class DatabaseController {
     public static Item getOneItemById(@RequestParam("itemId") int itemId) {
         return Item.findOneById(itemId);
     }
+
+    @GetMapping("/item/findByCategory")
+    public static List<Item> getItemsById(@RequestParam("category") String category) {
+        return Database.getItemsByCategory(category);
+    }
     
     @PostMapping("/item/insert")
     public static ResponseStatus insertItem(@RequestParam("item") Item item) {

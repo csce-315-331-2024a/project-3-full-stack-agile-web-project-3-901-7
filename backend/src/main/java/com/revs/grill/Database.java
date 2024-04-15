@@ -11,13 +11,13 @@ import org.apache.commons.lang3.tuple.MutablePair;
 public class Database {
     public static Connection connection = null;
 
-	public static void createConnection() {
+    public static void createConnection() {
         if (connection != null)
             return;
 
         String database_name = "csce331_901_04_p3_db";
         String database_user = "csce331_901_04_user";
-        String database_password = "HPTaVfHd";
+        String database_password = "HPTaVfHd"; // NEED TO PRIVATE
         String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
         
         try {
@@ -65,6 +65,8 @@ public class Database {
             item.ingredientInfo = resultSet.getString("ingredients");
             item.startDate = resultSet.getDate("startDate");
             item.endDate = resultSet.getDate("endDate");
+            item.picture = resultSet.getString("picture");
+            item.itemDesc = resultSet.getString("itemDesc");
 
             if (fillIngredients) {
                 PreparedStatement ingStatement = connection.prepareStatement(
@@ -159,6 +161,19 @@ public class Database {
             return null;
         }
     }
+
+    public static List<Item> getItemsByCategory(String category) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items WHERE category = ?");
+            statement.setString(1, category);
+            return runItemQuery(statement, true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static int insertOrder(Order order) {
         try {
             // insert item into database
@@ -295,7 +310,7 @@ public class Database {
 
         try {
             // insert item into database
-            String itemInsertQuery = "INSERT INTO Items (name, price, category, ingredients, startDate, endDate) VALUES (?, ?, ?, ?, ?, ?)";
+            String itemInsertQuery = "INSERT INTO Items (name, price, category, ingredients, startDate, endDate, picture, itemDesc) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery, Statement.RETURN_GENERATED_KEYS);
             itemInsertStatement.setString(1, item.name);
             itemInsertStatement.setDouble(2, item.price);
@@ -303,6 +318,8 @@ public class Database {
             itemInsertStatement.setString(4, item.ingredientInfo);
             itemInsertStatement.setDate(5, item.startDate);
             itemInsertStatement.setDate(6, item.endDate);
+            itemInsertStatement.setString(7, item.picture);
+            itemInsertStatement.setString(8, item.itemDesc);
             itemInsertStatement.executeUpdate();
             
             // get generated id of item in database
@@ -356,7 +373,7 @@ public class Database {
     public static boolean editItem(Item item) {
         try {
             // insert item into database
-            String itemInsertQuery = "UPDATE Items SET name = ?, price = ?, category = ?, ingredients = ?, startDate = ?, endDate = ? WHERE itemId = ?";
+            String itemInsertQuery = "UPDATE Items SET name = ?, price = ?, category = ?, ingredients = ?, startDate = ?, endDate = ?, picture = ?, itemDesc = ? WHERE itemId = ?";
             PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery);
             itemInsertStatement.setString(1, item.name);
             itemInsertStatement.setDouble(2, item.price);
@@ -364,7 +381,9 @@ public class Database {
             itemInsertStatement.setString(4, item.ingredientInfo);
             itemInsertStatement.setDate(5, item.startDate);
             itemInsertStatement.setDate(6, item.endDate);
-            itemInsertStatement.setInt(7, item._id);
+            itemInsertStatement.setString(7, item.picture);
+            itemInsertStatement.setString(8, item.itemDesc);
+            itemInsertStatement.setInt(9, item._id);
             itemInsertStatement.executeUpdate();
 
             // remove existing order-item junctions

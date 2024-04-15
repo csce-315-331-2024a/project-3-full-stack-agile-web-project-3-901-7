@@ -19,6 +19,7 @@ export default function OrderItemContainer({items, currCategory, updateOrder}: O
                         id={item._id}
                         name={item.name} 
                         price={item.price} 
+                        picture={item.picture}
                         updateOrder={updateOrder}
                     />
                 )
