@@ -1,15 +1,17 @@
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { useState } from "react";
+import { OrderType } from "../../types/dbTypes";
 
 interface ItemCardProps {
     id: number;
     name: string;
     price: number;
     picture: string;
+    order: OrderType;
     updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-export default function OrderItemCard({id, name, price, picture, updateOrder} : ItemCardProps) {
+export default function OrderItemCard({id, name, price, picture, order, updateOrder} : ItemCardProps) {
     const [quantity, setQuantity] = useState<number>(0);
 
     function addQuantity() {
@@ -27,7 +29,7 @@ export default function OrderItemCard({id, name, price, picture, updateOrder} : 
     return (
         <div className="w-[280px] h-[280px] relative rounded-md bg-white shadow-md">
 
-            <div className="absolute left-4 top-4 flex flex-col items-center z-10">
+            <div className="absolute left-4 top-4 flex flex-col items-center z-10 bg-white rounded-md">
                 <button 
                     type="button"
                     onClick={addQuantity}
@@ -35,7 +37,11 @@ export default function OrderItemCard({id, name, price, picture, updateOrder} : 
                 >
                     <FaPlus />
                 </button>
-                <p className="py-1 font-semibold">{quantity}</p>
+                <p className="py-1 font-semibold">
+                    {
+                        order.itemToQuantity.has(id) ? order.itemToQuantity.get(id) : 0
+                    }
+                </p>
                 <button
                     type="button"
                     onClick={subtractQuantity}

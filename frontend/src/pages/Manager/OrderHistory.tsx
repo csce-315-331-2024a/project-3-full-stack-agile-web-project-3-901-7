@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ManagerNavbar from "../../components/ManagerNavbar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { getUserAuth, UserInfo } from '../Login';
 
 interface Order {
     _id: number;
@@ -16,50 +19,63 @@ const mockOrders: Order[] = [
         numItems: 2,
         orderInfo: "Cheeseburger,Fries",
         itemToQuantity: new Map([
-            [1, 2], 
-            [2, 3], 
+            [1, 2],
+            [2, 3],
         ]),
         total: 14.99,
-        date: new Date('12-12-2024'),
+        date: new Date('2024-12-12'),
     },
-  ];
-  
+    {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger,Fries",
+        itemToQuantity: new Map([
+            [1, 2],
+            [2, 3],
+        ]),
+        total: 14.99,
+        date: new Date('2024-12-03'),
+    },
+    {
+        _id: 3,
+        numItems: 2,
+        orderInfo: "Cheeseburger,Fries",
+        itemToQuantity: new Map([
+            [1, 2],
+            [2, 3],
+        ]),
+        total: 14.99,
+        date: new Date('2024-12-18'),
+    },
+];
+
 const OrderCard = ({ order }: { order: Order }) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
 
-    const getFormattedDate = (date: Date | string) => {
-        if (date) {
-          const dateObj = new Date(date);
-          if (!isNaN(dateObj.getTime())) {
-            return dateObj.toLocaleDateString();
-          }
-        }
-        return "Invalid date";
-      };
-  
-    useEffect(() => {
-      const fetchItemDetails = async () => {
-        const details: { [key: number]: { name: string, price: number } } = {};
-  
-        for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
-          try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch');
-            }
-            const data = await response.json();
-            details[itemId] = { name: data.name, price: data.price };
-          } catch (error) {
-            console.error('Fetch error:', error);
-          }
-        }
-  
-        setItemsDetails(details);
-      };
-  
-      fetchItemDetails();
-    }, [order]);
+    const getFormattedDate = (date: Date) => date.toLocaleDateString();
 
+    useEffect(() => {
+        async function fetchItemDetails() {
+            const details: { [key: number]: { name: string, price: number } } = {};
+
+            for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch');
+                    }
+                    const data = await response.json();
+                    details[itemId] = { name: data.name, price: data.price };
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                }
+            }
+
+            setItemsDetails(details);
+        }
+
+        fetchItemDetails();
+    }, [order]);
     
       
     return (
@@ -96,9 +112,12 @@ const OrderCard = ({ order }: { order: Order }) => {
   );
 };
 
-  
 const OrderHistory = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<Order[]>(mockOrders);
+    const [sortDirection, setSortDirection] = useState<string>('asc');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
   const handleDeleteOrder = async (id: number) => {
       try {
@@ -127,10 +146,26 @@ const OrderHistory = () => {
         setOrders(data);
     }
 
-    //fetchOrders();
+    const sortOrders = (direction: string) => {
+        setSortDirection(direction);
+        setOrders(orders => [...orders].sort((a, b) => {
+            if (direction === 'asc') {
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            } else {
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            }
+        }));
+    };
 
-    setOrders(mockOrders);
-  }, []);
+    const filterByDateRange = () => {
+        if (startDate && endDate) {
+            setOrders(mockOrders.filter(order => {
+                const orderDate = new Date(order.date);
+                return orderDate >= startDate && orderDate <= endDate;
+            }));
+        }
+    };
+
 
   return (
     <div className="p-4">
