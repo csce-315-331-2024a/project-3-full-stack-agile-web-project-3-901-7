@@ -110,7 +110,15 @@ const OrderHistory = () => {
   return (
     <div className="p-4">
       <ManagerNavbar />
+      <div className="flex flex-col sm:flex-row items-center">
       <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
+      <button
+        onClick={() => window.location.href = '/editorder'}
+        className="mt-4 ml-16 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
+      >
+        Edit Order
+      </button>
+      </div>
       <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
         {orders.map(order => (
           <OrderCard key={order._id} order={order} />
