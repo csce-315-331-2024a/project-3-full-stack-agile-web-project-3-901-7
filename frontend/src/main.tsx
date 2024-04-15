@@ -13,7 +13,8 @@ import Manager from './pages/Manager'
 import Inventory from './pages/Manager/Inventory'
 import EditInventory from './pages/Manager/EditInventory'
 import OrderHistory from './pages/Manager/OrderHistory' 
-import EditOrderHistory from './pages/Manager/EditOrderHistory' 
+import EditOrderHistory from './pages/Manager/EditOrderHistory'
+import SalesTrends from './pages/Manager/SalesTrends'
 
 import AdminOrder from './pages/AdminOrder'
 import Weather from './pages/Weather'
@@ -40,6 +41,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/orderhistory" element={<OrderHistory/>}/>
                     <Route path="/editorderhistory" element={<EditOrderHistory/>}/>
                     <Route path="/admin/order" element={<AdminOrder/>}/>
+                    <Route path="/salestrends" element={<SalesTrends/>}/>
                     <Route path="/weather" element={<Weather/>}/>
                 </Routes>
             </BrowserRouter>

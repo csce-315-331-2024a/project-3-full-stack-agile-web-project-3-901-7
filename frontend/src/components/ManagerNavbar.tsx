@@ -47,7 +47,7 @@ export default function Navbar() {
                 </a>
             </button>
             <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-                <a href="/manager" className="hover:text-white">
+                <a href="/salestrends" className="hover:text-white">
                     reports
                 </a>
             </button>
