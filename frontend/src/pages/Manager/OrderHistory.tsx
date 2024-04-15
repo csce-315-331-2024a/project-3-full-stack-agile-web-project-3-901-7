@@ -59,37 +59,43 @@ const OrderCard = ({ order }: { order: Order }) => {
   
       fetchItemDetails();
     }, [order]);
+
+    
       
-      return (
-        <div className="border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
-          <div className="text-lg font-bold font-ptserif mb-2">order #{order._id}</div>
+    return (
+      <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
+          <button className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
+              -
+          </button>
+          <div className="text-lg font-bold mb-2">order #{order._id}</div>
           <div className="flex-grow overflow-y-auto">
-            <table className="w-full text-sm font-ptserif">
-              <thead>
-                <tr className="border-b-2">
-                  <th className="p-1 text-left font-ptserif">qty</th>
-                  <th className="p-1 text-left font-ptserif">item</th>
-                  <th className="p-1 text-left font-ptserif">price</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from(order.itemToQuantity).map(([itemId, quantity], index) => (
-                <tr key={index} className="border-b">
-                    <td className="p-1 font-ptserif pl-2">{quantity}</td>
-                    <td className="p-1 font-ptserif">{itemsDetails[itemId]?.name}</td>
-                    <td className="p-1 font-ptserif">${(itemsDetails[itemId]?.price * quantity).toFixed(2)}</td>
-                </tr>
-                ))}
-              </tbody>
-            </table>
+              <table className="w-full text-sm">
+                  <thead>
+                      <tr className="border-b-2">
+                          <th className="p-1 text-left">qty</th>
+                          <th className="p-1 text-left">item</th>
+                          <th className="p-1 text-left">price</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {Array.from(order.itemToQuantity.entries()).map(([itemId, quantity], index) => (
+                          <tr key={index}>
+                              <td className="p-1">{quantity}</td>
+                              <td className="p-1">{itemsDetails[itemId]?.name}</td>
+                              <td className="p-1">${(itemsDetails[itemId]?.price * quantity).toFixed(2)}</td>
+                          </tr>
+                      ))}
+                  </tbody>
+              </table>
           </div>
-          <div className="mt-2 pt-2 border-t flex justify-between items-center">
-            <span className="font-bold font-ptserif">total: ${order.total.toFixed(2)}</span>
-            <span className="font-ptserif">{getFormattedDate(order.date)}</span>
+          <div className="mt-2 pt-2 border-t flex justify-between">
+              <span className="font-bold">total: ${order.total.toFixed(2)}</span>
+              <span>{getFormattedDate(order.date)}</span>
           </div>
-        </div>
-      );
+      </div>
+  );
 };
+
   
 const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -113,7 +119,7 @@ const OrderHistory = () => {
       <div className="flex flex-col sm:flex-row items-center">
       <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
       <button
-        onClick={() => window.location.href = '/editorder'}
+        onClick={() => window.location.href = '/editorderhistory'}
         className="mt-4 ml-16 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
       >
         Edit Order
