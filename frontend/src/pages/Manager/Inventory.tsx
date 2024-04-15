@@ -307,26 +307,26 @@ const Inventory = () => {
                 Supplier
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Delete
+                Action
               </th>
             </tr>
           </thead>
           <tbody>
           {isAddingNew && newIngredient && (
               <tr>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
                   New
                 </td>
                 <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} placeholder="Enter name"/>
-                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="Enter quantity"/>
-                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="Enter min quantity"/>
-                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="Enter unit price"/>
+                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="0.00"/>
                 <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} placeholder="Enter supplier" />
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
+                  <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mr-2 rounded">
                     Save
                   </button>
-                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
                     Cancel
                   </button>
                 </td>
@@ -356,7 +356,7 @@ const Inventory = () => {
                   {ingredient.supplier}
                 </td>
                 <td className="py-4 px-6 border border-black font-ptserif">
-                <button onClick={() => handleDeleteIngredient(ingredient._id)} className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
+                <button onClick={() => handleDeleteIngredient(ingredient._id)} className=" border-2 border-black px-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
                     -
                 </button>
                 </td>

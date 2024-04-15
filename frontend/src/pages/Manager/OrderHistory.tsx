@@ -64,7 +64,7 @@ const OrderCard = ({ order }: { order: Order }) => {
       
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
-          <button className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
+          <button onClick={() => handleDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
           <div className="text-lg font-bold mb-2">order #{order._id}</div>
@@ -100,8 +100,22 @@ const OrderCard = ({ order }: { order: Order }) => {
 const OrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const deleteOrder = (orderId: number) => {
-    setOrders(orders.filter(order => order._id !== orderId));
+  const handleDeleteOrder = async (id: number) => {
+      try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
+            method: 'POST',
+          });
+          const data = await response.json();
+          if (data) {
+              const updatedOrders = orders.filter(order => order._id !== id);
+              setOrders(updatedOrders);
+          } else {
+              throw new Error('Failed to delete the order');
+          }
+      } catch (error) {
+          console.error('Delete order error:', error);
+          alert('Failed to delete the order. Please try again.');
+      }
   };
 
   useEffect(() => {
