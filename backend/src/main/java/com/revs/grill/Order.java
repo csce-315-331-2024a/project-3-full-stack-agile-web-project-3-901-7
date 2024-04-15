@@ -1,4 +1,5 @@
 package com.revs.grill;
+
 import java.util.*;
 import java.sql.Date;
 
@@ -22,8 +23,7 @@ public class Order {
         return new Order();
     }
 
-    public Order(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total)
-    {
+    public Order(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total) {
         this._id = id;
         this.numItems = numItems;
         this.orderInfo = orderInfo;
@@ -31,7 +31,8 @@ public class Order {
         this.total = total;
     }
 
-    public Order orderConstrutor2(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total){
+    public Order orderConstrutor2(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity,
+            double total) {
         return new Order(id, numItems, orderInfo, itemToQuantity, total);
     }
 
@@ -39,12 +40,12 @@ public class Order {
         List<Integer> itemIds = new ArrayList<>(itemToQuantity.keySet());
         this.numItems = 0;
         List<String> itemNames = new ArrayList<>();
-        for (Item item : Item.findById(itemIds)){
+        for (Item item : Item.findById(itemIds)) {
             int currQuantity = itemToQuantity.containsKey(item._id) ? itemToQuantity.get(item._id) : 0;
             this.numItems += currQuantity;
             itemNames.add(item.name + "(" + currQuantity + ")");
         }
-        
+
         this.orderInfo = String.join(",", itemNames);
     }
 
@@ -102,7 +103,7 @@ public class Order {
     public static boolean removeById(int orderId) {
         return Database.deleteOrder(Order.findOneById(orderId));
     }
-    
+
     @Override
     public String toString() {
         return "Order{" +
@@ -111,6 +112,7 @@ public class Order {
                 ", items=" + itemToQuantity +
                 ", total=" + total +
                 ", dateTime='" + dateTime + '\'' +
+                ", orderInfo='" + orderInfo + '\'' +
                 '}';
     }
 }
