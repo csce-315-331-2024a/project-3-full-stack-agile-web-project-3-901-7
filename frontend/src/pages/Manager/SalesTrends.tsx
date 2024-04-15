@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import dayjs from 'dayjs';
 import ManagerNavbar from "../../components/ManagerNavbar";
+import { getUserAuth, UserInfo } from '../Login';
 
 interface Ingredient {
   name: string;
@@ -58,6 +59,13 @@ const SalesTrends = () => {
     dayjs().subtract(1, 'month')
   );
   const [psEndDate, setPsEndDate] = useState<dayjs.Dayjs | null>(dayjs());
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   useEffect(() => {
     loadData();
@@ -95,14 +103,14 @@ const SalesTrends = () => {
       <TextField
         label={label}
         value={startDate?.format('YYYY-MM-DD') || ''}
-        onChange={(e) => setStartDate(dayjs(e.target.value))}
+        onChange={(e : React.ChangeEvent<HTMLInputElement>) => setStartDate(dayjs(e.target.value))}
         type="date"
       />
       {endDate && setEndDate && (
         <TextField
           label="End Date"
           value={endDate?.format('YYYY-MM-DD') || ''}
-          onChange={(e) => setEndDate(dayjs(e.target.value))}
+          onChange={(e : React.ChangeEvent<HTMLInputElement>) => setEndDate(dayjs(e.target.value))}
           type="date"
         />
       )}
@@ -152,9 +160,9 @@ const SalesTrends = () => {
   );
   
 
-  return (
+  return (userProfile &&
     <div className="p-4">
-      <ManagerNavbar />
+      <ManagerNavbar userInfo={userProfile} />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <div className="p-4">
           <h1 className="text-3xl font-bold mb-6">Sales Trends</h1>

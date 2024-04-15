@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { getUserAuth, UserInfo } from '../Login';
 
 interface Order {
     _id: number;
@@ -112,6 +113,13 @@ const OrderHistory = () => {
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+    useEffect(() => {
+        getUserAuth()
+            .then(setUserProfile)
+            .catch(console.error);
+    }, [])
 
     const sortOrders = (direction: string) => {
         setSortDirection(direction);
@@ -137,9 +145,9 @@ const OrderHistory = () => {
         sortOrders('asc');
     }, []);
 
-    return (
+    return (userProfile &&
         <div className="p-4">
-            <ManagerNavbar />
+            <ManagerNavbar userInfo={userProfile} />
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
             <div className="mb-4 flex gap-2">
                 <button className="border-2 border-black bg-white px-4 py-2" onClick={() => sortOrders('asc')}>Sort Ascending</button>

@@ -27,24 +27,6 @@ export interface OrderType {
     date: Date;
 }
 
-export type Ingredient = {
-    _id: number;
-    name: string;
-    quantity: number;
-    minQuantity: number;
-    unitPrice: number;
-    supplier: string;
-};
-
-export type Order = {
-    _id: number;
-    numItems: number;
-    dateTime: Date;
-    total: number;
-    orderInfo: string;
-    itemToQuantity: Map<number, number>;
-};
-
 export type SalesData = {
     itemName: string;
     totalSales: number;

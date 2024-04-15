@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Ingredient, Item } from "../../../types/dbTypes";
+import { getUserAuth, UserInfo } from "../../Login";
 
 const itemIngredients = new Set<string>();
 
@@ -19,6 +20,13 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
 
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   useEffect(() => {
     itemIngredients.clear();
@@ -148,9 +156,9 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }
   };
 
-  return (
+  return (userProfile &&
     <>
-      <ManagerNavbar />
+      <ManagerNavbar userInfo={userProfile} />
       <div className="pl-8 pr-8 pb-8 pt-4">
           <h1 className="font-ptserif text-black mb-4">
             {itemId ? `Edit Item "${item.name}"` : 'Create New Item'}

@@ -4,6 +4,8 @@ import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Item } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
 import ManagerTable from './ManagerTable';
+import {  } from '@react-oauth/google';
+import { getUserAuth, UserInfo } from '../../Login';
 
 const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
   return (
@@ -17,6 +19,13 @@ const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   useEffect(() => {
     async function fetchItems() {
@@ -38,9 +47,9 @@ const ManagerMenu = () => {
     );
   }
 
-  return (
+  return (userProfile &&
     <>
-      <ManagerNavbar />
+      <ManagerNavbar userInfo={userProfile} />
       <div className='pl-4 pr-4 pb-4'>
         <ManagerSearchbar 
           searchPlaceholder='search item'

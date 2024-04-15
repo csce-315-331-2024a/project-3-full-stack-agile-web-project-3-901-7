@@ -17,6 +17,17 @@ interface IIcon {
     path: string;
 }
 
+export interface UserInfo {
+    id: string;
+    email: string;
+    verified_email: boolean;
+    name: string;
+    given_name: string;
+    family_name: string;
+    picture: string;
+    locale: string;
+}
+
 const icons = {
     google: {
         path: "M 0 300 C 0 134.578125 134.578125 0 300 0 C 366.808594 0 430.042969 21.496094 482.867188 62.160156 L 413.152344 152.71875 C 380.492188 127.578125 341.363281 114.285156 300 114.285156 C 197.597656 114.285156 114.285156 197.597656 114.285156 300 C 114.285156 402.402344 197.597656 485.714844 300 485.714844 C 382.476562 485.714844 452.566406 431.675781 476.71875 357.144531 L 300 357.144531 L 300 242.855469 L 600 242.855469 L 600 300 C 600 465.421875 465.421875 600 300 600 C 134.578125 600 0 465.421875 0 300 Z M 0 300",
@@ -30,7 +41,6 @@ const icons = {
 
 export async function getUserAuth() {
     let tokenResponseStr = CookieManager.get('tokenResponse');
-    console.log(tokenResponseStr);
     if (tokenResponseStr) {
         let tokenResponse = JSON.parse(tokenResponseStr) as TokenResponse;
         const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`, {
@@ -39,7 +49,7 @@ export async function getUserAuth() {
                 Accept: 'application/json'
             }
         });
-        const userProfile = await response.json();
+        const userProfile = await response.json() as UserInfo;
         return userProfile;
     }
     else {

@@ -3,11 +3,19 @@ import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
 import { Ingredient } from '../../types/dbTypes';
+import { getUserAuth, UserInfo } from '../Login';
 
 const Inventory = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [showLowStock, setShowLowStock] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   const exampleData: Ingredient[] = [
     {
@@ -68,9 +76,9 @@ const Inventory = () => {
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
 
-  return (
+  return (userProfile &&
     <div className="p-4">
-        <ManagerNavbar/>
+        <ManagerNavbar userInfo={userProfile}/>
 
         <ManagerSearchbar 
           searchPlaceholder='search ingredient'
