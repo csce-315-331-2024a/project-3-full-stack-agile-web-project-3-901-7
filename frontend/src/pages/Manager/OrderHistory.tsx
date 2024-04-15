@@ -4,6 +4,7 @@ import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth, UserInfo } from '../Login';
+import Order from '../Order/Order';
 
 interface Order {
     _id: number;
@@ -55,7 +56,7 @@ const mockOrders: Order[] = [
     },
 ];
 
-const OrderCard = ({ order }: { order: Order }) => {
+const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
 
     const getFormattedDate = (date: Date) => date.toLocaleDateString();
@@ -64,6 +65,7 @@ const OrderCard = ({ order }: { order: Order }) => {
         async function fetchItemDetails() {
             const details: { [key: number]: { name: string, price: number } } = {};
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
                 try {
                     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
@@ -82,14 +84,10 @@ const OrderCard = ({ order }: { order: Order }) => {
 
         fetchItemDetails();
     }, [order]);
-    
-      
+
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
-          <button onClick={handleEditClick} className="absolute top-2 right-8 bg-white text-black border-2 border-black px-1 rounded font-ptserif hover:bg-black hover:text-white">
-            Edit
-          </button>
-          <button onClick={() => onDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
+          <button onClick={() => deleteOrderCallback(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
           <div className="text-lg font-bold mb-2">order #{order._id}</div>
@@ -124,12 +122,19 @@ const OrderCard = ({ order }: { order: Order }) => {
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState<Order[]>(mockOrders);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
-  const handleDeleteOrder = async (id: number) => {
+    useEffect(() => {
+        getUserAuth()
+        .then(setUserProfile)
+        .catch(console.error);
+    }, []);
+
+    const handleDeleteOrder = async (id: number) => {
       try {
           const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
             method: 'POST',
@@ -145,46 +150,6 @@ const OrderHistory = () => {
           console.error('Delete order error:', error);
           alert('Failed to delete the order. Please try again.');
       }
-  };
-
-  useEffect(() => {
-    async function fetchOrders() {
-      const orderLimit = 10; 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
-      
-      if (response.ok) {
-        const fetchedOrders: Order[] = await response.json();
-        console.log(fetchedOrders);
-    
-        const ordersWithItemToQuantity = fetchedOrders.map(order => {
-          // Check if itemToQuantity exists and has at least one entry
-          const isItemToQuantityAvailable = order.itemToQuantity && Array.from(order.itemToQuantity).length > 0;
-          
-          // If itemToQuantity is not available or empty, set a default Map with a dummy itemId of 0 and quantity of 0
-          // Otherwise, use the existing itemToQuantity Map
-          const itemToQuantity = isItemToQuantityAvailable ? order.itemToQuantity : new Map([[0, 0]]);
-    
-          return {
-            ...order,
-            itemToQuantity
-          };
-        });
-    
-        setOrders(ordersWithItemToQuantity);
-      } else {
-        console.error('Failed to fetch orders:', response.status);
-      }
-    }
-
-    const sortOrders = (direction: string) => {
-        setSortDirection(direction);
-        setOrders(orders => [...orders].sort((a, b) => {
-            if (direction === 'asc') {
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            } else {
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-            }
-        }));
     };
 
     const filterByDateRange = () => {
@@ -196,19 +161,52 @@ const OrderHistory = () => {
         }
     };
 
+    useEffect(() => {
+        filterByDateRange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [startDate, endDate]);
 
-  return (
-    <div className="p-4">
-      <ManagerNavbar />
-      <div className="flex flex-col sm:flex-row items-center">
-      <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
+    return (userProfile &&
+      <div className="p-4">
+        <ManagerNavbar userInfo={userProfile}/>
+        <div className="flex flex-col sm:flex-row items-center justify-between">
+            <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
+            <button
+              onClick={() => window.location.href = '/editorderhistory'}
+              className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white"
+            >
+              Edit Order
+            </button>
+        </div>
+        <div className="mb-4 flex gap-2">
+            <DatePicker
+                selected={startDate}
+                onChange={(date: Date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Start Date"
+                className="border-2 border-black bg-white px-4 py-2 rounded"
+            />
+            <DatePicker
+                selected={endDate}
+                onChange={(date: Date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="End Date"
+                className="border-2 border-black bg-white px-4 py-2 rounded"
+            />
+            <button onClick={filterByDateRange} className="border-2 border-black bg-white px-4 py-2 rounded">Filter by Date Range</button>
+        </div>
+        <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
+          {orders.map(order => (
+            <OrderCard key={order._id} deleteOrderCallback={handleDeleteOrder} order={order} />
+          ))}
+        </div>
       </div>
-      <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
-        {orders.map(order => (
-          <OrderCard key={order._id} order={order} onDeleteOrder={handleDeleteOrder} />
-        ))}
-      </div>
-    </div>
-  );
+    );
 };
+
 export default OrderHistory;
