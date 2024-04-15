@@ -26,10 +26,16 @@ const EditableCell: React.FC<EditableCellProps> = ({
     field,
     ingredientId,
     placeholder = "",
-    isEditable = false
+    isEditable = true  // Ensuring this allows entering edit mode
 }) => {
-    const [isEditing, setIsEditing] = useState(isEditable);
+    const [isEditing, setIsEditing] = useState(false);
     const [currentValue, setCurrentValue] = useState(value.toString());
+
+    const handleEditStart = () => {
+        if (isEditable) {  // Only allow editing if editable
+            setIsEditing(true);
+        }
+    };
 
     const handleBlur = () => {
         if (currentValue !== value.toString()) {
@@ -37,6 +43,10 @@ const EditableCell: React.FC<EditableCellProps> = ({
         }
         setIsEditing(false);
     };
+
+    useEffect(() => {
+        setCurrentValue(value.toString());  // Update internal state when external value changes
+    }, [value]);
 
     return (
         <td className="py-4 px-6 border border-black font-ptserif">
@@ -53,10 +63,9 @@ const EditableCell: React.FC<EditableCellProps> = ({
                             handleBlur();
                         }
                     }}
-                    placeholder={placeholder}
                 />
             ) : (
-                <span onDoubleClick={() => setIsEditing(true)}>
+                <span onDoubleClick={handleEditStart}>
                     {value || placeholder}
                 </span>
             )}
@@ -80,25 +89,18 @@ const Inventory = () => {
         supplier: 'Enter supplier',
     });
 
-    const handleCancelNewIngredient = () => {
-        setIsAddingNew(false);
-        setNewIngredient(null);
-    };
-
     const handleAddClick = () => {
         setIsAddingNew(true);
         setNewIngredient({
-            _id: -1,
+            _id: -1, // Temporary ID until saved
             name: '',
             quantity: 0,
             minQuantity: 0,
-            unitPrice: 0.00,
+            unitPrice: 0,
             supplier: '',
         });
     };
-
-
-
+    
 
   const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
     // Find the ingredient that is being edited
@@ -155,10 +157,8 @@ const Inventory = () => {
   
   const handleDeleteIngredient = async (id: number) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredientId: id }),
       });
       const data = await response.json();
       if (data.success) {
@@ -169,6 +169,10 @@ const Inventory = () => {
     } catch (error) {
       console.error('Fetch error:', error);
     }
+  };
+
+  const handleCancelNewIngredient = () => {
+    setIsAddingNew(false);
   };
 
 
@@ -192,7 +196,7 @@ const Inventory = () => {
         setIngredients([...ingredients, { ...ingredientToSave, _id: data.ingredientId }]);
         //resetNewIngredient();  // Reset input fields after successful save
       } else {
-        throw new Error('hiFailed to save new ingredient');
+        throw new Error('Failed to save new ingredient');
       }
     } catch (error) {
       console.error('Error saving new ingredient:', error);
@@ -270,7 +274,7 @@ const Inventory = () => {
     Reorder Stock
   </button>
   <button
-  onClick={() => setIsAddingNew(true)}
+  onClick={handleAddClick}
   className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
     >
     +
@@ -310,23 +314,23 @@ const Inventory = () => {
             </tr>
           </thead>
           <tbody>
-          {newIngredient && (
+          {isAddingNew && newIngredient && (
               <tr>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   New
                 </td>
-                <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} />
-                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id} />
-                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id} />
-                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id} />
-                <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} />
+                <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} placeholder="Enter name"/>
+                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="Enter quantity"/>
+                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="Enter min quantity"/>
+                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="Enter unit price"/>
+                <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} placeholder="Enter supplier" />
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                     Save
                   </button>
-                  {/* <button onClick={handleCancel} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                     Cancel
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             )}
