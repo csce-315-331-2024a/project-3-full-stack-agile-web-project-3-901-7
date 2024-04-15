@@ -33,7 +33,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/order" element={<Order/>}/>
                     <Route path="/manager" element={<Manager/>}/>
                     <Route path="/inventory" element={<Inventory/>}/>
-                    <Route path="/editinventory" element={<EditInventory/>}/>
                     <Route path="/editmenu" element={<ManagerMenu/>}/>
                     <Route path="/newmenuitem" element={<NewMenuItemPage/>}/>
                     <Route path="/editmenuitem/:itemId" element={<EditMenuItemPage/>}/>

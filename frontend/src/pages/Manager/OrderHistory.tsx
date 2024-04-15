@@ -3,6 +3,7 @@ import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth, UserInfo } from '../Login';
+import Order from '../Order/Order';
 
 interface Order {
     _id: number;
@@ -49,7 +50,7 @@ const mockOrders: Order[] = [
     },
 ];
 
-const OrderCard = ({ order }: { order: Order }) => {
+const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
 
     const getFormattedDate = (date: Date) => date.toLocaleDateString();
@@ -77,10 +78,9 @@ const OrderCard = ({ order }: { order: Order }) => {
         fetchItemDetails();
     }, [order]);
     
-      
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
-          <button onClick={() => handleDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
+          <button onClick={() => deleteOrderCallback(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
           <div className="text-lg font-bold mb-2">order #{order._id}</div>
@@ -119,7 +119,13 @@ const OrderHistory = () => {
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
-  const handleDeleteOrder = async (id: number) => {
+    useEffect(() => {
+        getUserAuth()
+        .then(setUserProfile)
+        .catch(console.error);
+    }, []);
+
+    const handleDeleteOrder = async (id: number) => {
       try {
           const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
             method: 'POST',
@@ -137,7 +143,6 @@ const OrderHistory = () => {
       }
   };
 
-  useEffect(() => {
     async function fetchOrders() {
         const orderLimit = 10; 
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
@@ -166,10 +171,14 @@ const OrderHistory = () => {
         }
     };
 
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
-  return (
+
+  return (userProfile &&
     <div className="p-4">
-      <ManagerNavbar />
+      <ManagerNavbar userInfo={userProfile}/>
       <div className="flex flex-col sm:flex-row items-center">
       <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
       <button
@@ -181,7 +190,7 @@ const OrderHistory = () => {
       </div>
       <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
         {orders.map(order => (
-          <OrderCard key={order._id} order={order} />
+          <OrderCard key={order._id} deleteOrderCallback={handleDeleteOrder} order={order} />
         ))}
       </div>
     </div>
