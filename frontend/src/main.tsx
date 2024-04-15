@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 import Landing from './pages/Landing' 
-import Login from './pages/Login'
+import { Login } from './pages/Login'
 import Menu from './pages/Menu'
 import Order from './pages/Order/Order'
 import Manager from './pages/Manager'

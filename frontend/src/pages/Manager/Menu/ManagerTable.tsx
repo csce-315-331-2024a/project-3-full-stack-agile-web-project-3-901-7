@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getUserAuth, UserInfo } from "../../Login";
 
 interface IManagerTableProps {
   headerColumns: string[];
@@ -13,6 +14,14 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
   const handleRowHover = (index: number | null) => {
     setHoveredRowIndex(index);
   };
+
+  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+  useEffect(() => {
+    getUserAuth()
+      .then(setUserProfile)
+      .catch(console.error);
+  }, [])
 
   return (
     <div className='mt-4 ml-4 overflow-y-auto' style={{ maxHeight: 'calc(100vh - 280px)' }}>

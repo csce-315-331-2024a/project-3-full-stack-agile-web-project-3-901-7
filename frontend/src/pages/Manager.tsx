@@ -1,7 +1,17 @@
-import Navbar from "../components/ManagerNavbar";
+import { useEffect, useState } from "react";
+import ManagerNavbar from "../components/ManagerNavbar";
+import { getUserAuth, UserInfo } from "./Login";
 
 export default function Manager() {
-    return (
-        <Navbar />
+    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+
+    useEffect(() => {
+        getUserAuth()
+            .then(setUserProfile)
+            .catch(console.error);
+    }, [])
+    
+    return (userProfile &&
+        <ManagerNavbar userInfo={userProfile} />
     )
 }
