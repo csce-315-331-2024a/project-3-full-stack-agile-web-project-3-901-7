@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
+import { hasGrantedAllScopesGoogle, hasGrantedAnyScopeGoogle, TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import CookieManager from "../utils/CookieManager";
 
 interface ILoginButtonProps {
     color?: string;
@@ -26,6 +27,26 @@ const icons = {
         viewboxSize: 20,
     },
 };
+
+export async function getUserAuth() {
+    let tokenResponseStr = CookieManager.get('tokenResponse');
+    console.log(tokenResponseStr);
+    if (tokenResponseStr) {
+        let tokenResponse = JSON.parse(tokenResponseStr) as TokenResponse;
+        const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`, {
+            headers: {
+                Authorization: `Bearer ${tokenResponse.access_token}`,
+                Accept: 'application/json'
+            }
+        });
+        const userProfile = await response.json();
+        return userProfile;
+    }
+    else {
+        window.location.href = '/login';
+        throw Error('No auth token');
+    }
+}
 
 const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     return (
@@ -56,7 +77,7 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     );
 };
 
-const Login: React.FC = () => {
+export const Login: React.FC = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -64,6 +85,7 @@ const Login: React.FC = () => {
     const googleLogin = useGoogleLogin({
         onSuccess: (user) => {
             console.log("Login Success:", user);
+            CookieManager.create('tokenResponse', JSON.stringify(user), user.expires_in);
             navigate("/manager");
         },
         onError: (error) => {
@@ -151,5 +173,3 @@ const Login: React.FC = () => {
         </div>
     );
 };
-
-export default Login;
