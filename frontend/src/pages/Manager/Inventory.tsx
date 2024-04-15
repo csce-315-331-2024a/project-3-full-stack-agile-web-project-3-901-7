@@ -120,10 +120,6 @@ const Inventory = () => {
             });
             const data = await response.json();
 
-            if (!data.success) {
-                throw new Error('Failed to update the ingredient');
-            }
-
             setIngredients(ingredients.map(ingredient =>
                 ingredient._id === id ? updatedIngredient : ingredient
             ));
@@ -161,7 +157,7 @@ const Inventory = () => {
         method: 'POST',
       });
       const data = await response.json();
-      if (data.success) {
+      if (data) {
         setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
       } else {
         throw new Error('Failed to delete the ingredient');
@@ -191,13 +187,10 @@ const Inventory = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ingredientToSave)
       });
-      const data = await response.json();
-      if (data.success) {
-        setIngredients([...ingredients, { ...ingredientToSave, _id: data.ingredientId }]);
-        //resetNewIngredient();  // Reset input fields after successful save
-      } else {
-        throw new Error('Failed to save new ingredient');
-      }
+      const ingredientId = await response.json();
+      
+      setIngredients([...ingredients, { ...ingredientToSave, _id: ingredientId }]);
+      setIsAddingNew(false);
     } catch (error) {
       console.error('Error saving new ingredient:', error);
       alert('Failed to save new ingredient');
