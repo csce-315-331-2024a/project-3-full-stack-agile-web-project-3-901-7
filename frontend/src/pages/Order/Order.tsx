@@ -97,6 +97,7 @@ export default function Order() {
                     <OrderItemContainer 
                         items={items} 
                         currCategory={currCategory}
+                        order={order}
                         updateOrder={updateOrder}
                     />
 
