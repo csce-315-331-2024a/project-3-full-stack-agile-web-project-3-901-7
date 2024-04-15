@@ -103,7 +103,6 @@ const Inventory = () => {
     
 
   const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
-    // Find the ingredient that is being edited
     const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
     console.log(ingredientToEdit);
     console.log(id, field, newValue);
@@ -196,18 +195,24 @@ const Inventory = () => {
       alert('Failed to save new ingredient');
     }
   };
-  
-  
 
   useEffect(() => {
-
     async function fetchIngredients() {
-        console.log(import.meta.env.VITE_BACKEND_URL);
-        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/findAll");
+      console.log(import.meta.env.VITE_BACKEND_URL);
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findAll`);
         const data = await response.json();
-        setIngredients(data);
+        if (response.ok) {
+          const sortedData = data.sort((a: Ingredient, b: Ingredient) => a._id - b._id);
+          setIngredients(sortedData);
+        } else {
+          throw new Error('Failed to fetch ingredients');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+      }
     }
-
+  
     fetchIngredients();
   }, []);
 
