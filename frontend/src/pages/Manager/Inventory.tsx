@@ -45,7 +45,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
     };
 
     useEffect(() => {
-        setCurrentValue(value.toString());  // Update internal state when external value changes
+        setCurrentValue(value.toString());  
     }, [value]);
 
     return (
@@ -373,82 +373,3 @@ const Inventory = () => {
 };
 
 export default Inventory;
-// return (
-//     <div className="p-4">
-//       <ManagerNavbar />
-//       <div className="flex flex-col items-center">
-//         <div className="pl-4 pr-64 mt-8 mb-4 flex flex-col sm:flex-row items-center justify-between w-full">
-//           <div className="relative flex-grow">
-//             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-//               <img src="icons/search-icon.png" alt="Search" className="w-5 h-5" />
-//             </div>
-//             <input
-//               type="text"
-//               placeholder="search item"
-//               className="text-xl font-ptserif block w-full pl-10 pr-3 py-2 border-b-2 border-black bg-transparent placeholder-gray-500 focus:outline-none focus:border-black focus:ring-0"
-//               onChange={(e) => setSearchTerm(e.target.value)}
-//             />
-//           </div>
-//           <button onClick={() => setShowLowStock(!showLowStock)}
-//             className={`ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium font-ptserif ${showLowStock ? 'bg-black text-white' : 'bg-white text-black'}`}>
-//             Show Low-Stock
-//           </button>
-//           <button onClick={handleRestock}
-//             className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black font-ptserif hover:bg-black hover:text-white">
-//             Reorder Stock
-//           </button>
-//           <button onClick={() => setNewIngredient({ _id: -1, name: '', quantity: 0, minQuantity: 0, unitPrice: 0, supplier: '' })}
-//             className="ml-4 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
-//             +
-//           </button>
-//         </div>
-//       </div>
-//       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
-//         <table className="w-full text-sm text-center text-black border border-black">
-//           <thead>
-//             <tr>
-//               <th className="py-3 px-6 border border-black">Ingredient ID</th>
-//               <th className="py-3 px-6 border border-black">Name</th>
-//               <th className="py-3 px-6 border border-black">Quantity</th>
-//               <th className="py-3 px-6 border border-black">Min Quantity</th>
-//               <th className="py-3 px-6 border border-black">Unit Price</th>
-//               <th className="py-3 px-6 border border-black">Supplier</th>
-//               <th className="py-3 px-6 border border-black">Actions</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {ingredients.map((ingredient) => (
-//               <tr key={ingredient._id}>
-//                 <td className="py-4 px-6 border border-black">{ingredient._id}</td>
-//                 <EditableCell value={ingredient.name} onEdit={handleEdit} field="name" ingredientId={ingredient._id} />
-//                 <EditableCell value={ingredient.quantity} onEdit={handleEdit} field="quantity" ingredientId={ingredient._id} />
-//                 <EditableCell value={ingredient.minQuantity} onEdit={handleEdit} field="minQuantity" ingredientId={ingredient._id} />
-//                 <EditableCell value={ingredient.unitPrice} onEdit={handleEdit} field="unitPrice" ingredientId={ingredient._id} />
-//                 <EditableCell value={ingredient.supplier} onEdit={handleEdit} field="supplier" ingredientId={ingredient._id} />
-//                 <td className="py-4 px-6 border border-black">
-//                   <button onClick={() => handleDeleteIngredient(ingredient._id)} className="text-red-500 hover:text-red-700">Delete</button>
-//                 </td>
-//               </tr>
-//             ))}
-//             {newIngredient && (
-//                 <tr>
-//                     <td className="py-4 px-6 border border-black">New</td>
-//                     <EditableCell value={newIngredient.name} onEdit={(field, value) => setNewIngredient({ ...newIngredient, name: value })} field="name" ingredientId={-1} placeholder="Enter name" isEditable={true} />
-//                     <EditableCell value={newIngredient.quantity} onEdit={(field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={-1} placeholder="0" isEditable={true} />
-//                     <EditableCell value={newIngredient.minQuantity} onEdit={(field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={-1} placeholder="0" isEditable={true} />
-//                     <EditableCell value={newIngredient.unitPrice} onEdit={(field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={-1} placeholder="0.00" isEditable={true} />
-//                     <EditableCell value={newIngredient.supplier} onEdit={(field, value) => setNewIngredient({ ...newIngredient, supplier: value })} field="supplier" ingredientId={-1} placeholder="Enter supplier" isEditable={true} />
-//                     <td className="py-4 px-6 border border-black">
-//                         <button onClick={handleAddIngredient} className="text-green-500 hover:text-green-700">Save</button>
-//                         <button onClick={() => setIsAddingNew(false)} className="text-red-500 hover:text-red-700 ml-2">Cancel</button>
-//                     </td>
-//                 </tr>
-//             )}
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Inventory;
