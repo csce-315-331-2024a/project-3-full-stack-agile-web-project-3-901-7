@@ -10,6 +10,11 @@ interface Order {
     date: Date;
 }
 
+interface OrderCardProps {
+  order: Order;
+  onDeleteOrder: (id: number) => void; 
+}
+
 const mockOrders: Order[] = [
     {
         _id: 1,
@@ -24,7 +29,8 @@ const mockOrders: Order[] = [
     },
   ];
   
-const OrderCard = ({ order }: { order: Order }) => {
+  
+  const OrderCard = ({ order, onDeleteOrder }: OrderCardProps) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
 
     const getFormattedDate = (date: Date | string) => {
@@ -64,7 +70,7 @@ const OrderCard = ({ order }: { order: Order }) => {
       
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
-          <button onClick={() => handleDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
+          <button onClick={() => onDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
           <div className="text-lg font-bold mb-2">order #{order._id}</div>
@@ -120,16 +126,37 @@ const OrderHistory = () => {
 
   useEffect(() => {
     async function fetchOrders() {
-        const orderLimit = 10; 
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
-        const data = await response.json();
-        console.log(data);
-        setOrders(data);
+      const orderLimit = 10; 
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
+      
+      if (response.ok) {
+        const fetchedOrders: Order[] = await response.json();
+        console.log(fetchedOrders);
+    
+        const ordersWithItemToQuantity = fetchedOrders.map(order => {
+          // Check if itemToQuantity exists and has at least one entry
+          const isItemToQuantityAvailable = order.itemToQuantity && Array.from(order.itemToQuantity).length > 0;
+          
+          // If itemToQuantity is not available or empty, set a default Map with a dummy itemId of 0 and quantity of 0
+          // Otherwise, use the existing itemToQuantity Map
+          const itemToQuantity = isItemToQuantityAvailable ? order.itemToQuantity : new Map([[0, 0]]);
+    
+          return {
+            ...order,
+            itemToQuantity
+          };
+        });
+    
+        setOrders(ordersWithItemToQuantity);
+      } else {
+        console.error('Failed to fetch orders:', response.status);
+      }
     }
+    
 
-    //fetchOrders();
+    fetchOrders();
 
-    setOrders(mockOrders);
+    //setOrders(mockOrders);
   }, []);
 
   return (
@@ -146,7 +173,7 @@ const OrderHistory = () => {
       </div>
       <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
         {orders.map(order => (
-          <OrderCard key={order._id} order={order} />
+          <OrderCard key={order._id} order={order} onDeleteOrder={handleDeleteOrder} />
         ))}
       </div>
     </div>
