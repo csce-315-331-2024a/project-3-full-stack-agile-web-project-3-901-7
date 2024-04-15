@@ -131,12 +131,12 @@ public class DatabaseController {
     }
 
     @PostMapping("/ingredient/insert")
-    public static int insertIngredient(@RequestParam("ingredient") Ingredient ingredient) {
+    public static int insertIngredient(@RequestBody Ingredient ingredient) {
         return Database.insertIngredient(ingredient);
     }
 
     @PostMapping("/ingredient/edit")
-    public static boolean editIngredient(@RequestParam("ingredient") Ingredient ingredient) {
+    public static boolean editIngredient(@RequestBody Ingredient ingredient) {
         return Database.editIngredient(ingredient);
     }
 

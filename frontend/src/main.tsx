@@ -11,7 +11,6 @@ import Order from './pages/Order/Order'
 import Manager from './pages/Manager'
 
 import Inventory from './pages/Manager/Inventory'
-import EditInventory from './pages/Manager/EditInventory'
 import OrderHistory from './pages/Manager/OrderHistory' 
 import EditOrderHistory from './pages/Manager/EditOrderHistory'
 import SalesTrends from './pages/Manager/SalesTrends'
