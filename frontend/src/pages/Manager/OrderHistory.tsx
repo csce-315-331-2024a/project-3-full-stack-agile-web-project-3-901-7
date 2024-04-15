@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ManagerNavbar from "../../components/ManagerNavbar";
 
 interface Order {
@@ -32,6 +33,12 @@ const mockOrders: Order[] = [
   
   const OrderCard = ({ order, onDeleteOrder }: OrderCardProps) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
+
+    const navigate = useNavigate();
+
+    const handleEditClick = () => {
+      navigate(`/editorderhistory/${order._id}`);
+    };
 
     const getFormattedDate = (date: Date | string) => {
         if (date) {
@@ -70,6 +77,9 @@ const mockOrders: Order[] = [
       
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
+          <button onClick={handleEditClick} className="absolute top-2 right-8 bg-white text-black border-2 border-black px-1 rounded font-ptserif hover:bg-black hover:text-white">
+            Edit
+          </button>
           <button onClick={() => onDeleteOrder(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
@@ -164,12 +174,6 @@ const OrderHistory = () => {
       <ManagerNavbar />
       <div className="flex flex-col sm:flex-row items-center">
       <h1 className="mt-8 ml-8 text-4xl font-bold my-4 font-ptserif">recent orders</h1>
-      <button
-        onClick={() => window.location.href = '/editorderhistory'}
-        className="mt-4 ml-16 border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif"
-      >
-        Edit Order
-      </button>
       </div>
       <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
         {orders.map(order => (
