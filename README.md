@@ -859,7 +859,7 @@ In our previous session, we addressed the pressing need to finalize all pending 
 - Agreed on a timeline for Sprint 3 tasks
 
 
-### Sprint 2 Plan:
+### Sprint 3 Plan:
 #### Goal: 
 - The goal for this sprint is to ensure that the website is accessible to everyone and that the it's inuitive and easy to use for all users.
 
