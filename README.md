@@ -824,4 +824,93 @@ Our progress remained strong with the completion of critical tasks such as backe
 ### Minutes from Previous Meeting
 In our previous session, we addressed the pressing need to finalize all pending tasks for the GitHub Release. We managed to implement comprehensive functionalities across the manager, customer, and cashier interfaces, setting a robust foundation for the upcoming Sprint 3.
 
+---
+
+**Sprint 3 Planning Meeting Minutes**
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**Overview of Sprint 3:**
+- Provided an overview of the purpose of Sprint 3
+- Figured out that we needed to fully complete functionality
+
+
+**Review of Sprint 3 Goal and Backlog:**
+- Complete the web app and all accessibility features
+- Review backlog items and add any additional tasks observed from the user study
+
+**Assignment of Tasks:**
+- Tasks were assigned and distributed to everyone
+- Tasks were equally spread out and covered a variety of tasks
+
+**Discussion on Implementation:**
+- Discussed various approaches to efficiently implement backlog items
+- Discussed potential backlog items that could be added or removed
+
+**Conclusion and Next Steps:**
+- Decided on key features that needed to be implemented first
+- Summarized key points discussed during the meeting
+- Addressed questions about logistics and implementation
+- Agreed on a timeline for Sprint 3 tasks
+
+
+### Sprint 2 Plan:
+#### Goal: 
+- The goal for this sprint is to ensure that the website is accessible to everyone and that the it's inuitive and easy to use for all users.
+
+#### Backlog:    
+
+| Task                                                  | Assigned to | User Story Points | Priority | Time Estimate (min) | Status     |
+|-------------------------------------------------------|-------------|--------------|----------|---------------------|------------|
+| data validation for quantity, min quantity, and price | Sua         | 3            | medium   | 20                  | Incomplete |
+| implement edit for other inventory attributes         | Sua         | 2            | medium   | 20                  | In progress|
+| add a confirmation pop-up for deleting an ingredient  | Sua         | 3            | medium   | 20                  | Incomplete |
+| sort option to sort ingredient list - every column in the table  | Sua         | 3            | medium   | 20                  | Incomplete |
+| add a confirmation pop-up for updating an ingredient | Sua         | 3            | medium   | 20                  | Incomplete |
+| Implement translation button functionality       | Shweta      | 3            | high     | 20                  | Incomplete |
+| Implement Google translate                      | Shweta      | 5            | high     | 20                  | Incomplete |
+| Run accessibility checker -- add tasks to support good things | Andrew      | 5            | high     | 10                  | Incomplete |
+| Dark Mode                                        | Warren      | 5            | high     | 20                  | Incomplete |
+| Enlarge Text                                     | Andrew      | 5            | high     | 20                  | Incomplete |
+| Recommend Menu item based on weather            | Andrew      | 5            | high     | 20                  | Incomplete |
+| Sort option to sort ingredient list                         | Sua         | 4            | medium   | 20                  | Incomplete |
+| A table with a list of orders with its attributes            | Sua         | 3            | medium   | 20                  | Complete   |
+| Update order                                                 | Sua         | 3            | medium   | 20                  | Incomplete |
+| Delete order                                                 | Sua         | 3            | medium   | 20                  | Complete   |
+| Add a confirmation pop-up for updating an order              | Sua         | 3            | medium   | 20                  | Incomplete |
+| Add a confirmation pop-up for deleting an order             | Sua         | 3            | medium   | 20                  | Incomplete |
+| Put start date after end date                                | Andrew      | 5            | low      | 5                   | Incomplete |
+| Fix the backend for order history - itemToQuantity attribute | Shweta      | 2            | high     | 40                  | Incomplete |
+| Allow user to directly input quantity (so user doesn't have to click + 50 times)  | Warren | 3 | low | 10 | Incomplete |
+| Add search functionality to cashier ordering page                            | Warren | 4 | low | 10 | Incomplete |
+| List IDs for each item and even spacing for item elements                     | Warren | 5 | low | 30 | Incomplete |
+| Add manager navbar component to cashier ordering page                         | Surya  | 4 | low | 5  | Incomplete |
+| Send help ticker when help button is clicked                                 | Warren | 5 | medium | 20 | Incomplete |
+| Add quick ordering via IDs functionality                                     | Warren | 5 | low | 10 | Incomplete |
+| Add confirmation to delete menu item    | Surya       | 4            | medium   | 15                  | Incomplete |
+| Sort for every column in the table      | Surya       | 5            | high     | 10                  | Incomplete |
+| Validate inputs to new and update menu item | Surya    | 4            | medium   | 10                  | Incomplete |
+| Put start date after end date | Andrew      | 4            | low      | 10                  | Incomplete |
+| Update styling to look appealing | Shweta      | 3            | low      | 30                  | Incomplete |
+| Update styling to look appealing | Shweta      | 5            | low      | 30                  | Incomplete |
+| Add cashier login functionality                           | Surya       | 3            | medium   | 30                  | Incomplete |
+| Add non google oauth login functionality                 | Surya       | 1            | medium   | 15                  | Incomplete |
+| Connect to cashier home or manager home depending on login type | Surya | 1            | medium   | 10                  | Incomplete |
+| Set up admin home                                         | Surya       | 3            | medium   | 30                  | Incomplete |
+| Implement admin add cashier/manager backend edit          | Surya       | 4            | medium   | 20                  | Incomplete |
+| Implement admin delete cashier/manager backdend edit      | Surya       | 4            | medium   | 20                  | Incomplete |
+| A profile page for cashier w clock in and out             | Shweta      | 4            | medium   | 10                  | Incomplete |
+| A profile page for manager w cashier management thing     | Shweta      | 4            | medium   | 10                  | Incomplete |
+| Implement clock for timesheets                            | Shweta      | 3            | medium   | 10                  | Incomplete |
+| A profile page for admin                                  | Shweta      | 4            | medium   | 10                  | Incomplete |
+| Set up backend testing                             | Andrew      | 3            | high     | 20                  | Incomplete |
+| Write unit test for each endpoint                  | Andrew      | 3            | high     | 40                  | Incomplete |
+| Write edge cases (invalid input) for each endpoint | Andrew      | 3            | high     | 40                  | Incomplete |
+| Set up frontend testing             | Warren      | 3            | high     | 20                  | Incomplete |
+| Write tests for each component      | Warren      | 3            | high     | 40                  | Incomplete |
 
