@@ -560,5 +560,268 @@
 | Set up Jacoco                                        | medium   | 20                  | incomplete  | 1                | Surya       |
 | Start backend testing                                | medium   | 20                  | incomplete  | 1                | Shweta      |
 
-   
+**Sprint 2 SCRUM Standup Meeting 1**
+
+**Date:** 4/2
+**Time:** 8:30am 
+**Location:** Zach 244
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+### Meeting Agenda Items
+- Standup
+- Discuss features and their implementation
+- Discuss sprint plan
+
+### Status Update Since Last Meeting
+**Accomplishments:**
+- Completed Sprint 1 successfully and demoed the developments.
+- Began Sprint 2 planning.
+
+**Tasks Completed:**
+- **Discuss when to meet for Sprint 2 planning:** Assigned to Andrew (Completed)
+- **Schedule Sprint 2 retrospective:** Assigned to Andrew (Completed)
+
+### Plans Before The Next Meeting
+- Team members to brainstorm potential new features to implement for enhanced functionality.
+
+### Minutes from Previous Meeting
+Each team member reflected on their contributions that led to the successful completion of Sprint 1. We reviewed our successes and formulated a strategy to maintain efficiency for Sprint 2. The plan includes implementing basic functionalities for a comprehensive point-of-sale system, which encompasses:
+- Login page
+- Ordering pages for customers, cashiers, and managers
+- Inventory and order history management
+- Sales trend analysis
+
+Additionally, we planned to enhance the user interface by splitting the menu board into multiple pages, allowing customers to view the entire menu without excessive scrolling.
+
+---
+
+## SCRUM Standup Meeting 2
+
+**Date:** 4/4
+**Time:** 8:30am 
+**Location:** Zach 244
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+### Meeting Agenda Items
+- Review tasks completed since the last standup.
+- Identify any roadblocks on current tasks and discuss solutions.
+- Discuss what to focus on until the next meeting.
+
+### Status Update Since Last Meeting
+**Accomplishments:**
+- Updated the ordering page to include categories and item images.
+- Enhanced the database to store images for each menu item.
+- Redesigned the login page.
+
+**Tasks Completed:**
+- **Add an image attribute to item in database:** Assigned to Shweta (Completed)
+- **Add a description attribute to item in database:** Assigned to Shweta (Completed)
+- **Redesign the login page:** Assigned to Surya (Completed)
+
+### Plans Before The Next Meeting
+- Focus on developing manager-side features.
+- Start the redesign of the menu board to display on different screens for better user interaction.
+
+### Task Assignments
+- **A table with a list of ingredients with its attributes:** Assigned to Sua
+- **Restock low-stock items:** Assigned to Sua
+- **Product usage chart:** Assigned to Andrew
+- **Redesign the menu board as separate screens:** Assigned to Shweta
+- **Reimplement the menu board:** Assigned to Shweta
+- **Add security measures to the page (restrict manager access without login):** Assigned to Surya
+- **Finish adding order functionality:** Assigned to Warren
+
+### Minutes from Previous Meeting
+We reviewed the considerable progress made since the initial Sprint 2 meeting. Our achievements included the successful integration of new images and descriptions for menu items into the database, and a complete overhaul of the ordering and login pages to enhance visual and functional appeal. The next steps involve adding necessary security features and continuing the redesign of managerial functionalities to streamline operations further.
+
+## SCRUM Meeting 3
+
+**Date:** 4/9
+**Time:** 8:30am 
+**Location:** Zach 244
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+### Meeting Agenda Items
+- Discuss progress on tasks.
+- Identify and address any roadblocks.
+- Plan future manager-side pages and features.
+
+### Status Update Since Last Meeting
+**Accomplishments:**
+- Completed basic features for the manager-side.
+- Updated the menu board design.
+
+**Tasks Completed:**
+- **A table with a list of ingredients with its attributes:** Assigned to Sua (Completed)
+- **Restock low-stock items:** Assigned to Sua (Completed)
+- **Product usage chart:** Assigned to Andrew (Completed)
+- **Redesign the menu board as separate screens:** Assigned to Shweta (Completed)
+- **Reimplement the menu board:** Assigned to Shweta (Completed)
+- **Add security to the page (manager login required):** Assigned to Surya (Completed)
+- **Finish adding order functionality:** Assigned to Warren (Completed)
+
+### Plans Before The Next Meeting
+- **Setup SSL certificate on server** to host backend more securely.
+- **Set up backend tests** to ensure functionality and stability.
+- **Improve inventory tables with filters** for better management.
+- **Add sales report and excess report** for detailed managerial insights.
+
+### Task Assignments
+- **View low-stock items:** Assigned to Sua
+- **Add a new ingredient:** Assigned to Sua
+- **SSL certificate for backend cloud hosting:** Assigned to Surya
+- **Set up Jacoco for code coverage:** Assigned to Surya
+- **Sales report:** Assigned to Andrew
+- **Excess report:** Assigned to Andrew
+- **Order button to submit order:** Assigned to Warren
+- **Order confirmation page:** Assigned to Warren
+- **Set up the cashier display front end:** Assigned to Warren
+- **Set up categories for easier navigation:** Assigned to Shweta
+- **Redesign the home landing page:** Assigned to Shweta
+- **Update ingredient:** Assigned to Sua
+- **Delete ingredient:** Assigned to Sua
+
+### Minutes from Previous Meeting
+We were able to finish significant tasks from our backlog, setting up a good foundation for the manager and customer views, involving both backend and frontend integrations. With several functionalities shaped up, including basic manager-side features and a revamped menu board, our focus shifts towards enhancing security measures and expanding reporting features.
+
+---
+
+## SCRUM Meeting 4
+
+**Date:** 4/11
+**Time:** 8:30am 
+**Location:** Zach 244  
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+### Meeting Agenda Items
+- Review tasks completed since the last meeting.
+- Discuss ongoing task progress and any new issues.
+- Outline future plans for backend and frontend integration.
+
+### Status Update Since Last Meeting
+**Accomplishments:**
+- Established backend hosting on a secure server.
+- Advanced the customer and cashier order features.
+- Initiated the inventory management system.
+- Enhanced site navigation for better accessibility.
+
+**Tasks Completed:**
+- **View low-stock items:** Assigned to Sua (Completed)
+- **Add a new ingredient:** Assigned to Sua (Completed)
+- **SSL certificate for backend cloud hosting:** Assigned to Surya (Completed)
+- **Set up Jacoco:** Assigned to Surya (Completed)
+- **Update ingredient:** Assigned to Sua (Completed)
+- **Delete ingredient:** Assigned to Sua (Completed)
+- **Excess report:** Assigned to Andrew (Completed)
+- **Order button to submit order:** Assigned to Warren (Completed)
+- **Order confirmation page:** Assigned to Warren (Completed)
+- **Set up the cashier display front end:** Assigned to Warren (Completed)
+- **Set up categories for easier navigation:** Assigned to Shweta (Completed)
+- **Redesign the home landing page:** Assigned to Shweta (Completed)
+
+### Plans Before The Next Meeting
+- **Implement the weather API** to enhance customer experience based on local weather conditions.
+- **Complete the order page** with full functionality.
+- **Add new menu items and ingredients** to expand the menu offerings.
+- **Update ingredients and images** for items in the backend to improve the menu visuals.
+
+### Task Assignments
+- **Order button to submit order:** Assigned to Warren
+- **Display weather:** Assigned to Andrew
+- **Add a new menu item:** Assigned to Surya
+- **Add a new ingredient:** Assigned to Sua
+- **A table with a list of orders with its attributes:** Assigned to Sua
+- **Implement update image feature:** Assigned to Shweta
+- **Update order:** Assigned to Sua
+- **Delete order:** Assigned to Sua
+- **Implement date filter:** Assigned to Andrew
+- **Update menu item:** Assigned to Surya
+- **Delete menu item:** Assigned to Surya
+- **Ordering trend report based on what sells together:** Assigned to Andrew
+- **Order confirmation page setup:** Assigned to Warren
+- **Implement the ordering confirmation page:** Assigned to Warren
+- **Include pictures for each item on the menu:** Assigned to Shweta
+
+### Minutes from Previous Meeting
+Our progress remained strong with the completion of critical tasks such as backend setup, customer/cashier order functionalities, and initial steps towards a comprehensive inventory management system. We tackled new and ongoing tasks methodically, ensuring we stay on schedule for a successful sprint completion.
+
+---
+
+## SCRUM Meeting 5
+
+**Date:** 4/13
+**Time:** 8:30am 
+**Location:** Zach 244
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+### Meeting Agenda Items
+- Review completed tasks.
+- Address backend issue with Order History.
+- Plan for Sprint 3.
+
+### Status Update Since Last Meeting
+**Accomplishments:**
+- Completed all manager-side functionalities: inventory, menu updates, trends, and order history.
+- Finalized order functionalities for cashier and customer sides.
+- Wrapped up most backend tasks.
+- Achieved most goals set for Sprint 2.
+
+**Tasks Completed:**
+- **Order button to submit order:** Assigned to Warren (Completed)
+- **Display weather:** Assigned to Andrew (Completed)
+- **Add a new menu item:** Assigned to Surya (Completed)
+- **Add a new ingredient:** Assigned to Sua (Completed)
+- **A table with a list of orders with its attributes:** Assigned to Sua (Completed)
+- **Implement update image feature:** Assigned to Shweta (Completed)
+- **Update order:** Assigned to Sua (Completed)
+- **Delete order:** Assigned to Sua (Completed)
+- **Implement date filter:** Assigned to Andrew (Completed)
+- **Update menu item:** Assigned to Surya (Completed)
+- **Delete menu item:** Assigned to Surya (Completed)
+- **Ordering trend report:** Assigned to Andrew (Completed)
+- **Order confirmation page setup:** Assigned to Warren (Completed)
+- **Implement the ordering confirmation page:** Assigned to Warren (Completed)
+- **Include pictures for each menu item:** Assigned to Shweta (Completed)
+
+### Plans Before The Next Meeting
+- **Complete remaining tasks** not finished in Sprint 2.
+- **Plan and outline tasks for Sprint 3** focusing on enhancing functionalities and user experience.
+
+### Task Assignments
+- **Review remaining tasks in Sprint 2 backlog:** Assigned to Andrew
+- **Outline and plan Sprint 3 tasks:** Assigned to Andrew
+
+### Minutes from Previous Meeting
+In our previous session, we addressed the pressing need to finalize all pending tasks for the GitHub Release. We managed to implement comprehensive functionalities across the manager, customer, and cashier interfaces, setting a robust foundation for the upcoming Sprint 3.
+
 
