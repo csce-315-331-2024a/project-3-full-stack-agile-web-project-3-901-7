@@ -83,7 +83,7 @@ export default function Order() {
             }
 
             <Modal
-                message="An employee will be with you shortly. Please wait..."
+                message={<p>An employee will be with you shortly.<br/>Please wait...</p>}
                 open={getHelp}
                 setOpen={setGetHelp}
             />
