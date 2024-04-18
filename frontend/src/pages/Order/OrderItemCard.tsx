@@ -29,7 +29,7 @@ export default function OrderItemCard({id, name, price, picture, order, updateOr
     return (
         <div className="w-[280px] h-[280px] relative rounded-md bg-white shadow-md">
 
-            <div className="absolute left-4 top-4 flex flex-col items-center z-10 bg-white rounded-md">
+            <div className="absolute left-4 top-4 flex flex-col items-center bg-white rounded-md">
                 <button 
                     type="button"
                     onClick={addQuantity}
