@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { Item, OrderType } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 import Loading from "../../components/Loading";
-import OrderCategoryCard from "./OrderCategoryCard";
 import OrderItemContainer from "./OrderItemContainer";
 import OrderReceipt from "./OrderReceipt";
+import OrderHeader from "./OrderHeader";
 
 export default function Order() {
 
@@ -69,28 +69,13 @@ export default function Order() {
 
             {(items.length === 0) ? <Loading/> :
             <> 
-                <div className="flex flex-wrap gap-6 mt-14">
-                    {categories.map((category, index) => {
-                        let isActive = false
-                        if (category.name === currCategory)
-                            isActive = true
-                        return (
-                            <OrderCategoryCard 
-                                key={index} 
-                                name={category.name} 
-                                icon={category.icon}
-                                setCurrentCategory={setCurrCategory}
-                                active={isActive}
-                            />
-                        )
-                    })}
-                    <button 
-                        type="button" 
-                        onClick={() => setGetHelp(true)} 
-                        className="px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]">
-                            Call Help
-                    </button>
-                </div>
+
+                <OrderHeader 
+                    categories={categories} 
+                    currCategory={currCategory} 
+                    setCurrCategory={setCurrCategory}
+                    setGetHelp={setGetHelp}
+                />
 
                 <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
                     
