@@ -4,10 +4,10 @@ interface OrderHeader {
     categories: {name: string, icon: string}[];
     currCategory: string;
     setCurrCategory: React.Dispatch<React.SetStateAction<string>>;
-    setGetHelp: React.Dispatch<React.SetStateAction<boolean>>;
+    getHelp: () => void;
 }
 
-export default function OrderHeader({categories, currCategory, setCurrCategory, setGetHelp}: OrderHeader) {
+export default function OrderHeader({categories, currCategory, setCurrCategory, getHelp}: OrderHeader) {
     return (
         <div className="flex flex-wrap gap-6 mt-14 items-center">
 
@@ -28,7 +28,7 @@ export default function OrderHeader({categories, currCategory, setCurrCategory, 
 
             <button 
                 type="button" 
-                onClick={() => setGetHelp(true)} 
+                onClick={getHelp} 
                 className="w-fit h-fit px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]"
             >
                 Call Help

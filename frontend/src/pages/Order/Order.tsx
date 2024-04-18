@@ -14,7 +14,8 @@ export default function Order() {
     const [items, setItems] = useState<Item[]>([]);
     const [order, setOrder] = useState<OrderType>(defaultOrder);
     const [currCategory, setCurrCategory] = useState<string>("Burger");
-    const [getHelp, setGetHelp] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [modalMsg, setModalMsg] = useState<string | JSX.Element>("");
 
     useEffect(() => {
 
@@ -27,6 +28,16 @@ export default function Order() {
         fetchItems();
 
     }, [])
+
+    function getHelp() {
+        setOpen(true);
+        setModalMsg(<p>An employee will be with you shortly.<br/>Please wait...</p>)
+    }
+
+    function processOrder(msg: string) {
+        setOpen(true);
+        setModalMsg(msg);
+    }
 
     function updateOrder(id:number, name:string, price:number, action: string) {
         if (action === "add") {
@@ -60,7 +71,7 @@ export default function Order() {
                     categories={categories} 
                     currCategory={currCategory} 
                     setCurrCategory={setCurrCategory}
-                    setGetHelp={setGetHelp}
+                    getHelp={getHelp}
                 />
 
                 <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
@@ -76,6 +87,7 @@ export default function Order() {
                         items={items}
                         order={order}
                         updateOrder={updateOrder}
+                        processOrder={processOrder}
                     />
                 
                 </div>
@@ -83,9 +95,9 @@ export default function Order() {
             }
 
             <Modal
-                message={<p>An employee will be with you shortly.<br/>Please wait...</p>}
-                open={getHelp}
-                setOpen={setGetHelp}
+                message={modalMsg}
+                open={open}
+                setOpen={setOpen}
             />
 
         </div>

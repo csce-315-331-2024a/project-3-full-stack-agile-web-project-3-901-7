@@ -6,12 +6,12 @@ interface OrderReceiptProps {
     order: OrderType;
     items: Item[];
     updateOrder: (id:number, name:string, price:number, action:string) => void;
+    processOrder: (msg: string) => void;
 }
 
 // TODO: fix duplicate item in orderInfo
-// TODO: add better UI for order confirmation
 
-export default function OrderReceipt({order, items, updateOrder}: OrderReceiptProps) {
+export default function OrderReceipt({order, items, updateOrder, processOrder}: OrderReceiptProps) {
 
     let receiptItem:any = []
     order.itemToQuantity.forEach((value, key) => {
@@ -42,9 +42,9 @@ export default function OrderReceipt({order, items, updateOrder}: OrderReceiptPr
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
         const data = await response.json();
         if(data.success === true)
-            alert("Order Successfully Processed!")
+            processOrder("Order successfully submitted!")
         else
-            alert("Uh oh something went wrong :(")
+            processOrder("Uh oh something went wrong :(, contact staff for help.")
     }
 
     return (
