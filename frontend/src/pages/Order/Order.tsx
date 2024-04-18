@@ -1,32 +1,18 @@
 import { useEffect, useState } from "react"
 import { Item, OrderType } from "../../types/dbTypes";
+import { defaultCategories, defaultOrder } from "../../types/defaults";
 import Navbar from "../../components/Navbar";
 import Loading from "../../components/Loading";
-import OrderItemContainer from "./OrderItemContainer";
-import OrderReceipt from "./OrderReceipt";
 import OrderHeader from "./OrderHeader";
+import OrderItems from "./OrderItems";
+import OrderReceipt from "./OrderReceipt";
+import Modal from "../../components/Modal";
 
 export default function Order() {
 
-    const categories = [
-        {name: "Burger", icon: "/icons/burger.png"},
-        {name: "Chicken", icon: "/icons/chicken.svg"},
-        {name: "Side", icon: "/icons/meal.svg"},
-        {name: "Salad", icon: "/icons/salad.svg"},
-        {name: "Snack", icon: "/icons/appetizer.svg"},
-        {name: "Beverage", icon: "/icons/beverages.svg"},
-        {name: "Dessert", icon: "/icons/treats.svg"},
-        {name: "Seasonal", icon: "/icons/seasonal.svg"}
-    ]
-
+    const categories = defaultCategories;
     const [items, setItems] = useState<Item[]>([]);
-    const [order, setOrder] = useState<OrderType>({
-        numItems: 0,
-        orderInfo: "",
-        itemToQuantity: new Map(),
-        total: 0,
-        date: new Date()
-    });
+    const [order, setOrder] = useState<OrderType>(defaultOrder);
     const [currCategory, setCurrCategory] = useState<string>("Burger");
     const [getHelp, setGetHelp] = useState<boolean>(false);
 
@@ -79,7 +65,7 @@ export default function Order() {
 
                 <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
                     
-                    <OrderItemContainer 
+                    <OrderItems
                         items={items} 
                         currCategory={currCategory}
                         order={order}
@@ -96,23 +82,11 @@ export default function Order() {
             </>
             }
 
-            <div className={`w-screen h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md flex justify-center items-center ${(getHelp) ? "flex":"hidden"}`}>
-
-
-                <div className="bg-white rounded-md p-4 flex flex-col font-ptserif font-bold text-lg gap-y-4">
-                    An employee will be with you shortly.
-                    <br/>
-                    Please wait...
-                    <button 
-                        type="button" 
-                        onClick={() => setGetHelp(false)}
-                        className="px-3 py-2 font-inter text-white bg-red-400 rounded-md hover:bg-red-500 duration-500 transition"
-                    >
-                        cancel
-                    </button>
-                </div>
-
-            </div>
+            <Modal
+                message="An employee will be with you shortly. Please wait..."
+                open={getHelp}
+                setOpen={setGetHelp}
+            />
 
         </div>
     )

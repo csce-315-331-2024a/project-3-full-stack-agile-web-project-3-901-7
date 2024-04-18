@@ -1,6 +1,35 @@
+import { Item, OrderType } from "../../types/dbTypes";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { useState } from "react";
-import { OrderType } from "../../types/dbTypes";
+
+interface OrderItemContainerProps {
+    items: Item[];
+    currCategory: string;
+    order: OrderType;
+    updateOrder: (id:number, name:string, price:number, action:string) => void;
+}
+
+export default function OrderItems({items, currCategory, order, updateOrder}: OrderItemContainerProps) {
+    return (
+        <div className="flex gap-8 flex-wrap h-fit">
+            {items.map((item, index) => {
+                if (item.category !== currCategory) return;
+
+                return (
+                    <OrderItemCard 
+                        key={index} 
+                        id={item._id}
+                        name={item.name} 
+                        price={item.price} 
+                        picture={item.picture}
+                        order={order}
+                        updateOrder={updateOrder}
+                    />
+                )
+            })}
+        </div>
+    )
+}
 
 interface ItemCardProps {
     id: number;
@@ -11,7 +40,7 @@ interface ItemCardProps {
     updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-export default function OrderItemCard({id, name, price, picture, order, updateOrder} : ItemCardProps) {
+function OrderItemCard({id, name, price, picture, order, updateOrder} : ItemCardProps) {
     const [quantity, setQuantity] = useState<number>(0);
 
     function addQuantity() {
