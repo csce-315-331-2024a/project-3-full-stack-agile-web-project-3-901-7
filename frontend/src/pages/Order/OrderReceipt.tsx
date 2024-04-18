@@ -48,7 +48,7 @@ export default function OrderReceipt({order, items, updateOrder}: OrderReceiptPr
     }
 
     return (
-        <div className="min-w-[396px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
+        <div className="min-w-[320px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
 
             <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
 
@@ -106,7 +106,7 @@ interface OrderReceiptItemProps {
 
 function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice, updateOrder}: OrderReceiptItemProps) {
     return (
-        <div className="w-[360px] h-24 flex items-center gap-x-4">
+        <div className="w-[320px] h-24 flex items-center gap-x-4">
             <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black rounded-md p-2">
                 <img src={picture === "" ? "/no-image-icon.png" : picture} alt={`image of ${name}`} className="object-contain h-[100%] max-h-[100%]" />
             </div>
