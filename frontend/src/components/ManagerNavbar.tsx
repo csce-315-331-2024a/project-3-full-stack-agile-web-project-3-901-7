@@ -10,7 +10,7 @@ const ManagerNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center">
           <div className="square-black border-black border-[2px] rounded">
-            <img src="./logo.png" alt="Logo" className="block" />
+            <img src="/logo.png" alt="Logo" className="block" />
           </div>
           <span className="font-bold text-4xl ml-2 font-ptserif">
             Welcome {userInfo.given_name}
@@ -34,12 +34,12 @@ const ManagerNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
       </div>
       <div className="mt-4 flex flex-wrap justify-start">
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/admin/order" className="hover:text-white">
+              <a href="/manager/orders/new" className="hover:text-white">
                   create order
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/orderhistory" className="hover:text-white">
+              <a href="/manager/orders" className="hover:text-white">
                   order history
               </a>
           </button>
@@ -49,17 +49,17 @@ const ManagerNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/salestrends" className="hover:text-white">
+              <a href="/manager/salestrends" className="hover:text-white">
                   reports
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/inventory" className="hover:text-white">
+              <a href="/manager/inventory" className="hover:text-white">
                   inventory
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/editmenu" className="hover:text-white">
+              <a href="/manager/menu" className="hover:text-white">
                   menu
               </a>
           </button>

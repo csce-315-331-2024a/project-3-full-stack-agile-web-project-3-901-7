@@ -122,7 +122,7 @@ const OrderHistory = () => {
     const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
     useEffect(() => {
-        getUserAuth()
+        getUserAuth('manager')
         .then(setUserProfile)
         .catch(console.error);
     }, []);
@@ -165,7 +165,7 @@ const OrderHistory = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between">
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
             <button
-              onClick={() => window.location.href = '/editorderhistory'}
+              onClick={() => window.location.href = '/manager/orders/edit'}
               className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white"
             >
               Edit Order

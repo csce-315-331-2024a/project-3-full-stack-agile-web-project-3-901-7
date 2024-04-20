@@ -6,7 +6,7 @@ export default function Manager() {
     const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
     useEffect(() => {
-        getUserAuth()
+        getUserAuth('manager')
             .then(setUserProfile)
             .catch(console.error);
     }, [])

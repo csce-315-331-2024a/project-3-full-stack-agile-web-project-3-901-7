@@ -7,7 +7,7 @@ const CashierNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center">
           <div className="square-black border-black border-[2px] rounded">
-            <img src="./logo.png" alt="Logo" className="block" />
+            <img src="/logo.png" alt="Logo" className="block" />
           </div>
           <span className="font-bold text-4xl ml-2 font-ptserif">
             Welcome {userInfo.given_name}

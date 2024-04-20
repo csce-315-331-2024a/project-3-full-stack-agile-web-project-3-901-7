@@ -22,7 +22,7 @@ const ManagerMenu = () => {
   const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
   useEffect(() => {
-    getUserAuth()
+    getUserAuth('manager')
       .then(setUserProfile)
       .catch(console.error);
   }, [])
@@ -56,7 +56,7 @@ const ManagerMenu = () => {
           onSearch={setSearchQuery}
           conditions={[]}
           actions={[
-            { title: 'New Item', callback: () => {window.location.href = '/newmenuitem'} },
+            { title: 'New Item', callback: () => {window.location.href = '/manager/menu/new'} },
           ]}
           fill
         />
@@ -69,7 +69,7 @@ const ManagerMenu = () => {
           ])}
           thumbnails={getFilteredItems(items, searchQuery).map(item => item.picture)}
           onEdit={(itemId) => { 
-            window.location.href = '/editmenuitem/' + itemId; 
+            window.location.href = '/manager/menu/edit/' + itemId; 
           }}
         />
       </div>

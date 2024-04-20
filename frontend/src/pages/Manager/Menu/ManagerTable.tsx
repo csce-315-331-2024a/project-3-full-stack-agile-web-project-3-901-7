@@ -18,7 +18,7 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
   const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
   useEffect(() => {
-    getUserAuth()
+    getUserAuth('manager')
       .then(setUserProfile)
       .catch(console.error);
   }, [])
