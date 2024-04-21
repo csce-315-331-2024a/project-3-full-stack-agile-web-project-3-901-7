@@ -10,6 +10,7 @@ export interface User {
 }
 
 export interface Role {
+    _id: number;
     email: string;
     type: UserType;
 }

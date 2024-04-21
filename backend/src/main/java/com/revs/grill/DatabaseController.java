@@ -72,6 +72,26 @@ public class DatabaseController {
         return new ResponseStatus(Database.insertUser(new User(body.userInfo), body.password));
     }
 
+    @GetMapping("/role/findAll")
+    public static List<Role> getAllRoles() {
+        return Database.getAllRoles();
+    }
+
+    @PostMapping("/role/insert")
+    public static ResponseStatus insertRole(@RequestBody Role role) {
+        return new ResponseStatus(Database.insertRole(role));
+    }
+
+    @PostMapping("/role/edit")
+    public static ResponseStatus editRole(@RequestBody Role role) {
+        return new ResponseStatus(Database.editRole(role));
+    }
+
+    @PostMapping("/role/delete")
+    public static ResponseStatus deleteRole(@RequestBody Role role) {
+        return new ResponseStatus(Database.deleteRole(role));
+    }
+
     @GetMapping("/item/findAll")
     public static List<Item> getAllItems() {
         return Database.getAllItems();

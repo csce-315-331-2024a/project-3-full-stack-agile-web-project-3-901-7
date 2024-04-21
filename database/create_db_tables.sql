@@ -18,6 +18,7 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE Roles (
+  roleId SERIAL PRIMARY KEY,
   email VARCHAR,
   type VARCHAR
 );

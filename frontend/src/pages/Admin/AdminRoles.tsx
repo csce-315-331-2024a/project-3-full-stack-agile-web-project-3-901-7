@@ -5,49 +5,86 @@ import { User } from "../../types/dbTypes";
 import { Role, UserType } from "../../types/dbTypes";
 import { toTitleCase } from "../../utils/utils";
 
-interface SerializedRole extends Role {
-  id: number;
-}
-
 interface IRoleListProps {
   type: UserType;
-  roles: SerializedRole[];
-  updateRole: (newRole: SerializedRole) => void;
-  deleteRole: (id: number) => void;
+  roles: Role[];
+  updateNewRoleState: (newRole: Role | undefined) => void;
+  updateRoleState: (updatedRole: Role) => void;
+  insertRole: (newRole: Role) => void;
+  saveRole: (updatedRole: Role) => void;
+  deleteRole: (toDelete: Role) => void;
 }
 
 const RoleList : React.FC<IRoleListProps> = (props) => {
-  if (props.roles.length === 0)
-    return (<> </>);
+  const updateRole = (updatedRole : Role) => {
+    if (updatedRole._id >= 0) {
+      props.updateRoleState(updatedRole);
+    } else {
+      props.updateNewRoleState(updatedRole);
+    }
+  }
+
+  const onEmailChange = (e : React.ChangeEvent<HTMLInputElement>, role : Role) => {
+    updateRole({...role, email : e.target.value});
+  };
+
+  const onTypeChange = (e : React.ChangeEvent<HTMLSelectElement>, role : Role) => {
+    props.saveRole({...role, type : e.target.value as UserType});
+  };
+
+  const saveRole = (role : Role) => {
+    if (!role)
+      return;
+    props.updateNewRoleState(undefined);
+    props.insertRole(role);
+  }
 
   return (
     <div className="p-4">
-      <label className="block text-gray-700 text-lg font-ptserif mb-2">{toTitleCase(props.type)}s</label>
+      <div className="flex flex-row items-center gap-4 mb-2">
+        <label className="block text-gray-700 text-lg font-ptserif">{toTitleCase(props.type)}s</label>
+        <button
+          onClick={() => props.updateNewRoleState({ _id: -1, email: '', type: props.type })}
+        >
+          +
+        </button>
+      </div>
 
       {props.roles.map(role => (
         <div className="flex flex-row gap-4 p-4">
           <input
             name="email"
             type="email"
+            placeholder="hello@gmail.com"
             autoComplete="email"
             value={role.email}
-            onChange={(e : React.ChangeEvent<HTMLInputElement>) => props.updateRole({...role, email : e.target.value})}
+            onChange={(e) => onEmailChange(e, role)}
+            onBlur={() => (role._id >= 0) && props.saveRole(role)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && role._id >= 0) {
+                props.saveRole(role);
+              }
+            }}
             className="w-full border rounded px-3 py-2"
             required
           />
           <select 
             value={role.type}
-            onChange={(e : React.ChangeEvent<HTMLSelectElement>) => props.updateRole({...role, type : e.target.value as UserType})}
+            onChange={(e) => onTypeChange(e, role)}
           >
             <option value={"admin"}>Administrator</option>
             <option value={"manager"}>Manager</option>
             <option value={"cashier"}>Cashier</option>
           </select>
-          <button
-            onClick={() => props.deleteRole(role.id)}
-          >
-            Delete
-          </button>
+
+          {role._id < 0 ? (<>
+            {/* New Role */}
+            <button onClick={() => props.updateNewRoleState(undefined)}>Cancel</button>
+            <button onClick={() => saveRole(role)}>Save</button>
+          </>) : (<>
+            {/* Existing Role */}
+            <button onClick={() => props.deleteRole(role)}>Delete</button>  
+          </>)}
         </div>
       ))}
     </div>
@@ -56,17 +93,14 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
 
 export default function AdminRoles() {
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
-  const [roles, setRoles] = useState<Role[]>([
-    { email: 'suryajasper2004@gmail.com', type: 'admin' },
-    { email: 'hamza.miranda@yahoo.com', type: 'admin' },
-    { email: 'peqieks1uk@hotmail.com', type: 'manager' },
-    { email: 'manuel.sharpe@aol.com', type: 'manager' },
-    { email: '05jcl6jy4mlycqsnngyt@aol.com', type: 'manager' },
-    { email: 'talorcan.long@comcast.net', type: 'cashier' },
-    { email: '3psyx8pje4@rediffmail.com', type: 'cashier' },
-    { email: 'akram.kline@ymail.com', type: 'cashier' },
-    { email: 'lruhheh4xzl@comcast.net', type: 'cashier' },
-  ]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [newRole, setNewRole] = useState<Role | undefined>(undefined);
+
+  const updateRole = (role : Role) => {
+    setRoles(prevRoles => prevRoles.map(prevRole => 
+      role._id === prevRole._id ? role : prevRole
+    ));
+  }
 
   useEffect(() => {
     getUserAuth('admin')
@@ -74,43 +108,51 @@ export default function AdminRoles() {
       .catch(console.error);
   }, []);
 
-  const serializeRoles = (roles: Role[]) => roles.map((role, i) => ({...role, id: i} as SerializedRole));
+  async function fetchRoles() {
+    const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/role/findAll");
+    const data = await response.json();
+    setRoles(data);
+  }
+
+  async function rolePost(action : string, role : Role) {
+    await fetch(import.meta.env.VITE_BACKEND_URL + `/role/${action}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(role),
+    });
+    await fetchRoles();
+  }
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
 
   const rolesByType = (roles: Role[]) => {
-    let serializedRoles = serializeRoles(roles);
     return ['admin', 'manager', 'cashier'].map((userType) => (
       {
         userType: userType as UserType,
-        roles: serializedRoles.filter(role => 
+        roles: roles.filter(role => 
           role.type == userType
         ),
       }
     ));
   };
-
-  const updateRole = (newRole : SerializedRole) => {
-    setRoles((prevRoles) => {
-      const updatedRoles = prevRoles.map((role, i) =>
-        i === newRole.id ? newRole : role
-      );
-      return updatedRoles;
-    });
-  };
-
-  const deleteRole = (roleId : number) => {
-    setRoles((prevRoles) => prevRoles.filter((role, i) => i !== roleId));
-  }
   
   return (userProfile &&
     <>
       <AdminNavbar userInfo={userProfile} />
       <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)'}}>
-        {rolesByType(roles).map(({userType, roles}) => (
+        {rolesByType(roles.concat(newRole ? [newRole] : [])).map(({userType, roles}) => (
           <RoleList
             type={userType}
             roles={roles}
-            updateRole={(newRole) => updateRole(newRole)}
-            deleteRole={deleteRole}
+            updateNewRoleState={setNewRole}
+            updateRoleState={updateRole}
+            saveRole={(role) => rolePost('edit', role)}
+            deleteRole={(role) => rolePost('delete', role)}
+            insertRole={(role) => rolePost('insert', role)}
           />
         ))}
       </div>

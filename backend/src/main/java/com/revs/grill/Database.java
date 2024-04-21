@@ -123,6 +123,30 @@ public class Database {
         return users;
     }
 
+    private static List<Role> runRoleQuery(PreparedStatement queryStatement)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<Role> roles = new ArrayList<>();
+
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            Role role = new Role();
+            role._id = resultSet.getInt("roleId");
+            role.email = resultSet.getString("email");
+            role.type = resultSet.getString("type");
+
+            roles.add(role);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return roles;
+    }
+
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
             createConnection();
@@ -206,13 +230,12 @@ public class Database {
             PreparedStatement userInsertStatement = connection.prepareStatement(userInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
             
-            userInsertStatement.setInt(1, user._id);
-            userInsertStatement.setString(2, user.email);
-            userInsertStatement.setString(3, user.name);
-            userInsertStatement.setString(4, user.given_name);
-            userInsertStatement.setString(5, user.family_name);
-            userInsertStatement.setString(6, user.getSalt());
-            userInsertStatement.setString(7, user.getHash());
+            userInsertStatement.setString(1, user.email);
+            userInsertStatement.setString(2, user.name);
+            userInsertStatement.setString(3, user.given_name);
+            userInsertStatement.setString(4, user.family_name);
+            userInsertStatement.setString(5, user.getSalt());
+            userInsertStatement.setString(6, user.getHash());
 
             userInsertStatement.executeUpdate();
 
@@ -250,6 +273,93 @@ public class Database {
             return null;
         }
         return null;
+    }
+
+    public static List<Role> getAllRoles() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles;");
+            return runRoleQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int editRole(Role role) {
+        try {
+            String roleInsertQuery = "UPDATE Roles SET email = ?, type = ? WHERE roleId = ?;";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+            
+            roleInsertStatement.setString(1, role.email);
+            roleInsertStatement.setString(2, role.type);
+            roleInsertStatement.setInt(3, role._id);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static int insertRole(Role role) {
+        try {
+            String roleInsertQuery = "INSERT INTO Roles (email, type) VALUES (?, ?);";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+            
+            roleInsertStatement.setString(1, role.email);
+            roleInsertStatement.setString(2, role.type);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static boolean deleteRole(Role role) {
+        try {
+            String roleDeleteQuery = "DELETE FROM Roles WHERE roleId = ?;";
+            PreparedStatement roleDeleteStatement = connection.prepareStatement(roleDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+            
+            roleDeleteStatement.setInt(1, role._id);
+
+            roleDeleteStatement.executeUpdate();
+            roleDeleteStatement.close();
+            
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static List<Item> getAllItems() {
