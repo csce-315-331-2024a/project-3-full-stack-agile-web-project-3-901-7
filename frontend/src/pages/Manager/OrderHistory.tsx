@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getUserAuth, UserInfo } from '../Login';
+import { getUserAuth } from '../Login';
+import { User } from "../../types/dbTypes";
 import Order from '../Order/Order';
 
 interface Order {
@@ -119,7 +120,7 @@ const OrderHistory = () => {
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
         getUserAuth('manager')

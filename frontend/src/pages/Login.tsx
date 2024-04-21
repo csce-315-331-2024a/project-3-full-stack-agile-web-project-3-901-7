@@ -4,22 +4,11 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CookieManager from "../utils/CookieManager";
 import { toTitleCase } from "../utils/utils";
-import { UserType } from "../types/dbTypes";
+import { UserType, User } from "../types/dbTypes";
 
 interface IIcon {
     viewboxSize: number;
     path: string;
-}
-
-export interface UserInfo {
-    id: string;
-    email: string;
-    verified_email: boolean;
-    name: string;
-    given_name: string;
-    family_name: string;
-    picture: string;
-    locale: string;
 }
 
 interface AugmentedTokenResponse extends TokenResponse {
@@ -60,7 +49,7 @@ export async function getUserAuth(type : UserType) {
                 Accept: 'application/json'
             }
         });
-        const userProfile = await response.json() as UserInfo;
+        const userProfile = await response.json() as User;
         return userProfile;
     }
     else {

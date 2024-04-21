@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AdminNavbar from "../../components/AdminNavbar";
-import { getUserAuth, UserInfo } from "../Login";
+import { getUserAuth } from "../Login";
+import { User } from "../../types/dbTypes";
 import { Role, UserType } from "../../types/dbTypes";
 import { toTitleCase } from "../../utils/utils";
 
@@ -54,7 +55,7 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
 }
 
 export default function AdminRoles() {
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
   const [roles, setRoles] = useState<Role[]>([
     { email: 'suryajasper2004@gmail.com', type: 'admin' },
     { email: 'hamza.miranda@yahoo.com', type: 'admin' },

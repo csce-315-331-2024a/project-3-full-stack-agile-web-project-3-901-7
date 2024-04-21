@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagerNavbar from "../../../components/ManagerNavbar";
-import { Ingredient, Item } from "../../../types/dbTypes";
-import { getUserAuth, UserInfo } from "../../Login";
+import { Ingredient, Item, User } from "../../../types/dbTypes";
+import { getUserAuth } from "../../Login";
 
 const itemIngredients = new Set<string>();
 
@@ -20,7 +20,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
 
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     getUserAuth('manager')

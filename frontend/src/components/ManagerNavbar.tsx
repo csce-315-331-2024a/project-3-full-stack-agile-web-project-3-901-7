@@ -1,6 +1,6 @@
-import { UserInfo } from "../pages/Login";
+import { User } from "../types/dbTypes";
 
-const ManagerNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
+const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   function changeLang() {
     console.log("language change");
   }

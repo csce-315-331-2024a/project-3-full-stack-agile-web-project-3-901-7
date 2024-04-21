@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getUserAuth, UserInfo } from "../../Login";
+import { getUserAuth } from "../../Login";
+import { User } from "../../../types/dbTypes";
 
 interface IManagerTableProps {
   headerColumns: string[];
@@ -15,7 +16,7 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
     setHoveredRowIndex(index);
   };
 
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     getUserAuth('manager')

@@ -1,11 +1,10 @@
 import '../../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../../components/ManagerNavbar";
-import { Item } from '../../../types/dbTypes';
+import { Item, User } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
 import ManagerTable from './ManagerTable';
-import {  } from '@react-oauth/google';
-import { getUserAuth, UserInfo } from '../../Login';
+import { getUserAuth } from '../../Login';
 
 const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
   return (
@@ -19,7 +18,7 @@ const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     getUserAuth('manager')

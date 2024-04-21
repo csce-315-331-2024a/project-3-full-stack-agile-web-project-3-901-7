@@ -1,7 +1,7 @@
 // still in implementation modee
-import { UserInfo } from "../pages/Login";
+import { User } from "../types/dbTypes";
 
-const CashierNavbar : React.FC<{userInfo: UserInfo}> = ({userInfo}) => {
+const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   return (
     <nav className="text-black pb-2 shadow-sm border-hidden rounded px-3">
       <div className="flex flex-col sm:flex-row justify-between items-center">

@@ -25,7 +25,8 @@ import {
 } from 'recharts';
 import dayjs from 'dayjs';
 import ManagerNavbar from "../../components/ManagerNavbar";
-import { getUserAuth, UserInfo } from '../Login';
+import { getUserAuth } from '../Login';
+import { User } from "../../types/dbTypes";
 
 interface Ingredient {
   name: string;
@@ -59,7 +60,7 @@ const SalesTrends = () => {
     dayjs().subtract(1, 'month')
   );
   const [psEndDate, setPsEndDate] = useState<dayjs.Dayjs | null>(dayjs());
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     getUserAuth('manager')
