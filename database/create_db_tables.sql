@@ -13,6 +13,7 @@ CREATE TABLE Users (
   name VARCHAR,
   firstName VARCHAR,
   lastName VARCHAR,
+  picture VARCHAR,
   salt VARCHAR,
   hash VARCHAR
 );

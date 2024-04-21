@@ -1,7 +1,11 @@
 // still in implementation modee
+import { useNavigate } from "react-router-dom";
+import CookieManager from "../utils/CookieManager";
 import { User } from "../types/dbTypes";
 
 const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
+  const navigate = useNavigate();
+  
   return (
     <nav className="text-black pb-2 shadow-sm border-hidden rounded px-3">
       <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -16,11 +20,14 @@ const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
         <div className="flex flex-col sm:flex-row items-center sm:items-end">
         {/* Profile Button */}
         <button
-          onClick={() => {}}
+          onClick={() => {
+            CookieManager.delete('tokenResponse');
+            navigate('/admin/login');
+          }}
           className="flex items-center border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif"
         >
           <img
-            src={userInfo.picture} 
+            src={userInfo.picture || "/icons/profile.png"} 
             alt="Profile"
             className="w-6 h-6 mr-2"
           />

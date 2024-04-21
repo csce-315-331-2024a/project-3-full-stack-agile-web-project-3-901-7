@@ -27,14 +27,25 @@ class ResponseStatus {
 }
 
 class AuthBody {
-    String email;
-    String password;
+    public String email;
+    public String password;
 }
 
 class UserInsertBody {
-    UserInfo userInfo;
-    String password;
+    public UserInfo userInfo;
+    public String password;
+
+    public UserInsertBody() {
+        this.userInfo = new UserInfo();
+        this.password = "";
+    }
+
+    public UserInsertBody(UserInfo userInfo, String password) {
+        this.userInfo = userInfo;
+        this.password = password;
+    }
 }
+
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController

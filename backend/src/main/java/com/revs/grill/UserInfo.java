@@ -29,4 +29,9 @@ public class UserInfo {
     public UserInfo(String email, String name, String given_name, String family_name, String picture) {
         this(-1, email, name, given_name, family_name, picture);
     }
+
+    @Override
+    public String toString() {
+        return email + "," + name;
+    }
 }

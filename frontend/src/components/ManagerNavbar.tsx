@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
+import CookieManager from "../utils/CookieManager";
 import { User } from "../types/dbTypes";
 
 const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
+  const navigate = useNavigate();
+
   function changeLang() {
     console.log("language change");
   }
@@ -19,11 +23,14 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
         <div className="flex flex-col sm:flex-row items-center sm:items-end">
         {/* Profile Button */}
         <button
-          onClick={() => {}}
+          onClick={() => {
+            CookieManager.delete('tokenResponse');
+            navigate('/admin/login');
+          }}
           className="flex items-center border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif"
         >
           <img
-            src={userInfo.picture} 
+            src={userInfo.picture || "/icons/profile.png"} 
             alt="Profile"
             className="w-6 h-6 mr-2"
           />
@@ -59,7 +66,7 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 ml-6 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/menu" className="hover:text-white">
+              <a href="/cashier" className="hover:text-white">
                   cashier page
               </a>
           </button>

@@ -107,6 +107,7 @@ public class Database {
         while (resultSet.next()) {
             User user = new User();
             user._id = resultSet.getInt("userId");
+            user.email = resultSet.getString("email");
             user.name = resultSet.getString("name");
             user.given_name = resultSet.getString("firstName");
             user.family_name = resultSet.getString("lastName");
@@ -219,14 +220,14 @@ public class Database {
 
     public static int insertUser(User user, String password) {
         try {
-            if (password == "") {
+            if (password.length() > 0) {
                 user.hashPassword(password);
             } else {
                 user.setHash("");
                 user.setSalt("");
             }
 
-            String userInsertQuery = "INSERT INTO Users (userId, email, name, firstName, lastName, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            String userInsertQuery = "INSERT INTO Users (email, name, firstName, lastName, picture, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement userInsertStatement = connection.prepareStatement(userInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
             
@@ -234,8 +235,9 @@ public class Database {
             userInsertStatement.setString(2, user.name);
             userInsertStatement.setString(3, user.given_name);
             userInsertStatement.setString(4, user.family_name);
-            userInsertStatement.setString(5, user.getSalt());
-            userInsertStatement.setString(6, user.getHash());
+            userInsertStatement.setString(5, user.picture);
+            userInsertStatement.setString(6, user.getSalt());
+            userInsertStatement.setString(7, user.getHash());
 
             userInsertStatement.executeUpdate();
 
