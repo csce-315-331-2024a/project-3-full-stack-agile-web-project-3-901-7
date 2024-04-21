@@ -11,19 +11,21 @@ import MenuPage1 from './pages/MenuPage1'
 import MenuPage2 from './pages/MenuPage2'
 import MenuPage3 from './pages/MenuPage3'
 import Order from './pages/Order/Order'
-import Manager from './pages/Manager'
+import Manager from './pages/Manager/Manager'
 
 import Inventory from './pages/Manager/Inventory'
 import OrderHistory from './pages/Manager/OrderHistory' 
 import EditOrderHistory from './pages/Manager/EditOrderHistory'
 import SalesTrends from './pages/Manager/SalesTrends'
 
-import AdminOrder from './pages/AdminOrder'
+import AdminOrder from './pages/Manager/NewOrder'
 import Weather from './pages/Weather'
 import ManagerMenu from './pages/Manager/Menu/ManagerMenu'
 import NewMenuItemPage from './pages/Manager/Menu/NewMenuItem'
 import EditMenuItemPage from './pages/Manager/Menu/EditMenuItem'
-import Cashier from './pages/Cashier'
+import Cashier from './pages/Cashier/Cashier'
+import Admin from './pages/Admin/Admin'
+import AdminRoles from './pages/Admin/AdminRoles'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -31,6 +33,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <React.StrictMode>
             <BrowserRouter>
                 <Routes>
+
+                    {/* Landing */}
                     <Route path="/" element={<Landing/>}/>
 
                     {/* Customer-side */}
@@ -56,6 +60,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/manager/orders/edit" element={<EditOrderHistory/>}/>
                     <Route path="/manager/orders/new" element={<AdminOrder/>}/>
                     <Route path="/manager/salestrends" element={<SalesTrends/>}/>
+
+                    {/* Admin-side */}
+                    <Route path="/admin" element={<Admin/>}/>
+                    <Route path="/admin/login" element={<Login type="admin"/>}/>
+                    <Route path="/admin/roles" element={<AdminRoles/>}/>
+
                 </Routes>
             </BrowserRouter>
         </React.StrictMode>
