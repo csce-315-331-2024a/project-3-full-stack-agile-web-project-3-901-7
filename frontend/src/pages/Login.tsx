@@ -61,22 +61,25 @@ export async function getUserAuth(type : UserType) {
             throw Error('Invalid auth');
         }
         
+        let role : Role;
+
         try {
             console.log('requesting with profile', userProfile);
             const roleResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/role/findByEmail?email=" + userProfile.email);
-            const role = await roleResponse.json() as Role;
-    
-            if (authLevel(role.type) < authLevel(type)) {
-                window.location.href = `${window.location.origin}/${role.type}`;
-                throw Error('Authorization Level too Low');
-            }
-    
-            return userProfile;
+            role = await roleResponse.json() as Role;
         }
         catch {
             window.location.href = `${window.location.origin}/${type}/login`;
             throw Error('Role not set up');
         }
+
+    
+        if (authLevel(role.type) < authLevel(type)) {
+            window.location.href = `${window.location.origin}/${role.type}`;
+            throw Error('Authorization Level too Low');
+        }
+    
+        return userProfile;
     }
     else {
         window.location.href = `${window.location.origin}/${type}/login`;

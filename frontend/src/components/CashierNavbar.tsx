@@ -5,7 +5,7 @@ import { User } from "../types/dbTypes";
 
 const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   const navigate = useNavigate();
-  
+
   return (
     <nav className="text-black pb-2 shadow-sm border-hidden rounded px-3">
       <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -22,7 +22,7 @@ const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
         <button
           onClick={() => {
             CookieManager.delete('tokenResponse');
-            navigate('/admin/login');
+            navigate('/cashier/login');
           }}
           className="flex items-center border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif"
         >

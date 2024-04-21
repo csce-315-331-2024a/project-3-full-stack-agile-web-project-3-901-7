@@ -25,7 +25,7 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
         <button
           onClick={() => {
             CookieManager.delete('tokenResponse');
-            navigate('/admin/login');
+            navigate('/manager/login');
           }}
           className="flex items-center border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif"
         >
