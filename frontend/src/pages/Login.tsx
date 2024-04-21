@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { hasGrantedAllScopesGoogle, hasGrantedAnyScopeGoogle, TokenResponse, useGoogleLogin } from "@react-oauth/google";
+import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CookieManager from "../utils/CookieManager";
 import { toTitleCase } from "../utils/utils";
-
-type UserType = "customer" | "admin" | "manager" | "cashier";
+import { UserType } from "../types/dbTypes";
 
 interface IIcon {
     viewboxSize: number;

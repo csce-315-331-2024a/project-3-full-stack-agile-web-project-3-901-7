@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { Item, OrderType } from "../types/dbTypes";
+import Navbar from "../../components/Navbar";
+import { Item, OrderType } from "../../types/dbTypes";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 
 export default function AdminOrder() {

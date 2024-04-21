@@ -1,3 +1,10 @@
+export type UserType = "customer" | "admin" | "manager" | "cashier";
+
+export interface Role {
+    email: string;
+    type: UserType;
+}
+
 export interface Item {
     _id: number;
     name: string;

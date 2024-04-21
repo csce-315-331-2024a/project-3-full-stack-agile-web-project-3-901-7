@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import ManagerNavbar from "../components/ManagerNavbar";
-import { getUserAuth, UserInfo } from "./Login";
+import CashierNavbar from "../../components/CashierNavbar";
+import { getUserAuth, UserInfo } from "../Login";
 
-export default function Manager() {
+export default function Cashier() {
     const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
 
     useEffect(() => {
-        getUserAuth('manager')
+        getUserAuth('cashier')
             .then(setUserProfile)
             .catch(console.error);
     }, [])
     
     return (userProfile &&
-        <ManagerNavbar userInfo={userProfile} />
+        <CashierNavbar userInfo={userProfile} />
     )
 }
