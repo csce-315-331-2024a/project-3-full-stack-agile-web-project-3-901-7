@@ -77,6 +77,11 @@ public class DatabaseController {
         return Database.getAllRoles();
     }
 
+    @GetMapping("/role/findByEmail")
+    public static Role getRoleByEmail(@RequestParam String email) {
+        return Database.getRoleByEmail(email);
+    }
+
     @PostMapping("/role/insert")
     public static ResponseStatus insertRole(@RequestBody Role role) {
         return new ResponseStatus(Database.insertRole(role));

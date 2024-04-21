@@ -44,11 +44,6 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager" className="hover:text-white">
-                  update items
-              </a>
-          </button>
-          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
               <a href="/manager/salestrends" className="hover:text-white">
                   reports
               </a>
@@ -61,6 +56,11 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
               <a href="/manager/menu" className="hover:text-white">
                   menu
+              </a>
+          </button>
+          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 ml-6 rounded-md text-lg font-medium font-ptserif">
+              <a href="/manager/menu" className="hover:text-white">
+                  cashier page
               </a>
           </button>
       </div>

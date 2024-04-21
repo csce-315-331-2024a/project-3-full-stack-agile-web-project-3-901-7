@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CookieManager from "../utils/CookieManager";
 import { toTitleCase } from "../utils/utils";
-import { UserType, User } from "../types/dbTypes";
+import { UserType, User, Role } from "../types/dbTypes";
 
 interface IIcon {
     viewboxSize: number;
@@ -39,17 +39,23 @@ export async function getUserAuth(type : UserType) {
     let tokenResponseStr = CookieManager.get('tokenResponse');
     if (tokenResponseStr) {
         let tokenResponse = JSON.parse(tokenResponseStr) as AugmentedTokenResponse;
-
-        if (authLevel(tokenResponse.type) < authLevel(type))
-            throw Error('Do not have authorization');
-
-        const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`, {
+        
+        const userResponse = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`, {
             headers: {
                 Authorization: `Bearer ${tokenResponse.access_token}`,
                 Accept: 'application/json'
             }
         });
-        const userProfile = await response.json() as User;
+        const userProfile = await userResponse.json() as User;
+        
+        const roleResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/role/findByEmail?email=" + userProfile.email);
+        const role = await roleResponse.json() as Role;
+
+        if (authLevel(role.type) < authLevel(type)) {
+            window.location.href = `${window.location.origin}/${role.type}`;
+            throw Error('Authorization Level too Low');
+        }
+
         return userProfile;
     }
     else {
@@ -108,7 +114,9 @@ export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
         onSuccess: (user) => {
             user = Object.assign(user, { type: props.type }) as AugmentedTokenResponse;
             CookieManager.create('tokenResponse', JSON.stringify(user), user.expires_in);
-            navigate(`/${props.type}`);
+            getUserAuth(props.type).then(_ => {
+                navigate(`/${props.type}`);
+            })
         },
         onError: (error) => {
             console.error("Login Error:", error);

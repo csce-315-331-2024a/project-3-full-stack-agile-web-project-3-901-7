@@ -286,6 +286,21 @@ public class Database {
         }
     }
 
+    public static Role getRoleByEmail(String email) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles WHERE email = ?;");
+            statement.setString(1, email);
+            List<Role> roleMatches = runRoleQuery(statement);
+            if (roleMatches.size() < 1)
+                return null;
+            return roleMatches.get(0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static int editRole(Role role) {
         try {
             String roleInsertQuery = "UPDATE Roles SET email = ?, type = ? WHERE roleId = ?;";
