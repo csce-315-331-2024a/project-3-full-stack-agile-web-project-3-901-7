@@ -29,8 +29,18 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
   };
 
   const onTypeChange = (e : React.ChangeEvent<HTMLSelectElement>, role : Role) => {
-    props.saveRole({...role, type : e.target.value as UserType});
+    if (role.type === 'admin' && props.roles.length === 1)
+      alert('There must be at least one administrator');
+    else
+      props.saveRole({...role, type : e.target.value as UserType});
   };
+
+  const onDelete = (role : Role) => {
+    if (role.type === 'admin' && props.roles.length === 1)
+      alert('There must be at least one administrator');
+    else
+      props.deleteRole(role)
+  }
 
   const saveRole = (role : Role) => {
     if (!role)
@@ -83,7 +93,7 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
             <button onClick={() => saveRole(role)}>Save</button>
           </>) : (<>
             {/* Existing Role */}
-            <button onClick={() => props.deleteRole(role)}>Delete</button>  
+            <button onClick={() => onDelete(role)}>Delete</button>  
           </>)}
         </div>
       ))}
