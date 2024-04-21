@@ -46,11 +46,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     <Route path="/weather" element={<Weather/>}/>
 
                     {/* Cashier-side */}
-                    <Route path="/cashier/login" element={<Login type="cashier"/>}/>
                     <Route path="/cashier" element={<Cashier/>}/>
+                    <Route path="/cashier/signup" element={<Login type="cashier" signup/>}/>
+                    <Route path="/cashier/login" element={<Login type="cashier"/>}/>
 
                     {/* Manager-side */}
                     <Route path="/manager" element={<Manager/>}/>
+                    <Route path="/manager/signup" element={<Login type="manager" signup/>}/>
                     <Route path="/manager/login" element={<Login type="manager"/>}/>
                     <Route path="/manager/inventory" element={<Inventory/>}/>
                     <Route path="/manager/menu" element={<ManagerMenu/>}/>
@@ -63,6 +65,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
                     {/* Admin-side */}
                     <Route path="/admin" element={<Admin/>}/>
+                    <Route path="/admin/signup" element={<Login type="admin" signup/>}/>
                     <Route path="/admin/login" element={<Login type="admin"/>}/>
                     <Route path="/admin/roles" element={<AdminRoles/>}/>
 
