@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagerNavbar from "../../../components/ManagerNavbar";
-import { Ingredient, Item } from "../../../types/dbTypes";
-import { getUserAuth, UserInfo } from "../../Login";
+import { Ingredient, Item, User } from "../../../types/dbTypes";
+import { getUserAuth } from "../../Login";
 
 const itemIngredients = new Set<string>();
 
@@ -20,10 +20,10 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
 
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
-    getUserAuth()
+    getUserAuth('manager')
       .then(setUserProfile)
       .catch(console.error);
   }, [])
@@ -115,7 +115,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       body: JSON.stringify(item),
     });
     
-    window.location.href = '/editmenu';
+    window.location.href = '/manager/menu';
   }
 
   async function postUpdateItem(item : Item) {
@@ -127,7 +127,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       body: JSON.stringify(item),
     });
 
-    window.location.href = '/editmenu';
+    window.location.href = '/manager/menu';
   }
 
   async function postDeleteItem(item : Item) {
@@ -136,7 +136,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     });
 
     console.log(response.json());
-    window.location.href = '/editmenu';
+    window.location.href = '/manager/menu';
   }
 
   const handleAction = (actionType : string) => {
@@ -276,7 +276,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
 
             <div className="mt-4 pt-4">
               <button
-                onClick={() => {window.location.href = '/editmenu'}}
+                onClick={() => {window.location.href = '/manager/menu'}}
                 className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black font-ptserif hover:bg-black hover:text-white"
                 >
                 Cancel
