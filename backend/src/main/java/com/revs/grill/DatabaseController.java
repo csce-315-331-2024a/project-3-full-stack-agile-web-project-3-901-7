@@ -26,12 +26,50 @@ class ResponseStatus {
     }
 }
 
+class AuthBody {
+    String email;
+    String password;
+}
+
+class UserInsertBody {
+    UserInfo userInfo;
+    String password;
+}
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class DatabaseController {
 
     public DatabaseController() {
         Database.createConnection();
+    }
+
+    @GetMapping("/user/findAll")
+    public static List<UserInfo> getAllUsers() {
+        return User.toInfoList(Database.getAllUsers());
+    }
+
+    @GetMapping("/user/findById")
+    public static List<UserInfo> getUsersById(@RequestParam("userIds") List<Integer> userIds) {
+        return User.toInfoList(Database.getUsersById(userIds));
+    }
+
+    @GetMapping("/user/findOneById")
+    public static UserInfo getOneUserById(@RequestParam("userId") int userId) {
+        List<Integer> userIds = new ArrayList<>();
+        userIds.add(userId);
+
+        return User.toInfoList(Database.getUsersById(userIds)).get(0);
+    }
+
+    @PostMapping("/user/login")
+    public static UserInfo authenticateUser(@RequestBody AuthBody auth) {
+        return Database.authenticateUser(auth.email, auth.password);
+    }
+
+    @PostMapping("/user/signup")
+    public static ResponseStatus insertUser(@RequestBody UserInsertBody body) {
+        return new ResponseStatus(Database.insertUser(new User(body.userInfo), body.password));
     }
 
     @GetMapping("/item/findAll")
