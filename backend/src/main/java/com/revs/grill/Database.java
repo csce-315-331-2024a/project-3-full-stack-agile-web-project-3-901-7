@@ -181,6 +181,7 @@ public class Database {
 
             orderItemResult.close();
             orderItemStatement.close();
+            order.serializeOrderInfo();
 
             orders.add(order);
         }
