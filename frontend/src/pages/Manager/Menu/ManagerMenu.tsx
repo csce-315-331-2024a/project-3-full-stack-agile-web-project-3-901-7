@@ -1,11 +1,10 @@
 import '../../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../../components/ManagerNavbar";
-import { Item } from '../../../types/dbTypes';
+import { Item, User } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
 import ManagerTable from './ManagerTable';
-import {  } from '@react-oauth/google';
-import { getUserAuth, UserInfo } from '../../Login';
+import { getUserAuth } from '../../Login';
 
 const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
   return (
@@ -19,10 +18,10 @@ const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
-    getUserAuth()
+    getUserAuth('manager')
       .then(setUserProfile)
       .catch(console.error);
   }, [])
@@ -56,7 +55,7 @@ const ManagerMenu = () => {
           onSearch={setSearchQuery}
           conditions={[]}
           actions={[
-            { title: 'New Item', callback: () => {window.location.href = '/newmenuitem'} },
+            { title: 'New Item', callback: () => {window.location.href = '/manager/menu/new'} },
           ]}
           fill
         />
@@ -69,7 +68,7 @@ const ManagerMenu = () => {
           ])}
           thumbnails={getFilteredItems(items, searchQuery).map(item => item.picture)}
           onEdit={(itemId) => { 
-            window.location.href = '/editmenuitem/' + itemId; 
+            window.location.href = '/manager/menu/edit/' + itemId; 
           }}
         />
       </div>

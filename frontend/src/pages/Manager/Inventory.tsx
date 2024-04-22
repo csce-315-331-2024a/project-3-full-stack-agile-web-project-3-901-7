@@ -2,8 +2,8 @@ import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
-import { Ingredient } from '../../types/dbTypes';
-import { getUserAuth, UserInfo } from '../Login';
+import { Ingredient, User } from '../../types/dbTypes';
+import { getUserAuth } from '../Login';
 
 interface EditableCellProps {
     value: string | number;
@@ -82,10 +82,10 @@ const Inventory = () => {
         unitPrice: 0.00,
         supplier: 'Enter supplier',
     });
-    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
-      getUserAuth()
+      getUserAuth('manager')
         .then(setUserProfile)
         .catch(console.error);
     }, [])
