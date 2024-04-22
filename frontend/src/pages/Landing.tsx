@@ -18,9 +18,21 @@ export default function Landing() {
                     </button>
                     <button
                         className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate('/cashier/login')}
+                    >
+                        I am a cashier
+                    </button>
+                    <button
+                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        onClick={() => navigate('/manager/login')}
                     >
                         I am a manager
+                    </button>
+                    <button
+                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        onClick={() => navigate('/admin/login')}
+                    >
+                        I am an administrator
                     </button>
                 </div>
             </div>

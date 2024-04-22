@@ -1,13 +1,10 @@
+// still in implementation modee
 import { useNavigate } from "react-router-dom";
 import CookieManager from "../utils/CookieManager";
 import { User } from "../types/dbTypes";
 
-const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
+const AdminNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   const navigate = useNavigate();
-
-  function changeLang() {
-    console.log("language change");
-  }
 
   return (
     <nav className="text-black pb-2 shadow-sm border-hidden rounded px-3">
@@ -25,7 +22,7 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
         <button
           onClick={() => {
             CookieManager.delete('tokenResponse');
-            navigate('/manager/login');
+            navigate('/admin/login');
           }}
           className="flex items-center border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif"
         >
@@ -41,31 +38,16 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
       </div>
       <div className="mt-4 flex flex-wrap justify-start">
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/orders/new" className="hover:text-white">
-                  create order
-              </a>
-          </button>
-          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/orders" className="hover:text-white">
-                  order history
-              </a>
-          </button>
-          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/salestrends" className="hover:text-white">
-                  reports
-              </a>
-          </button>
-          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/inventory" className="hover:text-white">
-                  inventory
-              </a>
-          </button>
-          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/manager/menu" className="hover:text-white">
-                  menu
+              <a href="/admin/roles" className="hover:text-white">
+                  edit roles
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 ml-6 rounded-md text-lg font-medium font-ptserif">
+              <a href="/manager" className="hover:text-white">
+                  manager page
+              </a>
+          </button>
+          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
               <a href="/cashier" className="hover:text-white">
                   cashier page
               </a>
@@ -75,4 +57,4 @@ const ManagerNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   );
 }
   
-export default ManagerNavbar;
+export default AdminNavbar;

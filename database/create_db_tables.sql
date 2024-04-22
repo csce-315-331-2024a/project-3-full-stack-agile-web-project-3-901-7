@@ -1,8 +1,28 @@
+DROP TABLE Users;
+DROP TABLE Roles;
+
 DROP TABLE Orders;
 DROP TABLE Ingredients;
 DROP TABLE Items;
 DROP TABLE ItemIngredient_Junction;
 DROP TABLE OrderItem_Junction;
+
+CREATE TABLE Users (
+  userId SERIAL PRIMARY KEY,
+  email VARCHAR,
+  name VARCHAR,
+  firstName VARCHAR,
+  lastName VARCHAR,
+  picture VARCHAR,
+  salt VARCHAR,
+  hash VARCHAR
+);
+
+CREATE TABLE Roles (
+  roleId SERIAL PRIMARY KEY,
+  email VARCHAR,
+  type VARCHAR
+);
 
 CREATE TABLE Orders (
   orderId SERIAL PRIMARY KEY,

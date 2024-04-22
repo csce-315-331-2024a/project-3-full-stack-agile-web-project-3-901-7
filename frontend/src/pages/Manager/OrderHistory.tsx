@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getUserAuth, UserInfo } from '../Login';
+import { getUserAuth } from '../Login';
+import { User } from "../../types/dbTypes";
 import Order from '../Order/Order';
 
 interface Order {
@@ -126,10 +127,10 @@ const OrderHistory = () => {
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
-    const [userProfile, setUserProfile] = useState<UserInfo | undefined>(undefined);
+    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
-        getUserAuth()
+        getUserAuth('manager')
         .then(setUserProfile)
         .catch(console.error);
     }, []);
@@ -172,7 +173,7 @@ const OrderHistory = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between">
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
             <button
-              onClick={() => window.location.href = '/editorderhistory'}
+              onClick={() => window.location.href = '/manager/orders/edit'}
               className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white"
             >
               Edit Order
