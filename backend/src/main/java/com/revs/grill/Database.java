@@ -857,6 +857,19 @@ public class Database {
         }
     }
 
+    public static List<Order> getOrdersByStatus(String status) {
+        try {
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Orders WHERE status = ?");
+            statement.setString(1, status);
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end) {
         Map<String, Integer> inventoryUsed = new HashMap<>();
         try {

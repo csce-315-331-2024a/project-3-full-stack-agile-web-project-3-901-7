@@ -10,6 +10,7 @@ public class Order {
     public Map<Integer, Integer> itemToQuantity;
     public double total;
     public java.sql.Date dateTime;
+    public String status; // completed, in progress, received, null
 
     public Order() {
         this._id = -1;
@@ -17,23 +18,25 @@ public class Order {
         this.orderInfo = "";
         this.itemToQuantity = new HashMap<>();
         this.total = 0;
+        this.status = null;
     }
 
     public Order orderConstructor() {
         return new Order();
     }
 
-    public Order(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total) {
+    public Order(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total, String status) {
         this._id = id;
         this.numItems = numItems;
         this.orderInfo = orderInfo;
         this.itemToQuantity = itemToQuantity;
         this.total = total;
+        this.status = status;
     }
 
     public Order orderConstrutor2(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity,
-            double total) {
-        return new Order(id, numItems, orderInfo, itemToQuantity, total);
+            double total, String status) {
+        return new Order(id, numItems, orderInfo, itemToQuantity, total, status);
     }
 
     public void serializeOrderInfo() {
@@ -85,6 +88,10 @@ public class Order {
 
     public static List<Order> findInDateRange(Date start, Date end) {
         return Database.getOrdersByDateRange(start, end);
+    }
+
+    public static List<Order> findByStatus(String status) {
+        return Database.getOrdersByStatus(status);
     }
 
     public static boolean updateById(int orderId, String numItems, String orderInfo, String total) {
