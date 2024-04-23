@@ -362,7 +362,7 @@ const Inventory = () => {
                       Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
                   </button>
               </th>
-              <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("quantity")}>
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Quantity
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("minQuantity")}>
