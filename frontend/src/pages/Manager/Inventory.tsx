@@ -335,18 +335,30 @@ const Inventory = () => {
                     field="name"
                     ingredientId={ingredient._id}
                 />
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.quantity}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.minQuantity}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  ${ingredient.unitPrice.toFixed(2)}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.supplier}
-                </td>
+                <EditableCell
+                    value={ingredient.quantity}
+                    onEdit={handleEdit}
+                    field="quantity"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.minQuantity}
+                    onEdit={handleEdit}
+                    field="minQuantity"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.unitPrice}
+                    onEdit={handleEdit}
+                    field="unitPrice"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.supplier}
+                    onEdit={handleEdit}
+                    field="supplier"
+                    ingredientId={ingredient._id}
+                />
                 <td className="py-4 px-6 border border-black font-ptserif">
                 <button onClick={() => handleDeleteIngredient(ingredient._id)} className=" border-2 border-black px-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
                     -
@@ -354,7 +366,6 @@ const Inventory = () => {
                 </td>
               </tr>
             ))}
-            
           </tbody>
         </table>
       </div>
