@@ -78,6 +78,8 @@ const Inventory = () => {
     const [showWarning, setShowWarning] = useState<boolean>(false);
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [confirmation, setConfirmation] = useState<'add' | 'edit' | null>(null);
+    const [sortColumn, setSortColumn] = useState<keyof Ingredient>("_id");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
     const [newIngredient, setNewIngredient] = useState<Ingredient>({
         _id: -1,
@@ -255,34 +257,46 @@ const Inventory = () => {
       alert('Failed to save new ingredient');
     }
   };
-
-
-
+  
   const handleCancelConfirmation = () => {
       setConfirmation(null); 
   };
 
-  
+  const handleSort = (column: keyof Ingredient) => {
+    if (column === sortColumn) {
+      // Toggle sorting order if the same column is clicked again
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Set the new column and default to ascending order
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
+
 
   useEffect(() => {
     async function fetchIngredients() {
-      console.log(import.meta.env.VITE_BACKEND_URL);
       try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findAll`);
-        const data = await response.json();
-        if (response.ok) {
-          const sortedData = data.sort((a: Ingredient, b: Ingredient) => a._id - b._id);
-          setIngredients(sortedData);
-        } else {
-          throw new Error('Failed to fetch ingredients');
+        if (!response.ok) {
+          throw new Error("Failed to fetch ingredients");
         }
+        const data = await response.json();
+        const sortedData = data.sort((a: Ingredient, b: Ingredient) => {
+          if (sortOrder === "asc") {
+            return Number(a[sortColumn]) - Number(b[sortColumn]);
+          } else {
+            return Number(b[sortColumn]) - Number(a[sortColumn]);
+          }
+        });        
+        setIngredients(sortedData);
       } catch (error) {
-        console.error('Fetch error:', error);
+        console.error("Fetch error:", error);
       }
     }
-  
+
     fetchIngredients();
-  }, []);
+  }, [sortColumn, sortOrder]);
 
   const filterIngredients = (searchTerm: string) => {
     return ingredients.filter(ingredient =>
@@ -339,21 +353,25 @@ const Inventory = () => {
           <thead className="text-m text-black bg-gray-50 font-ptserif">
             <tr>
               <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif">
-                Ingredient ID
+                  <button onClick={() => handleSort("_id")}>
+                      Ingredient ID {sortColumn === "_id" && (sortOrder === "asc" ? "▲" : "▼")}
+                  </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Name
+                  <button onClick={() => handleSort("name")}>
+                      Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                  </button>
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("quantity")}>
                 Quantity
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("minQuantity")}>
                 Min Quantity
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("unitPrice")}>
                 Unit Price
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("supplier")}>
                 Supplier
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
