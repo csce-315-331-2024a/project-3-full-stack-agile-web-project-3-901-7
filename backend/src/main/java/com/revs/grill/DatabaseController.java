@@ -184,6 +184,11 @@ public class DatabaseController {
         return Order.findOneById(orderId);
     }
 
+    @GetMapping("/order/findByStatus")
+    public static List<Order> getOrdersByStatus(@RequestParam("status") String status) {
+        return Database.getOrdersByStatus(status);
+    }
+
     @GetMapping("/ingredient/findAll")
     public static List<Ingredient> getAllIngredients() {
         return Database.getAllIngredients();

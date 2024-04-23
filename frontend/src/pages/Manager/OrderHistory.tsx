@@ -13,7 +13,8 @@ interface Order {
     orderInfo: string;
     itemToQuantity: Map<number, number>;
     total: number;
-    date: Date;
+    date: Date; 
+    status: string;
 }
 
 interface OrderCardProps {
@@ -32,6 +33,7 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         date: new Date('2024-12-12'),
+        status: "in progress",
     },
     {
         _id: 2,
@@ -43,6 +45,7 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         date: new Date('2024-12-03'),
+        status: "in progress",
     },
     {
         _id: 3,
@@ -54,6 +57,7 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         date: new Date('2024-12-18'),
+        status: "in progress",
     },
 ];
 
@@ -122,8 +126,7 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
 
 
 const OrderHistory = () => {
-    const [orders, setOrders] = useState<Order[]>(mockOrders);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [orders, setOrders] = useState<Order[]>([]); // Declare once and initialize with an empty array
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -131,8 +134,33 @@ const OrderHistory = () => {
 
     useEffect(() => {
         getUserAuth('manager')
-        .then(setUserProfile)
-        .catch(console.error);
+            .then(setUserProfile)
+            .catch(console.error);
+
+            async function fetchOrders() {
+                const orderLimit = 10;
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
+                const data = await response.json();
+                
+                // Log the type of itemToQuantity
+                if (data && data.length > 0) {
+                    const firstOrder = data[0];
+                    if (firstOrder && typeof firstOrder.itemToQuantity === 'object' && firstOrder.itemToQuantity !== null && firstOrder.itemToQuantity instanceof Map) {
+                        console.log('itemToQuantity is a Map');
+                    } else {
+                        console.log('itemToQuantity is not a Map');
+                    }
+                } else {
+                    console.log('No orders found');
+                }
+                
+                setOrders(data);
+                console.log(data);
+            }
+            
+            fetchOrders();
+            
+
     }, []);
 
     const handleDeleteOrder = async (id: number) => {
