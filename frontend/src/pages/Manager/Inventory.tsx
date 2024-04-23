@@ -109,7 +109,9 @@ const Inventory = () => {
         });
         const tableElement = document.getElementById("inventory-table");
         if (tableElement) {
-          tableElement.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(() => {
+            tableElement.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
         }
     };
     
@@ -210,27 +212,6 @@ const Inventory = () => {
 
 
   const handleSaveNewIngredient = async () => {
-    if (!newIngredient.name.trim()) {
-      setShowWarning(true);
-      setWarningMessage("Name cannot be empty");
-      return;
-    }
-    if (newIngredient.quantity < 0 || !Number.isInteger(newIngredient.quantity)) {
-      setShowWarning(true);
-      setWarningMessage("Quantity must be a positive integer");
-      return;
-    }
-    if (newIngredient.minQuantity < 0 || !Number.isInteger(newIngredient.minQuantity)) {
-      setShowWarning(true);
-      setWarningMessage("Min quantity must be a positive integer");
-      return;
-    }
-    if (isNaN(newIngredient.unitPrice) || newIngredient.unitPrice <= 0) {
-      setShowWarning(true);
-      setWarningMessage("Unit price must be a positive number");
-      return;
-    }
-  
     const ingredientToSave = {
       name: newIngredient.name,
       quantity: Number(newIngredient.quantity),
@@ -245,19 +226,16 @@ const Inventory = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ingredientToSave)
       });
-  
-      const data = await response.json();
-      if (response.ok && data.ingredientId) {
-        setIngredients([...ingredients, { ...ingredientToSave, _id: data.ingredientId }]);
-        setIsAddingNew(false);
-      } else {
-        alert("Failed to add ingredient");
-      }
+      const ingredientId = await response.json();
+      
+      setIngredients([...ingredients, { ...ingredientToSave, _id: ingredientId }]);
+      setIsAddingNew(false);
     } catch (error) {
       console.error('Error saving new ingredient:', error);
       alert('Failed to save new ingredient');
     }
   };
+
 
 
   const handleCancelConfirmation = () => {
@@ -364,26 +342,6 @@ const Inventory = () => {
             </tr>
           </thead>
           <tbody>
-          {isAddingNew && newIngredient && (
-              <tr>
-                <td className="px-5 py-5 border-b border-black bg-white text-sm">
-                  New
-                </td>
-                <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} placeholder="Enter name"/>
-                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="0"/>
-                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="0"/>
-                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="0.00"/>
-                <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} placeholder="Enter supplier" />
-                <td className="px-5 py-5 border-b border-black bg-white text-sm">
-                  <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mr-2 rounded">
-                    Save
-                  </button>
-                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                    Cancel
-                  </button>
-                </td>
-              </tr>
-            )}
             {filteredIngredients.map((ingredient) => (
               <tr key={ingredient._id} className="bg-white border-b">
                 <th scope="row" className="py-4 px-6 font-medium text-black whitespace-nowrap border border-black font-ptserif">
@@ -426,6 +384,26 @@ const Inventory = () => {
                 </td>
               </tr>
             ))}
+            {isAddingNew && newIngredient && (
+              <tr>
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
+                  New
+                </td>
+                <EditableCell value={newIngredient.name} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, name: value as string })} field="name" ingredientId={newIngredient._id} placeholder="Enter name"/>
+                <EditableCell value={newIngredient.quantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, quantity: Number(value) })} field="quantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.minQuantity} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, minQuantity: Number(value) })} field="minQuantity" ingredientId={newIngredient._id}  placeholder="0"/>
+                <EditableCell value={newIngredient.unitPrice} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, unitPrice: Number(value) })} field="unitPrice" ingredientId={newIngredient._id}  placeholder="0.00"/>
+                <EditableCell value={newIngredient.supplier} onEdit={(id, field, value) => setNewIngredient({ ...newIngredient, supplier: value as string })} field="supplier" ingredientId={newIngredient._id} placeholder="Enter supplier" />
+                <td className="px-5 py-5 border-b border-black bg-white text-sm">
+                  <button onClick={handleSaveNewIngredient} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 mr-2 rounded">
+                    Save
+                  </button>
+                  <button onClick={handleCancelNewIngredient} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                    Cancel
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
