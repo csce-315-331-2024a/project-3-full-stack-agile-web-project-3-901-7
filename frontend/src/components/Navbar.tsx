@@ -76,7 +76,7 @@ export default function Navbar() {
                     </a>
                 </button>
                 <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <a href="/login" className="hover:text-white">
+                    <a href="/manager/login" className="hover:text-white">
                         manager login
                     </a>
                 </button>
