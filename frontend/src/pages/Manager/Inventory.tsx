@@ -4,6 +4,7 @@ import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
 import DeleteConfirmation from '../../components/DeleteConfirmation';
 import DataValidationWarning from '../../components/DataValidationWarning';
+import ConfirmationPopup from '../../components/ConfirmationPopup';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
 
@@ -76,6 +77,8 @@ const Inventory = () => {
     const [isAddingNew, setIsAddingNew] = useState(false);
     const [showWarning, setShowWarning] = useState<boolean>(false);
     const [warningMessage, setWarningMessage] = useState<string>('');
+    const [confirmation, setConfirmation] = useState<'add' | 'edit' | null>(null);
+  
 
     const [newIngredient, setNewIngredient] = useState<Ingredient>({
         _id: -1,
@@ -104,6 +107,10 @@ const Inventory = () => {
             unitPrice: 0,
             supplier: '',
         });
+        const tableElement = document.getElementById("inventory-table");
+        if (tableElement) {
+          tableElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
     };
     
 
@@ -135,10 +142,14 @@ const Inventory = () => {
                 setIngredients(ingredients.map(ingredient =>
                     ingredient._id === id ? updatedIngredient : ingredient
                 ));
+                
+                setConfirmation('edit');
+                
             } catch (error) {
                 console.error('Fetch error:', error);
             }
         }
+        
     };
 
   const handleAddIngredient = async () => {
@@ -247,6 +258,12 @@ const Inventory = () => {
       alert('Failed to save new ingredient');
     }
   };
+
+
+  const handleCancelConfirmation = () => {
+      setConfirmation(null); 
+  };
+
   
 
   useEffect(() => {
@@ -313,11 +330,14 @@ const Inventory = () => {
       )}
       {showWarning && (
           <DataValidationWarning message={warningMessage} onCancel={() => setShowWarning(false)} />
-        )}
+      )}
+      {confirmation && (
+          <ConfirmationPopup action={confirmation} onClose={() => setConfirmation(null)} />
+      )}
         
       </div>
       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
-        <table className="overflow-scroll w-full text-sm text-center text-black border border-black font-ptserif">
+        <table id="inventory-table" className="overflow-scroll w-full text-sm text-center text-black border border-black font-ptserif">
           <thead className="text-m text-black bg-gray-50 font-ptserif">
             <tr>
               <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif">
