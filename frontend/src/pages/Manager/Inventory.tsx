@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
 import DeleteConfirmation from '../../components/DeleteConfirmation';
+import DataValidationWarning from '../../components/DataValidationWarning';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
 
@@ -73,6 +74,9 @@ const Inventory = () => {
     const [showLowStock, setShowLowStock] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddingNew, setIsAddingNew] = useState(false);
+    const [showWarning, setShowWarning] = useState<boolean>(false);
+    const [warningMessage, setWarningMessage] = useState<string>('');
+
     const [newIngredient, setNewIngredient] = useState<Ingredient>({
         _id: -1,
         name: 'Enter name',
@@ -103,32 +107,39 @@ const Inventory = () => {
     };
     
 
-  const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
-    const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
-    console.log(ingredientToEdit);
-    console.log(id, field, newValue);
+    const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
+        const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
 
-    if (ingredientToEdit) {
-        console.log("ingredientToEdit", ingredientToEdit);
-        const updatedIngredient = { ...ingredientToEdit, [field]: newValue };
+        if (ingredientToEdit) {
+            // Check if the entered value meets the specified constraints
+            if ((field === 'quantity' || field === 'minQuantity') && (isNaN(Number(newValue)) || Number(newValue) < 0 || !Number.isInteger(Number(newValue)))) {
+                setWarningMessage(`Please enter a positive integer for ${field}`);
+                setShowWarning(true);
+                return;
+            } else if (field === 'unitPrice' && (isNaN(Number(newValue)) || Number(newValue) <= 0)) {
+                setWarningMessage('Please enter a positive number for unit price');
+                setShowWarning(true);
+                return;
+            }
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/edit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedIngredient),
-            });
-            const data = await response.json();
+            const updatedIngredient = { ...ingredientToEdit, [field]: newValue };
 
-            setIngredients(ingredients.map(ingredient =>
-                ingredient._id === id ? updatedIngredient : ingredient
-            ));
-        } catch (error) {
-            console.error('Fetch error:', error);
-            setIngredients(ingredients);
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/edit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedIngredient),
+                });
+                const data = await response.json();
+
+                setIngredients(ingredients.map(ingredient =>
+                    ingredient._id === id ? updatedIngredient : ingredient
+                ));
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
         }
-    }
-  };
+    };
 
   const handleAddIngredient = async () => {
     if (newIngredient) {
@@ -188,6 +199,27 @@ const Inventory = () => {
 
 
   const handleSaveNewIngredient = async () => {
+    if (!newIngredient.name.trim()) {
+      setShowWarning(true);
+      setWarningMessage("Name cannot be empty");
+      return;
+    }
+    if (newIngredient.quantity < 0 || !Number.isInteger(newIngredient.quantity)) {
+      setShowWarning(true);
+      setWarningMessage("Quantity must be a positive integer");
+      return;
+    }
+    if (newIngredient.minQuantity < 0 || !Number.isInteger(newIngredient.minQuantity)) {
+      setShowWarning(true);
+      setWarningMessage("Min quantity must be a positive integer");
+      return;
+    }
+    if (isNaN(newIngredient.unitPrice) || newIngredient.unitPrice <= 0) {
+      setShowWarning(true);
+      setWarningMessage("Unit price must be a positive number");
+      return;
+    }
+  
     const ingredientToSave = {
       name: newIngredient.name,
       quantity: Number(newIngredient.quantity),
@@ -202,15 +234,20 @@ const Inventory = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ingredientToSave)
       });
-      const ingredientId = await response.json();
-      
-      setIngredients([...ingredients, { ...ingredientToSave, _id: ingredientId }]);
-      setIsAddingNew(false);
+  
+      const data = await response.json();
+      if (response.ok && data.ingredientId) {
+        setIngredients([...ingredients, { ...ingredientToSave, _id: data.ingredientId }]);
+        setIsAddingNew(false);
+      } else {
+        alert("Failed to add ingredient");
+      }
     } catch (error) {
       console.error('Error saving new ingredient:', error);
       alert('Failed to save new ingredient');
     }
   };
+  
 
   useEffect(() => {
     async function fetchIngredients() {
@@ -274,6 +311,9 @@ const Inventory = () => {
           onConfirm={handleConfirmDelete}
         />
       )}
+      {showWarning && (
+          <DataValidationWarning message={warningMessage} onCancel={() => setShowWarning(false)} />
+        )}
         
       </div>
       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
@@ -370,6 +410,7 @@ const Inventory = () => {
         </table>
       </div>
     </div>
+    
   );
 };
 
