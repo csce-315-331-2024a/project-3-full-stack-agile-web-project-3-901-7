@@ -2,6 +2,7 @@ import '../../index.css';
 import { useEffect, useState } from "react"
 import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
+import DeleteConfirmation from '../../components/DeleteConfirmation';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
 
@@ -20,7 +21,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
     field,
     ingredientId,
     placeholder = "",
-    isEditable = true  // Ensuring this allows entering edit mode
+    isEditable = true  
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentValue, setCurrentValue] = useState(value.toString());
@@ -67,8 +68,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
     );
 };
 
-
-
 const Inventory = () => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [showLowStock, setShowLowStock] = useState(false);
@@ -83,6 +82,7 @@ const Inventory = () => {
         supplier: 'Enter supplier',
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
     useEffect(() => {
       getUserAuth('manager')
@@ -152,24 +152,39 @@ const Inventory = () => {
 
   
   const handleDeleteIngredient = async (id: number) => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${id}`, {
-        method: 'POST',
-      });
-      const data = await response.json();
-      if (data) {
-        setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
-      } else {
-        throw new Error('Failed to delete the ingredient');
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-    }
+    setConfirmDeleteId(id);
+    
   };
 
   const handleCancelNewIngredient = () => {
     setIsAddingNew(false);
   };
+
+
+  const handleCancelDelete = () => {
+    setConfirmDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (confirmDeleteId !== null) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${confirmDeleteId}`, {
+          method: 'POST',
+        });
+        const data = await response.json();
+        if (data) {
+          setIngredients(ingredients.filter((ingredient) => ingredient._id !== confirmDeleteId));
+          setConfirmDeleteId(null);
+        } else {
+          throw new Error('Failed to delete the ingredient');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setConfirmDeleteId(null);
+      }
+    }
+  };
+
 
 
   const handleSaveNewIngredient = async () => {
@@ -252,6 +267,13 @@ const Inventory = () => {
         ]}
       />
     <div>
+
+    {confirmDeleteId !== null && (
+        <DeleteConfirmation
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
         
       </div>
       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
