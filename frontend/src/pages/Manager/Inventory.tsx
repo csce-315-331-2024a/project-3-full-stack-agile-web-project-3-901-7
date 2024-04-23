@@ -78,15 +78,14 @@ const Inventory = () => {
     const [showWarning, setShowWarning] = useState<boolean>(false);
     const [warningMessage, setWarningMessage] = useState<string>('');
     const [confirmation, setConfirmation] = useState<'add' | 'edit' | null>(null);
-  
 
     const [newIngredient, setNewIngredient] = useState<Ingredient>({
         _id: -1,
-        name: 'Enter name',
+        name: '',
         quantity: 0,
         minQuantity: 0,
-        unitPrice: 0.00,
-        supplier: 'Enter supplier',
+        unitPrice: 1.00,
+        supplier: '',
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
@@ -102,9 +101,9 @@ const Inventory = () => {
         setNewIngredient({
             _id: -1, // Temporary ID until saved
             name: '',
-            quantity: 0,
-            minQuantity: 0,
-            unitPrice: 0,
+            quantity: -1,
+            minQuantity: -1,
+            unitPrice: -1,
             supplier: '',
         });
         const tableElement = document.getElementById("inventory-table");
@@ -154,26 +153,6 @@ const Inventory = () => {
         
     };
 
-  const handleAddIngredient = async () => {
-    if (newIngredient) {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/insert`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newIngredient),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.ingredientId) {
-        setIngredients([...ingredients, { ...newIngredient, _id: data.ingredientId }]);
-        setIsAddingNew(false);
-      } else {
-        alert("Failed to add ingredient");
-      }
-    } else {
-      alert("Please fill all fields");
-    }
-  };
-
   
   const handleDeleteIngredient = async (id: number) => {
     setConfirmDeleteId(id);
@@ -212,6 +191,47 @@ const Inventory = () => {
 
 
   const handleSaveNewIngredient = async () => {
+    if (!newIngredient.name.trim()) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for name");
+      return;
+    }
+    if (newIngredient.quantity == -1) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for quantity");
+      return;
+    }
+    if (newIngredient.minQuantity == -1) {
+        setShowWarning(true);
+        setWarningMessage("Enter value for minimum quantity");
+        return;
+    }
+    if (newIngredient.unitPrice == -1) {
+        setShowWarning(true);
+        setWarningMessage("Enter value for unit price");
+        return;
+    }
+    if (!newIngredient.supplier.trim()) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for supplier");
+      return;
+    }
+    if (newIngredient.quantity < 0 || !Number.isInteger(newIngredient.quantity)) {
+      setShowWarning(true);
+      setWarningMessage("Quantity must be a positive integer");
+      return;
+    }
+    if (newIngredient.minQuantity < 0 || !Number.isInteger(newIngredient.minQuantity)) {
+      setShowWarning(true);
+      setWarningMessage("Min quantity must be a positive integer");
+      return;
+    }
+    if (isNaN(newIngredient.unitPrice) || newIngredient.unitPrice <= 0) {
+      setShowWarning(true);
+      setWarningMessage("Unit price must be a positive number");
+      return;
+    }
+
     const ingredientToSave = {
       name: newIngredient.name,
       quantity: Number(newIngredient.quantity),
