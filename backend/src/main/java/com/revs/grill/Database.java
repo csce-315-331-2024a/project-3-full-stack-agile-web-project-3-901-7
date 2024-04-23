@@ -181,6 +181,7 @@ public class Database {
 
             orderItemResult.close();
             orderItemStatement.close();
+            order.serializeOrderInfo();
 
             orders.add(order);
         }
@@ -423,13 +424,14 @@ public class Database {
     public static int insertOrder(Order order) {
         try {
             // insert item into database
-            String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime) VALUES (?, ?, ?, ?)";
+            String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime, status) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement orderInsertStatement = connection.prepareStatement(orderInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
             orderInsertStatement.setInt(1, order.numItems);
             orderInsertStatement.setDouble(2, order.total);
             orderInsertStatement.setString(3, order.orderInfo);
             orderInsertStatement.setDate(4, order.dateTime);
+            orderInsertStatement.setString(5, order.status);
             orderInsertStatement.executeUpdate();
 
             // get generated id of item in database
@@ -490,13 +492,14 @@ public class Database {
     public static boolean editOrder(Order order) {
         try {
             // update order table
-            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ? WHERE orderId = ?";
+            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ?, status = ? WHERE orderId = ?";
             PreparedStatement orderUpdateStatement = connection.prepareStatement(orderUpdateQuery);
             orderUpdateStatement.setInt(1, order.numItems);
             orderUpdateStatement.setDouble(2, order.total);
             orderUpdateStatement.setString(3, order.orderInfo);
             orderUpdateStatement.setDate(4, order.dateTime);
-            orderUpdateStatement.setInt(5, order._id);
+            orderUpdateStatement.setString(5, order.status);
+            orderUpdateStatement.setInt(6, order._id);
             orderUpdateStatement.executeUpdate();
 
             // remove existing order-item junctions
@@ -848,6 +851,19 @@ public class Database {
                 statement.setInt(index++, orderId);
             }
 
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Order> getOrdersByStatus(String status) {
+        try {
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Orders WHERE status = ?");
+            statement.setString(1, status);
             return runOrderQuery(statement);
 
         } catch (SQLException e) {
