@@ -37,7 +37,8 @@ export default function OrderReceipt({order, items, updateOrder, processOrder}: 
             orderInfo: order.orderInfo,
             itemToQuantity: mapToObj(order.itemToQuantity),
             total: order.total,
-            dateTime: order.date
+            dateTime: order.date,
+            status: "received"
         }
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
         const data = await response.json();
