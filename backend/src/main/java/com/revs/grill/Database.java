@@ -1,27 +1,40 @@
 package com.revs.grill;
 
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
+@Configuration
+@PropertySource("classpath:application.properties")
 public class Database {
     public static Connection connection = null;
+
+    private static String databaseName;
+
+    private static String databaseUser;
+
+    private static String databasePassword;
 
     public static void createConnection() {
         if (connection != null)
             return;
 
-        String database_name = "csce331_901_04_p3_db";
-        String database_user = "csce331_901_04_user";
-        String database_password = "HPTaVfHd"; // NEED TO PRIVATE
-        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
-
         try {
-            connection = DriverManager.getConnection(database_url, database_user, database_password);
+            Properties p = new Properties();
+            p.load(Database.class.getClassLoader().getResourceAsStream("application.properties"));
+            databaseName = p.getProperty("database.name");
+            databaseUser = p.getProperty("database.user");
+            databasePassword = p.getProperty("database.password");
+            String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", databaseName);
+            connection = DriverManager.getConnection(database_url, databaseUser, databasePassword);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -231,7 +244,7 @@ public class Database {
             String userInsertQuery = "INSERT INTO Users (email, name, firstName, lastName, picture, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?);";
             PreparedStatement userInsertStatement = connection.prepareStatement(userInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
-            
+
             userInsertStatement.setString(1, user.email);
             userInsertStatement.setString(2, user.name);
             userInsertStatement.setString(3, user.given_name);
@@ -309,7 +322,7 @@ public class Database {
             String roleInsertQuery = "UPDATE Roles SET email = ?, type = ? WHERE roleId = ?;";
             PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
-            
+
             roleInsertStatement.setString(1, role.email);
             roleInsertStatement.setString(2, role.type);
             roleInsertStatement.setInt(3, role._id);
@@ -338,7 +351,7 @@ public class Database {
             String roleInsertQuery = "INSERT INTO Roles (email, type) VALUES (?, ?);";
             PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
                     Statement.RETURN_GENERATED_KEYS);
-            
+
             roleInsertStatement.setString(1, role.email);
             roleInsertStatement.setString(2, role.type);
 
@@ -366,12 +379,12 @@ public class Database {
             String roleDeleteQuery = "DELETE FROM Roles WHERE roleId = ?;";
             PreparedStatement roleDeleteStatement = connection.prepareStatement(roleDeleteQuery,
                     Statement.RETURN_GENERATED_KEYS);
-            
+
             roleDeleteStatement.setInt(1, role._id);
 
             roleDeleteStatement.executeUpdate();
             roleDeleteStatement.close();
-            
+
             return true;
 
         } catch (SQLException e) {
