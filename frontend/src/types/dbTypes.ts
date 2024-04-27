@@ -1,3 +1,20 @@
+export type UserType = "customer" | "admin" | "manager" | "cashier";
+
+export interface User {
+    _id: number;
+    email: string;
+    name: string;
+    given_name: string;
+    family_name: string;
+    picture: string;
+}
+
+export interface Role {
+    _id: number;
+    email: string;
+    type: UserType;
+}
+
 export interface Item {
     _id: number;
     name: string;
@@ -25,4 +42,26 @@ export interface OrderType {
     itemToQuantity: Map<number, number>;
     total: number;
     date: Date;
+    status?: string;
 }
+
+export type SalesData = {
+    itemName: string;
+    totalSales: number;
+};
+
+export type InventoryUsage = {
+    ingredientName: string;
+    totalUsed: number;
+};
+
+export type ExcessData = {
+    ingredient: Ingredient;
+    percentageConsumed: number;
+};
+
+export type PairItems = {
+    item1: Item;
+    item2: Item;
+    frequency: number;
+};

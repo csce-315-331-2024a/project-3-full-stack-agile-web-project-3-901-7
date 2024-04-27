@@ -1,19 +1,20 @@
 import React, { useState } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
+import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
-interface ILoginButtonProps {
-    color?: string;
-    isSubmit?: boolean;
-    children?: JSX.Element | string;
-    icon?: IIcon;
-    onClick?: () => void;
-}
+import CookieManager from "../utils/CookieManager";
+import { toTitleCase } from "../utils/utils";
+import { UserType, User, Role } from "../types/dbTypes";
 
 interface IIcon {
     viewboxSize: number;
     path: string;
+}
+
+interface CredCache {
+    googleResponse?: TokenResponse;
+    userInfo?: User;
+    type: UserType;
 }
 
 const icons = {
@@ -26,6 +27,73 @@ const icons = {
         viewboxSize: 20,
     },
 };
+
+export function authLevel(type : UserType) {
+    return {
+        'customer': 1,
+        'cashier': 2,
+        'manager': 3,
+        'admin': 4,
+    }[type];
+}
+
+export async function getUserAuth(type : UserType) {
+    let tokenResponseStr = CookieManager.get('tokenResponse');
+    if (tokenResponseStr) {
+        let credCache = JSON.parse(tokenResponseStr) as CredCache;
+        let userProfile : User | undefined = undefined;
+
+        if (credCache.googleResponse) {
+            const userResponse = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${credCache.googleResponse.access_token}`, {
+                headers: {
+                    Authorization: `Bearer ${credCache.googleResponse.access_token}`,
+                    Accept: 'application/json'
+                }
+            });
+            userProfile = await userResponse.json() as User;
+        }
+        else if (credCache.userInfo) {
+            userProfile = credCache.userInfo;
+        }
+
+        if (!userProfile) {
+            window.location.href = `${window.location.origin}/${type}/login`;
+            throw Error('Invalid auth');
+        }
+        
+        let role : Role;
+
+        try {
+            console.log('requesting with profile', userProfile);
+            const roleResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/role/findByEmail?email=" + userProfile.email);
+            role = await roleResponse.json() as Role;
+        }
+        catch {
+            window.location.href = `${window.location.origin}/${type}/login`;
+            throw Error('Role not set up');
+        }
+
+    
+        if (authLevel(role.type) < authLevel(type)) {
+            window.location.href = `${window.location.origin}/${role.type}`;
+            throw Error('Authorization Level too Low');
+        }
+    
+        return userProfile;
+    }
+    else {
+        window.location.href = `${window.location.origin}/${type}/login`;
+        throw Error('No auth token');
+    }
+}
+
+interface ILoginButtonProps {
+    color?: string;
+    isSubmit?: boolean;
+    children?: JSX.Element | string;
+    icon?: IIcon;
+    onClick?: () => void;
+}
 
 const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     return (
@@ -56,25 +124,82 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     );
 };
 
-const Login: React.FC = () => {
+interface ILoginProps {
+    type: UserType;
+    signup?: boolean;
+}
+
+export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
     const navigate = useNavigate();
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [userInfo, setUserInfo] = useState<User>({
+        _id: -1,
+        email: '',
+        name: '',
+        given_name: '',
+        family_name: '',
+        picture: '',
+    });
+
+    const onLoginSuccess = (cred: { googleResponse?: TokenResponse, userInfo?: User, type: UserType }) => {
+        const credCache : CredCache = {
+            googleResponse: cred.googleResponse,
+            userInfo: cred.userInfo,
+            type: cred.type,
+        };
+        CookieManager.create('tokenResponse', JSON.stringify(credCache), cred.googleResponse && cred.googleResponse.expires_in);
+        getUserAuth(props.type).then(_ => {
+            navigate(`/${props.type}`);
+        });
+    }
 
     const googleLogin = useGoogleLogin({
         onSuccess: (user) => {
-            console.log("Login Success:", user);
-            navigate("/manager");
+            onLoginSuccess({ googleResponse: user, type: props.type });
         },
         onError: (error) => {
             console.error("Login Error:", error);
         },
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(email, password);
-        navigate("/manager");
+        if (props.signup) {
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/user/signup", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userInfo, 
+                    password,
+                }),
+            });
+            const data = await response.json();
+            if (data.success)
+                navigate(`/${props.type}/login`);
+            else
+                alert('Invalid authentication: Please ensure the information you entered is correct and ask your administrator if any issues persist');
+        } 
+        else {
+            try {
+                const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/user/login", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: userInfo.email, password,
+                    }),
+                });
+                const user = await response.json() as User;
+                onLoginSuccess({ userInfo: user, type: props.type });
+            }
+            catch (error) {
+                alert('Could not authenticate');
+            }
+
+        }
     };
 
     return (
@@ -92,7 +217,7 @@ const Login: React.FC = () => {
                     <div className="items-center w-1/2 pl-4 flex flex-col justify-center">
                         <div>
                             <h2 className="font-ptserif text-center text-3xl font-extrabold text-gray-900">
-                                Login To Your Account
+                                {props.signup ? "Sign Up For" : "Login To"} Your {toTitleCase(props.type)} Account
                             </h2>
                         </div>
                         <form
@@ -100,6 +225,44 @@ const Login: React.FC = () => {
                             onSubmit={handleSubmit}
                         >
                             <div className="w-full rounded-md shadow-sm -space-y-px">
+                                {props.signup && <>
+                                    <div className="flex flex-row gap-4 mb-4">
+                                        <input
+                                            id="first-name"
+                                            name="firstName"
+                                            type="text"
+                                            required
+                                            value={userInfo.given_name}
+                                            onChange={(e) =>
+                                                setUserInfo(prevUser => ({
+                                                    ...prevUser, 
+                                                    given_name: toTitleCase(e.target.value), 
+                                                    name: toTitleCase(e.target.value + ' ' + prevUser.family_name)
+                                                }))
+                                            }
+                                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                            placeholder="First name"
+                                        />
+                                        
+                                        <input
+                                            id="last-name"
+                                            name="lastName"
+                                            type="text"
+                                            required
+                                            value={userInfo.family_name}
+                                            onChange={(e) =>
+                                                setUserInfo(prevUser => ({
+                                                    ...prevUser, 
+                                                    family_name: toTitleCase(e.target.value), 
+                                                    name: toTitleCase(prevUser.given_name + ' ' + e.target.value)
+                                                }))
+                                            }
+                                            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                            placeholder="Last name"
+                                        />
+                                    </div>
+                                </>}
+
                                 <div className="mb-4">
                                     <input
                                         id="email-address"
@@ -107,16 +270,15 @@ const Login: React.FC = () => {
                                         type="email"
                                         autoComplete="email"
                                         required
-                                        value={email}
-                                        onChange={(e) =>
-                                            setEmail(e.target.value)
-                                        }
+                                        value={userInfo.email}
+                                        onChange={(e) => {
+                                            setUserInfo((prevUser) => ({ ...prevUser, email : e.target.value }));
+                                        }}
                                         className="appearance-none rounded-none relative block w-full px-3 py-2 border border-black placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-black focus:border-black focus:z-10 sm:text-sm"
                                         placeholder="Email address"
                                     />
                                 </div>
-                                <div className="my-4" />
-                                <div>
+                                <div className="mb-4">
                                     <input
                                         id="password"
                                         name="password"
@@ -132,8 +294,21 @@ const Login: React.FC = () => {
                                     />
                                 </div>
                             </div>
+
+                            {!props.signup && (
+                                <div className="flex flex-row justify-center gap-4">
+                                    Don't have an account? 
+                                    <a 
+                                        className="text-blue-500"
+                                        href={`/${props.type}/signup`}
+                                    >
+                                        Sign up here
+                                    </a>
+                                </div>
+                            )}
+
                             <div className="space-y-4">
-                                <LoginButton isSubmit>Login</LoginButton>
+                                <LoginButton isSubmit>{props.signup ? "Sign Up" : "Login"}</LoginButton>
                                 <div className="text-lg font-bold text-gray-500 space-y-2 text-center">
                                     - or -
                                 </div>
@@ -141,7 +316,7 @@ const Login: React.FC = () => {
                                     icon={icons.google}
                                     onClick={googleLogin}
                                 >
-                                    Sign In With Google
+                                    <>Sign {props.signup ? "Up" : "In"} With Google</>
                                 </LoginButton>
                             </div>
                         </form>
@@ -151,5 +326,3 @@ const Login: React.FC = () => {
         </div>
     );
 };
-
-export default Login;

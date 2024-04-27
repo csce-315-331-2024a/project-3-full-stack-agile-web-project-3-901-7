@@ -1,36 +1,51 @@
 package com.revs.grill;
 
+import java.io.FileInputStream;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
+@Configuration
+@PropertySource("classpath:application.properties")
 public class Database {
     public static Connection connection = null;
+
+    private static String databaseName;
+
+    private static String databaseUser;
+
+    private static String databasePassword;
 
     public static void createConnection() {
         if (connection != null)
             return;
 
-        String database_name = "csce331_901_04_p3_db";
-        String database_user = "csce331_901_04_user";
-        String database_password = "HPTaVfHd"; // NEED TO PRIVATE
-        String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", database_name);
-        
         try {
-            connection = DriverManager.getConnection(database_url, database_user, database_password);
+            Properties p = new Properties();
+            p.load(Database.class.getClassLoader().getResourceAsStream("application.properties"));
+            databaseName = p.getProperty("database.name");
+            databaseUser = p.getProperty("database.user");
+            databasePassword = p.getProperty("database.password");
+            String database_url = String.format("jdbc:postgresql://csce-315-db.engr.tamu.edu/%s", databaseName);
+            connection = DriverManager.getConnection(database_url, databaseUser, databasePassword);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static List<Ingredient> runIngredientQuery(PreparedStatement queryStatement) throws SQLException {
-        if (connection == null) { createConnection(); }
+        if (connection == null) {
+            createConnection();
+        }
         List<Ingredient> ingredients = new ArrayList<>();
-        
+
         ResultSet resultSet = queryStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -50,10 +65,13 @@ public class Database {
         return ingredients;
     }
 
-    private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients) throws SQLException {
-        if (connection == null) { createConnection(); }
+    private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
         List<Item> items = new ArrayList<>();
-        
+
         ResultSet resultSet = queryStatement.executeQuery();
 
         while (resultSet.next()) {
@@ -70,14 +88,13 @@ public class Database {
 
             if (fillIngredients) {
                 PreparedStatement ingStatement = connection.prepareStatement(
-                    "SELECT * \n" +
-                    "FROM \n" +
-                        "Items i \n" +
-                        "JOIN ItemIngredient_Junction ii ON i.itemId = ii.itemId \n" +
-                        "JOIN Ingredients ing ON ii.ingredientId = ing.ingredientId \n" +
-                    "WHERE \n" +
-                        "i.name = ?;"
-                );
+                        "SELECT * \n" +
+                                "FROM \n" +
+                                "Items i \n" +
+                                "JOIN ItemIngredient_Junction ii ON i.itemId = ii.itemId \n" +
+                                "JOIN Ingredients ing ON ii.ingredientId = ing.ingredientId \n" +
+                                "WHERE \n" +
+                                "i.name = ?;");
                 ingStatement.setString(1, item.name);
                 item.ingredients = runIngredientQuery(ingStatement);
             }
@@ -91,12 +108,67 @@ public class Database {
         return items;
     }
 
-    private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
-        if (connection == null) { createConnection(); }
-        List<Order> orders = new ArrayList<>();
-        
+    private static List<User> runUserQuery(PreparedStatement queryStatement)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<User> users = new ArrayList<>();
+
         ResultSet resultSet = queryStatement.executeQuery();
-        
+
+        while (resultSet.next()) {
+            User user = new User();
+            user._id = resultSet.getInt("userId");
+            user.email = resultSet.getString("email");
+            user.name = resultSet.getString("name");
+            user.given_name = resultSet.getString("firstName");
+            user.family_name = resultSet.getString("lastName");
+            user.picture = resultSet.getString("picture");
+            user.setHash(resultSet.getString("hash"));
+            user.setSalt(resultSet.getString("salt"));
+
+            users.add(user);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return users;
+    }
+
+    private static List<Role> runRoleQuery(PreparedStatement queryStatement)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<Role> roles = new ArrayList<>();
+
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            Role role = new Role();
+            role._id = resultSet.getInt("roleId");
+            role.email = resultSet.getString("email");
+            role.type = resultSet.getString("type");
+
+            roles.add(role);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return roles;
+    }
+
+    private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<Order> orders = new ArrayList<>();
+
+        ResultSet resultSet = queryStatement.executeQuery();
+
         while (resultSet.next()) {
             Order order = new Order();
             order._id = resultSet.getInt("orderId");
@@ -106,14 +178,13 @@ public class Database {
             order.orderInfo = resultSet.getString("orderInfo");
 
             PreparedStatement orderItemStatement = connection.prepareStatement(
-                "SELECT * \n" +
-                "FROM OrderItem_Junction oij \n" + 
-                "JOIN Items i ON oij.itemId = i.itemId \n" + 
-                "WHERE oij.orderId = ?;"
-            );
+                    "SELECT * \n" +
+                            "FROM OrderItem_Junction oij \n" +
+                            "JOIN Items i ON oij.itemId = i.itemId \n" +
+                            "WHERE oij.orderId = ?;");
 
             orderItemStatement.setInt(1, order._id);
-            
+
             ResultSet orderItemResult = orderItemStatement.executeQuery();
             while (orderItemResult.next()) {
                 int numOfItem = orderItemResult.getInt("numOfItem");
@@ -123,7 +194,8 @@ public class Database {
 
             orderItemResult.close();
             orderItemStatement.close();
-            
+            order.serializeOrderInfo();
+
             orders.add(order);
         }
 
@@ -131,6 +203,194 @@ public class Database {
         queryStatement.close();
 
         return orders;
+    }
+
+    public static List<User> getAllUsers() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users");
+            return runUserQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<User> getUsersById(List<Integer> userIds) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE userId IN " + buildPlaceholderString(userIds.size()));
+            int index = 1;
+            for (Integer userId : userIds) {
+                statement.setInt(index++, userId);
+            }
+
+            return runUserQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int insertUser(User user, String password) {
+        try {
+            if (password.length() > 0) {
+                user.hashPassword(password);
+            } else {
+                user.setHash("");
+                user.setSalt("");
+            }
+
+            String userInsertQuery = "INSERT INTO Users (email, name, firstName, lastName, picture, salt, hash) VALUES (?, ?, ?, ?, ?, ?, ?);";
+            PreparedStatement userInsertStatement = connection.prepareStatement(userInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            userInsertStatement.setString(1, user.email);
+            userInsertStatement.setString(2, user.name);
+            userInsertStatement.setString(3, user.given_name);
+            userInsertStatement.setString(4, user.family_name);
+            userInsertStatement.setString(5, user.picture);
+            userInsertStatement.setString(6, user.getSalt());
+            userInsertStatement.setString(7, user.getHash());
+
+            userInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = userInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                userInsertStatement.close();
+                return -1;
+            }
+
+            int userId = generatedKeys.getInt(1);
+            return userId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static User authenticateUser(String email, String password) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email='" + email + "';");
+            List<User> users = runUserQuery(statement);
+            if (users.size() < 1) {
+                return null;
+            }
+
+            User user = users.get(0);
+            if (user.authenticate(password))
+                return user;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+    public static List<Role> getAllRoles() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles;");
+            return runRoleQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Role getRoleByEmail(String email) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles WHERE email = ?;");
+            statement.setString(1, email);
+            List<Role> roleMatches = runRoleQuery(statement);
+            if (roleMatches.size() < 1)
+                return null;
+            return roleMatches.get(0);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int editRole(Role role) {
+        try {
+            String roleInsertQuery = "UPDATE Roles SET email = ?, type = ? WHERE roleId = ?;";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            roleInsertStatement.setString(1, role.email);
+            roleInsertStatement.setString(2, role.type);
+            roleInsertStatement.setInt(3, role._id);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static int insertRole(Role role) {
+        try {
+            String roleInsertQuery = "INSERT INTO Roles (email, type) VALUES (?, ?);";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            roleInsertStatement.setString(1, role.email);
+            roleInsertStatement.setString(2, role.type);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static boolean deleteRole(Role role) {
+        try {
+            String roleDeleteQuery = "DELETE FROM Roles WHERE roleId = ?;";
+            PreparedStatement roleDeleteStatement = connection.prepareStatement(roleDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            roleDeleteStatement.setInt(1, role._id);
+
+            roleDeleteStatement.executeUpdate();
+            roleDeleteStatement.close();
+
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static List<Item> getAllItems() {
@@ -153,7 +413,7 @@ public class Database {
             for (Integer itemId : itemIds) {
                 statement.setInt(index++, itemId);
             }
-            
+
             return runItemQuery(statement, true);
 
         } catch (SQLException e) {
@@ -177,50 +437,54 @@ public class Database {
     public static int insertOrder(Order order) {
         try {
             // insert item into database
-            String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime) VALUES (?, ?, ?, ?)";
-            PreparedStatement orderInsertStatement = connection.prepareStatement(orderInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime, status) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement orderInsertStatement = connection.prepareStatement(orderInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             orderInsertStatement.setInt(1, order.numItems);
             orderInsertStatement.setDouble(2, order.total);
             orderInsertStatement.setString(3, order.orderInfo);
             orderInsertStatement.setDate(4, order.dateTime);
+            orderInsertStatement.setString(5, order.status);
             orderInsertStatement.executeUpdate();
-            
+
             // get generated id of item in database
             ResultSet generatedKeys = orderInsertStatement.getGeneratedKeys();
-            
-            if (!generatedKeys.next()) { 
+
+            if (!generatedKeys.next()) {
                 orderInsertStatement.close();
-                return -1; 
+                return -1;
             }
 
             int orderId = generatedKeys.getInt(1);
-            
+
             // add item ingredients to item-ingredient junction
             if (order.itemToQuantity != null && !order.itemToQuantity.isEmpty()) {
                 String insertOrderItemQuery = "INSERT INTO OrderItem_Junction (numOfItem, orderId, itemId) VALUES (?, ?, ?)";
                 PreparedStatement insertOrderItemStatement = connection.prepareStatement(insertOrderItemQuery);
-                
-                String updateIngredientQuantityQuery = "" + 
-                    "UPDATE Ingredients \n" +
-                    "SET quantity = quantity - 1 \n" + 
-                    "WHERE ingredientId IN ( \n" + 
-                    "    SELECT ii.ingredientId \n" + 
-                    "    FROM OrderItem_Junction oij \n" + 
-                    "    JOIN ItemIngredient_Junction ii ON oij.itemId = ii.itemId \n" + 
-                    "    WHERE oij.itemId IN " + buildPlaceholderString(order.itemToQuantity.size()) + " \n" + 
-                    ");";
-                PreparedStatement updateIngredientQuantityStatement = connection.prepareStatement(updateIngredientQuantityQuery);
-                
+
+                String updateIngredientQuantityQuery = "" +
+                        "UPDATE Ingredients \n" +
+                        "SET quantity = quantity - 1 \n" +
+                        "WHERE ingredientId IN ( \n" +
+                        " SELECT ii.ingredientId \n" +
+                        " FROM OrderItem_Junction oij \n" +
+                        " JOIN ItemIngredient_Junction ii ON oij.itemId = ii.itemId \n" +
+                        " WHERE oij.itemId IN " + buildPlaceholderString(order.itemToQuantity.size())
+                        + " \n" +
+                        ");";
+                PreparedStatement updateIngredientQuantityStatement = connection
+                        .prepareStatement(updateIngredientQuantityQuery);
+
                 int index = 1;
                 for (int itemId : order.itemToQuantity.keySet()) {
                     updateIngredientQuantityStatement.setInt(index++, itemId);
-                    
+
                     insertOrderItemStatement.setInt(1, order.getItemQuantity(itemId));
                     insertOrderItemStatement.setInt(2, orderId);
                     insertOrderItemStatement.setInt(3, itemId);
                     insertOrderItemStatement.addBatch();
                 }
-                
+
                 updateIngredientQuantityStatement.executeUpdate();
                 insertOrderItemStatement.executeBatch();
 
@@ -235,18 +499,20 @@ public class Database {
             e.printStackTrace();
             return -1;
         }
+
     }
-    
+
     public static boolean editOrder(Order order) {
         try {
             // update order table
-            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ? WHERE orderId = ?";
+            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ?, status = ? WHERE orderId = ?";
             PreparedStatement orderUpdateStatement = connection.prepareStatement(orderUpdateQuery);
             orderUpdateStatement.setInt(1, order.numItems);
             orderUpdateStatement.setDouble(2, order.total);
             orderUpdateStatement.setString(3, order.orderInfo);
             orderUpdateStatement.setDate(4, order.dateTime);
-            orderUpdateStatement.setInt(5, order._id);
+            orderUpdateStatement.setString(5, order.status);
+            orderUpdateStatement.setInt(6, order._id);
             orderUpdateStatement.executeUpdate();
 
             // remove existing order-item junctions
@@ -266,7 +532,7 @@ public class Database {
                 insertOrderItemStatement.addBatch();
             }
             insertOrderItemStatement.executeBatch();
-            
+
             orderUpdateStatement.close();
             oijRemoveStatement.close();
             insertOrderItemStatement.close();
@@ -278,7 +544,7 @@ public class Database {
             return false;
         }
     }
-    
+
     public static boolean deleteOrder(Order order) {
         try {
             // delete order from order table
@@ -304,7 +570,7 @@ public class Database {
             return false;
         }
     }
-    
+
     public static int insertItem(Item item) {
         int itemId = -1;
 
@@ -321,25 +587,24 @@ public class Database {
             itemInsertStatement.setString(7, item.picture);
             itemInsertStatement.setString(8, item.itemDesc);
             itemInsertStatement.executeUpdate();
-            
+
             // get generated id of item in database
             ResultSet generatedKeys = itemInsertStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 itemId = generatedKeys.getInt(1);
-                
+
                 // add item ingredients to item-ingredient junction
                 if (item.ingredients != null && !item.ingredients.isEmpty()) {
                     String ingredientInsertQuery = "INSERT INTO ItemIngredient_Junction (itemId, ingredientId) VALUES (?, ?)";
                     PreparedStatement ingredientInsertStatement = connection.prepareStatement(ingredientInsertQuery);
-                    
+
                     String ingredientList = "";
                     int i = 0;
                     for (Ingredient ingredient : item.ingredients) {
-                        if (i < item.ingredients.size() - 1){
+                        if (i < item.ingredients.size() - 1) {
                             ingredientList += ingredient.name;
                             ingredientList += ",";
-                        }
-                        else {
+                        } else {
                             ingredientList += ingredient.name;
                         }
                         ingredientInsertStatement.setInt(1, itemId);
@@ -350,7 +615,7 @@ public class Database {
                     ingredientInsertStatement.executeBatch();
                     ingredientInsertStatement.close();
 
-                    //set the varchar in item ingredients with a list of ingredients
+                    // set the varchar in item ingredients with a list of ingredients
                     String ingredientItemQuery = "UPDATE Items SET ingredients = ? WHERE itemId = ?";
                     PreparedStatement ingredientItemStatement = connection.prepareStatement(ingredientItemQuery);
                     ingredientItemStatement.setString(1, ingredientList);
@@ -369,7 +634,7 @@ public class Database {
 
         return itemId;
     }
-    
+
     public static boolean editItem(Item item) {
         try {
             // insert item into database
@@ -402,7 +667,7 @@ public class Database {
                 insertItemIngStatement.addBatch();
             }
             insertItemIngStatement.executeBatch();
-            
+
             // close statements
             insertItemIngStatement.close();
             iijRemoveStatement.close();
@@ -420,14 +685,16 @@ public class Database {
         try {
             // delete item from database
             String itemDeleteQuery = "DELETE FROM Items WHERE itemId = ?";
-            PreparedStatement itemDeleteStatement = connection.prepareStatement(itemDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement itemDeleteStatement = connection.prepareStatement(itemDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             itemDeleteStatement.setInt(1, itemId);
             itemDeleteStatement.executeUpdate();
             itemDeleteStatement.close();
 
             // delete item id relevant ingredient correlations in junction table
             String itemIngredientDeleteQuery = "DELETE FROM ItemIngredient_Junction WHERE itemId = ?";
-            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             itemIngredientDeleteStatement.setInt(1, itemId);
             itemIngredientDeleteStatement.executeUpdate();
             itemIngredientDeleteStatement.close();
@@ -439,7 +706,7 @@ public class Database {
 
         return true;
     }
-    
+
     public static List<Ingredient> getAllIngredients() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Ingredients");
@@ -450,17 +717,18 @@ public class Database {
             return null;
         }
     }
-    
+
     public static List<Ingredient> getIngredientsById(List<Integer> ingredientIds) {
         try {
-            String query = "SELECT * FROM Ingredients WHERE ingredientId IN " + buildPlaceholderString(ingredientIds.size());
+            String query = "SELECT * FROM Ingredients WHERE ingredientId IN "
+                    + buildPlaceholderString(ingredientIds.size());
             PreparedStatement statement = connection.prepareStatement(query);
 
             int index = 1;
             for (Integer ingredientId : ingredientIds) {
                 statement.setInt(index++, ingredientId);
             }
-            
+
             return runIngredientQuery(statement);
 
         } catch (SQLException e) {
@@ -474,7 +742,7 @@ public class Database {
             String query = "SELECT * FROM Ingredients WHERE name LIKE ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, "%" + testName + "%");
-            
+
             return runIngredientQuery(statement);
 
         } catch (SQLException e) {
@@ -482,21 +750,22 @@ public class Database {
             return null;
         }
     }
-    
+
     public static int insertIngredient(Ingredient ingredient) {
         int ingredientId = -1;
 
         try {
             // insert ingredient into database
             String ingInsertQuery = "INSERT INTO Ingredients (name, quantity, minQuantity, unitPrice, supplier) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement ingInsertStatement = connection.prepareStatement(ingInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ingInsertStatement = connection.prepareStatement(ingInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             ingInsertStatement.setString(1, ingredient.name);
             ingInsertStatement.setInt(2, ingredient.quantity);
             ingInsertStatement.setInt(3, ingredient.minQuantity);
             ingInsertStatement.setDouble(4, ingredient.unitPrice);
             ingInsertStatement.setString(5, ingredient.supplier);
             ingInsertStatement.executeUpdate();
-            
+
             // get generated id of ingredient in database
             ResultSet generatedKeys = ingInsertStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -511,7 +780,7 @@ public class Database {
 
         return ingredientId;
     }
-    
+
     public static boolean editIngredient(Ingredient ingredient) {
         try {
             String ingredientEditQuery = "UPDATE Ingredients SET name = ?, quantity = ?, minQuantity = ?, unitPrice = ?, supplier = ? WHERE ingredientId = ?";
@@ -531,19 +800,21 @@ public class Database {
             return false;
         }
     }
-    
+
     public static boolean deleteIngredient(int ingredientId) {
         try {
             // delete item from database
             String ingDeleteQuery = "DELETE FROM Ingredients WHERE ingredientId = ?";
-            PreparedStatement ingDeleteStatement = connection.prepareStatement(ingDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ingDeleteStatement = connection.prepareStatement(ingDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             ingDeleteStatement.setInt(1, ingredientId);
             ingDeleteStatement.executeUpdate();
             ingDeleteStatement.close();
 
             // delete item id relevant ingredient correlations in junction table
             String itemIngredientDeleteQuery = "DELETE FROM ItemIngredient_Junction WHERE ingredientId = ?";
-            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement itemIngredientDeleteStatement = connection.prepareStatement(itemIngredientDeleteQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             itemIngredientDeleteStatement.setInt(1, ingredientId);
             itemIngredientDeleteStatement.executeUpdate();
             itemIngredientDeleteStatement.close();
@@ -555,10 +826,11 @@ public class Database {
 
         return true;
     }
-    
+
     public static List<Order> getAllOrders(int limit) {
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders ORDER BY dateTime DESC LIMIT ?");
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Orders ORDER BY dateTime DESC LIMIT ?");
             statement.setInt(1, limit);
             return runOrderQuery(statement);
 
@@ -567,10 +839,11 @@ public class Database {
             return null;
         }
     }
-    
+
     public static List<Order> getOrdersByDateRange(Date start, Date end) {
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Orders WHERE dateTime >= ? AND dateTime <= ?");
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Orders WHERE dateTime >= ? AND dateTime <= ?");
             statement.setDate(1, start);
             statement.setDate(2, end);
             return runOrderQuery(statement);
@@ -580,7 +853,7 @@ public class Database {
             return null;
         }
     }
-    
+
     public static List<Order> getOrdersById(List<Integer> orderIds) {
         try {
             String query = "SELECT * FROM Orders WHERE orderId IN " + buildPlaceholderString(orderIds.size());
@@ -590,7 +863,7 @@ public class Database {
             for (Integer orderId : orderIds) {
                 statement.setInt(index++, orderId);
             }
-            
+
             return runOrderQuery(statement);
 
         } catch (SQLException e) {
@@ -598,18 +871,31 @@ public class Database {
             return null;
         }
     }
-    
-    public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end){
+
+    public static List<Order> getOrdersByStatus(String status) {
+        try {
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Orders WHERE status = ?");
+            statement.setString(1, status);
+            return runOrderQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end) {
         Map<String, Integer> inventoryUsed = new HashMap<>();
         try {
             String sql = "SELECT i.name, SUM(oi.numOfItem) AS totalUsed " +
-                         "FROM Orders o " +
-                         "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
-                         "JOIN Items it ON oi.itemId = it.itemId " +
-                         "JOIN ItemIngredient_Junction iij ON it.itemId = iij.itemId " +
-                         "JOIN Ingredients i ON iij.ingredientId = i.ingredientId " +
-                         "WHERE o.dateTime BETWEEN ? AND ? " +
-                         "GROUP BY i.name";
+                    "FROM Orders o " +
+                    "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
+                    "JOIN Items it ON oi.itemId = it.itemId " +
+                    "JOIN ItemIngredient_Junction iij ON it.itemId = iij.itemId " +
+                    "JOIN Ingredients i ON iij.ingredientId = i.ingredientId " +
+                    "WHERE o.dateTime BETWEEN ? AND ? " +
+                    "GROUP BY i.name";
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setDate(1, start);
             pstmt.setDate(2, end);
@@ -626,22 +912,22 @@ public class Database {
         return inventoryUsed;
     }
 
-    public static Map<String, Double> getSalesReport(Date start, Date end){
+    public static Map<String, Double> getSalesReport(Date start, Date end) {
         Map<String, Double> sales = new HashMap<>();
         try {
-            String sql = "SELECT it.name AS item_name, SUM(oi.numOfItem * it.price) AS total_sales " + 
-                        "FROM Orders o " + 
-                        "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
-                        "JOIN Items it ON oi.itemId = it.itemId " +
-                        "WHERE o.dateTime BETWEEN ? AND ? " +
-                        "GROUP BY it.name; ";
-            
+            String sql = "SELECT it.name AS item_name, SUM(oi.numOfItem * it.price) AS total_sales " +
+                    "FROM Orders o " +
+                    "JOIN OrderItem_Junction oi ON o.orderId = oi.orderId " +
+                    "JOIN Items it ON oi.itemId = it.itemId " +
+                    "WHERE o.dateTime BETWEEN ? AND ? " +
+                    "GROUP BY it.name; ";
+
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setDate(1, start);
             pstmt.setDate(2, end);
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
                 String menuItemName = rs.getString("item_name");
                 double total = rs.getDouble("total_sales");
                 sales.put(menuItemName, total);
@@ -651,36 +937,36 @@ public class Database {
         }
         return sales;
     }
-    
+
     public static List<Ingredient> getExcessIngredients(Date start) {
         try {
             Date end = new Date(System.currentTimeMillis());
-            
-            String excessQuery = "" + 
-                "SELECT DISTINCT \n" +
+
+            String excessQuery = "" +
+                    "SELECT DISTINCT \n" +
                     "ing.*, \n" +
-                    "((ing.quantity_at_start - ing.quantity_at_end) / ing.quantity_at_start) * 100 AS percentage_consumed \n" +
-                "FROM ( \n" +
+                    "((ing.quantity_at_start - ing.quantity_at_end) / ing.quantity_at_start) * 100 AS percentage_consumed \n"
+                    +
+                    "FROM ( \n" +
                     "SELECT \n" +
-                        "i.*, \n" +
-                        "LAG(i.quantity) OVER (PARTITION BY i.ingredientId ORDER BY o.dateTime) AS quantity_at_start, \n" +
-                        "i.quantity AS quantity_at_end \n" +
+                    "i.*, \n" +
+                    "LAG(i.quantity) OVER (PARTITION BY i.ingredientId ORDER BY o.dateTime) AS quantity_at_start, \n" +
+                    "i.quantity AS quantity_at_end \n" +
                     "FROM \n" +
-                        "Ingredients i \n" +
-                        "JOIN ItemIngredient_Junction ii ON i.ingredientId = ii.ingredientId \n" +
-                        "JOIN OrderItem_Junction oij ON ii.itemId = oij.itemId \n" +
-                        "JOIN Orders o ON oij.orderId = o.orderId \n" +
+                    "Ingredients i \n" +
+                    "JOIN ItemIngredient_Junction ii ON i.ingredientId = ii.ingredientId \n" +
+                    "JOIN OrderItem_Junction oij ON ii.itemId = oij.itemId \n" +
+                    "JOIN Orders o ON oij.orderId = o.orderId \n" +
                     "WHERE \n" +
-                        "o.dateTime BETWEEN ? AND ? \n" +
-                ") ing \n" +
-                "WHERE \n" +
+                    "o.dateTime BETWEEN ? AND ? \n" +
+                    ") ing \n" +
+                    "WHERE \n" +
                     "ing.quantity_at_start IS NOT NULL \n" +
                     "AND ((ing.quantity_at_start - ing.quantity_at_end) / ing.quantity_at_start) * 100 < 10;";
-            
+
             PreparedStatement excessStatement = connection.prepareStatement(excessQuery);
             excessStatement.setDate(1, start);
             excessStatement.setDate(2, end);
-            
 
             return runIngredientQuery(excessStatement);
 
@@ -689,37 +975,37 @@ public class Database {
             return new ArrayList<>();
         }
     }
-    
+
     public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(Date start, Date end) {
         List<MutablePair<MutablePair<Item, Item>, Integer>> sellsTog = new ArrayList<>();
         try {
             String sql = "" +
-                "WITH OrderItems AS ( \n" +
+                    "WITH OrderItems AS ( \n" +
                     "SELECT \n" +
-                        "oij1.orderId AS order1, \n" +
-                        "oij1.itemId AS item1, \n" +
-                        "oij2.orderId AS order2, \n" +
-                        "oij2.itemId AS item2 \n" +
+                    "oij1.orderId AS order1, \n" +
+                    "oij1.itemId AS item1, \n" +
+                    "oij2.orderId AS order2, \n" +
+                    "oij2.itemId AS item2 \n" +
                     "FROM \n" +
-                        "OrderItem_Junction oij1 \n" +
-                        "JOIN OrderItem_Junction oij2 ON oij1.orderId = oij2.orderId \n" +
-                            "AND oij1.itemId < oij2.itemId \n" +
-                        "JOIN Orders o1 ON oij1.orderId = o1.orderId \n" +
-                        "JOIN Orders o2 ON oij2.orderId = o2.orderId \n" +
+                    "OrderItem_Junction oij1 \n" +
+                    "JOIN OrderItem_Junction oij2 ON oij1.orderId = oij2.orderId \n" +
+                    "AND oij1.itemId < oij2.itemId \n" +
+                    "JOIN Orders o1 ON oij1.orderId = o1.orderId \n" +
+                    "JOIN Orders o2 ON oij2.orderId = o2.orderId \n" +
                     "WHERE \n" +
-                        "o1.dateTime BETWEEN ? AND ? \n" +
-                        "AND o2.dateTime BETWEEN ? AND ? \n" +
-                ") \n" +
-                "SELECT \n" +
+                    "o1.dateTime BETWEEN ? AND ? \n" +
+                    "AND o2.dateTime BETWEEN ? AND ? \n" +
+                    ") \n" +
+                    "SELECT \n" +
                     "item1, item2, \n" +
                     "COUNT(*) AS frequency \n" +
-                "FROM \n" +
+                    "FROM \n" +
                     "OrderItems \n" +
-                "GROUP BY \n" +
+                    "GROUP BY \n" +
                     "item1, item2 \n" +
-                "ORDER BY \n" +
+                    "ORDER BY \n" +
                     "frequency DESC \n" +
-                "LIMIT 10;";
+                    "LIMIT 10;";
 
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setDate(1, start);
@@ -727,13 +1013,14 @@ public class Database {
             pstmt.setDate(3, start);
             pstmt.setDate(4, end);
             ResultSet resultSet = pstmt.executeQuery();
-            
-            while (resultSet.next()){
+
+            while (resultSet.next()) {
                 int item1Id = resultSet.getInt("item1");
                 int item2Id = resultSet.getInt("item2");
                 int frequency = resultSet.getInt("frequency");
 
-                sellsTog.add(new MutablePair<>(new MutablePair<>(Item.findOneById(item1Id), Item.findOneById(item2Id)), frequency));
+                sellsTog.add(new MutablePair<>(new MutablePair<>(Item.findOneById(item1Id), Item.findOneById(item2Id)),
+                        frequency));
             }
 
         } catch (Exception e) {

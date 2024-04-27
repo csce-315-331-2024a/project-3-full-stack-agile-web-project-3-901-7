@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom"
 
 export default function Navbar() {
     function changeLang() {
@@ -56,9 +57,9 @@ export default function Navbar() {
     return (
         <nav className="text-black pb-2 flex justify-between items-center shadow-sm border-hidden rounded px-3">
             <div className="flex items-center flex-1">
-                <div className="square-black border-black border-[2px] rounded">
-                    <img src="./logo.png" alt="Logo" />
-                </div>
+                <Link to={"/"} className="square-black border-black border-[2px] rounded">
+                    <img src="/logo.png" alt="Logo"></img>
+                </Link>
                 <span className="font-bold text-4xl ml-2 font-ptserif">
                     Welcome to Rev's Grill
                 </span>
@@ -75,7 +76,7 @@ export default function Navbar() {
                     </a>
                 </button>
                 <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <a href="/login" className="hover:text-white">
+                    <a href="/manager/login" className="hover:text-white">
                         manager login
                     </a>
                 </button>
