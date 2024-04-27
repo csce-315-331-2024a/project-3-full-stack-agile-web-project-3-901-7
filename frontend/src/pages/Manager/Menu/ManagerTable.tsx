@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { getUserAuth } from "../../Login";
-import { User } from "../../../types/dbTypes";
+import { useState } from "react";
 
 interface IManagerTableProps {
   headerColumns: string[];
@@ -57,14 +55,6 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
     });
   };
 
-  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
-
-  useEffect(() => {
-    getUserAuth('manager')
-      .then(setUserProfile)
-      .catch(console.error);
-  }, [])
-
   return (
     <div className='mt-4 ml-4 overflow-y-auto' style={{ maxHeight: 'calc(100vh - 280px)' }}>
       <table className="overflow-scroll w-full text-sm text-center text-black  font-ptserif">
@@ -87,8 +77,9 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
 
         <tbody>
           {props.data
-            .sort((a, b) => compare(a[sortOptions.column], b[sortOptions.column], sortOptions.order))
-            .map((row, i) => (
+            .map((row, i) => ({ thumbnail: props.thumbnails && props.thumbnails[i], row }))
+            .sort((a, b) => compare(a.row[sortOptions.column], b.row[sortOptions.column], sortOptions.order))
+            .map(({row, thumbnail}, i) => (
               <tr 
                 key={row[0]} 
                 className={`bg-white hover:bg-gray-50 cursor-pointer border-b ${
@@ -98,9 +89,9 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
                 onMouseLeave={() => handleRowHover(null)}
               >
                 {/* Thumbnail */}
-                {props.thumbnails && (
+                {thumbnail && (
                   <td className=" font-ptserif">
-                    <img width={50} height={50} src={props.thumbnails[i]} />
+                    <img width={50} height={50} src={thumbnail} />
                   </td>
                 )}
 
