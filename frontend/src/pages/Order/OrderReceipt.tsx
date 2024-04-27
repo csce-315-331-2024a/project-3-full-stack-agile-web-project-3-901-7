@@ -1,17 +1,19 @@
 import { FaArrowRight } from "react-icons/fa";
-import { Item, OrderType } from "../../types/dbTypes";
+import { Item } from "../../types/dbTypes";
 import { FaMinus, FaPlus } from "react-icons/fa";
+import { useContext } from "react";
+import { ModalContext, OrderContext } from "./Order";
 
 interface OrderReceiptProps {
-    order: OrderType;
     items: Item[];
-    updateOrder: (id:number, name:string, price:number, action:string) => void;
-    processOrder: (msg: string) => void;
 }
 
 // TODO: fix duplicate item in orderInfo
 
-export default function OrderReceipt({order, items, updateOrder, processOrder}: OrderReceiptProps) {
+export default function OrderReceipt({items}: OrderReceiptProps) {
+
+    const {setOpen, setModalMsg} = useContext(ModalContext);
+    const {order} = useContext(OrderContext);
 
     let receiptItem:any = []
     order.itemToQuantity.forEach((value, key) => {
@@ -43,9 +45,10 @@ export default function OrderReceipt({order, items, updateOrder, processOrder}: 
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
         const data = await response.json();
         if(data.success === true)
-            processOrder("Order successfully submitted!")
+            setModalMsg("Order successfully submitted!")
         else
-            processOrder("Uh oh something went wrong :(, contact staff for help.")
+        setModalMsg("Uh oh something went wrong :(, contact staff for help.")
+        setOpen(true);
     }
 
     return (
@@ -66,7 +69,6 @@ export default function OrderReceipt({order, items, updateOrder, processOrder}: 
                                 qty={itemInfo.qty}
                                 picture={itemInfo.picture}
                                 totalPrice={itemInfo.price}
-                                updateOrder={updateOrder}
                             />
                         )})
                 }
@@ -102,10 +104,34 @@ interface OrderReceiptItemProps {
     qty: number;
     picture: string;
     totalPrice: number;
-    updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice, updateOrder}: OrderReceiptItemProps) {
+function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}: OrderReceiptItemProps) {
+    
+    const {order, setOrder} = useContext(OrderContext);
+    
+    function addQuantity() {
+        setOrder({
+            ...order,
+            numItems: order.numItems + 1,
+            total: order.total + itemPrice,
+            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+        });
+    }
+
+    function subtractQuantity() {
+        if (qty > 0) {
+            setOrder({
+                ...order,
+                numItems: order.numItems - 1,
+                total: order.total - itemPrice,
+                orderInfo: order.orderInfo.replace(name + " ", ""),
+                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+            })
+        }
+    }
+
     return (
         <div className="w-[320px] h-24 flex items-center gap-x-4">
             <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black rounded-md p-2">
@@ -116,9 +142,9 @@ function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice, 
                 <p>{desc}</p>
                 <div className="flex w-full justify-between mb-2 gap-x-4">
                     <div className="flex gap-x-2 items-center">
-                        <button type="button" onClick={() => updateOrder(id, name, itemPrice, "add")} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaPlus/></button>
+                        <button type="button" onClick={addQuantity} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaPlus/></button>
                         <p className="font-bold font-inter">{qty}</p>
-                        <button type="button" onClick={() => updateOrder(id, name, itemPrice, "subtract")} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaMinus/></button>
+                        <button type="button" onClick={subtractQuantity} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaMinus/></button>
                     </div>
                     <p className="font-bold font-ptserif">${Math.round(totalPrice*100)/100}</p>
                 </div>

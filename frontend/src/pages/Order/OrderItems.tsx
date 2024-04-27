@@ -1,15 +1,14 @@
-import { Item, OrderType } from "../../types/dbTypes";
+import { Item } from "../../types/dbTypes";
 import { FaPlus, FaMinus } from "react-icons/fa";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { OrderContext } from "./Order";
 
 interface OrderItemContainerProps {
     items: Item[];
     currCategory: string;
-    order: OrderType;
-    updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-export default function OrderItems({items, currCategory, order, updateOrder}: OrderItemContainerProps) {
+export default function OrderItems({items, currCategory}: OrderItemContainerProps) {
     return (
         <div className="flex gap-8 flex-wrap h-fit">
             {items.map((item, index) => {
@@ -22,8 +21,6 @@ export default function OrderItems({items, currCategory, order, updateOrder}: Or
                         name={item.name} 
                         price={item.price} 
                         picture={item.picture}
-                        order={order}
-                        updateOrder={updateOrder}
                     />
                 )
             })}
@@ -36,23 +33,48 @@ interface ItemCardProps {
     name: string;
     price: number;
     picture: string;
-    order: OrderType;
-    updateOrder: (id:number, name:string, price:number, action:string) => void;
 }
 
-function OrderItemCard({id, name, price, picture, order, updateOrder} : ItemCardProps) {
+function OrderItemCard({id, name, price, picture} : ItemCardProps) {
+
     const [quantity, setQuantity] = useState<number>(0);
+    const {order, setOrder} = useContext(OrderContext);
 
     function addQuantity() {
         setQuantity((prev) => prev + 1);
-        updateOrder(id, name, price, "add");
+        setOrder({
+            ...order,
+            numItems: order.numItems + 1,
+            total: order.total + price,
+            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+        });
     }
 
     function subtractQuantity() {
         if (quantity > 0) {
             setQuantity((prev) => prev - 1);
-            updateOrder(id, name, price, "subtract");
+            setOrder({
+                ...order,
+                numItems: order.numItems - 1,
+                total: order.total - price,
+                orderInfo: order.orderInfo.replace(name + " ", ""),
+                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+            })
         }
+    }
+
+    function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
+        const value = parseInt(e.target.value);
+        if (value < 0) return;
+        setQuantity(value);
+        setOrder({
+            ...order,
+            numItems: order.numItems + value,
+            total: order.total + price * value,
+            orderInfo: order.orderInfo + name + "(" + value+")"+ (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, value)
+        })
     }
 
     return (
@@ -66,11 +88,13 @@ function OrderItemCard({id, name, price, picture, order, updateOrder} : ItemCard
                 >
                     <FaPlus />
                 </button>
-                <p className="py-1 font-semibold">
-                    {
-                        order.itemToQuantity.has(id) ? order.itemToQuantity.get(id) : 0
-                    }
-                </p>
+                <input
+                    type="number"
+                    value={(quantity) ? quantity : 0}
+                    // value={order.itemToQuantity.has(id) ? order.itemToQuantity.get(id) : 0}
+                    onChange={inputHandler}
+                    className="py-1 font-semibold w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
                 <button
                     type="button"
                     onClick={subtractQuantity}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import { Item, OrderType } from "../../types/dbTypes";
 import { defaultCategories, defaultOrder } from "../../types/defaults";
 import Navbar from "../../components/Navbar";
@@ -7,6 +7,19 @@ import OrderHeader from "./OrderHeader";
 import OrderItems from "./OrderItems";
 import OrderReceipt from "./OrderReceipt";
 import Modal from "../../components/Modal";
+
+interface OrderContextProps {
+    order: OrderType;
+    setOrder: React.Dispatch<React.SetStateAction<OrderType>>;
+}
+
+interface ModalContextProps {
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
+}
+
+export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, setOrder: () => {}});
+export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
 export default function Order() {
 
@@ -29,70 +42,38 @@ export default function Order() {
 
     }, [])
 
-    function getHelp() {
-        setOpen(true);
-        setModalMsg(<p>An employee will be with you shortly.<br/>Please wait...</p>)
-    }
-
-    function processOrder(msg: string) {
-        setOpen(true);
-        setModalMsg(msg);
-    }
-
-    function updateOrder(id:number, name:string, price:number, action: string) {
-        if (action === "add") {
-            setOrder({
-                ...order,
-                numItems: order.numItems + 1,
-                total: order.total + price,
-                orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
-                itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
-            });
-        } else {
-            setOrder({
-                ...order,
-                numItems: order.numItems - 1,
-                total: order.total - price,
-                orderInfo: order.orderInfo.replace(name + " ", ""),
-                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
-            })
-        }
-    }
-
     return (
         <div className="w-full h-full p-8 relative flex flex-col">
             
             <Navbar/>
 
-            {(items.length === 0) ? <Loading/> :
-            <> 
+            <OrderContext.Provider value={{order, setOrder}}>
+                <ModalContext.Provider value={{setOpen, setModalMsg}}>
+                {(items.length === 0) ? <Loading/> :
+                <> 
 
-                <OrderHeader 
-                    categories={categories} 
-                    currCategory={currCategory} 
-                    setCurrCategory={setCurrCategory}
-                    getHelp={getHelp}
-                />
+                    <OrderHeader 
+                        categories={categories} 
+                        currCategory={currCategory} 
+                        setCurrCategory={setCurrCategory}
+                    />
 
-                <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
+                    <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
+                        
+                        <OrderItems
+                            items={items} 
+                            currCategory={currCategory}
+                        />
+
+                        <OrderReceipt
+                            items={items}
+                        />
                     
-                    <OrderItems
-                        items={items} 
-                        currCategory={currCategory}
-                        order={order}
-                        updateOrder={updateOrder}
-                    />
-
-                    <OrderReceipt
-                        items={items}
-                        order={order}
-                        updateOrder={updateOrder}
-                        processOrder={processOrder}
-                    />
-                
-                </div>
-            </>
-            }
+                    </div>
+                </>
+                }
+                </ModalContext.Provider>
+            </OrderContext.Provider>
 
             <Modal
                 message={modalMsg}
