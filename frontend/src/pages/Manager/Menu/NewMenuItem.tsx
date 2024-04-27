@@ -106,8 +106,21 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }));
   };
 
+  function validateItem(item : Item) {
+    if (!item.category) return false;
+    if (!item.ingredientInfo) return false;
+    if (!item.name) return false;
+    if (item.price < 0) return false;
+    if (!item.picture) return false;
+    if (!item.startDate || item.startDate > new Date()) return false;
+    return true;
+  }
+
   async function postNewItem(item : Item) {
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/insert", {
+    if (!validateItem(item))
+      return;
+
+    await fetch(import.meta.env.VITE_BACKEND_URL + "/item/insert", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +132,10 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   }
 
   async function postUpdateItem(item : Item) {
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/edit", {
+    if (!validateItem(item))
+      return;
+
+    await fetch(import.meta.env.VITE_BACKEND_URL + "/item/edit", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -229,7 +245,6 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
                     value={(item.endDate || new Date()).toString()}
                     onChange={handleChange}
                     className="w-full border rounded px-3 py-2"
-                    required
                   />
                 </div>
               </div>
