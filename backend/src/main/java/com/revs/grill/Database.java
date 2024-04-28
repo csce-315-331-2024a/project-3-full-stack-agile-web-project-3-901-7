@@ -404,6 +404,22 @@ public class Database {
         }
     }
 
+    public static List<Item> getAllAvailableItems() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
+            List<Item> items = runItemQuery(statement, true);
+            List<Item> avail = new ArrayList<>();
+            for (Item item: items) {
+                if (item.isAvailable()) { avail.add(item); }
+            }
+            return avail;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Item> getItemsById(List<Integer> itemIds) {
         try {
             String query = "SELECT * FROM Items WHERE itemId IN " + buildPlaceholderString(itemIds.size());
