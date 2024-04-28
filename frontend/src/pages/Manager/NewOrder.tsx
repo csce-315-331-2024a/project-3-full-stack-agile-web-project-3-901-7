@@ -147,8 +147,9 @@ function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItem
             <div>
                 {items.map((item:Item) => {
                     return (
-                        <div key={item._id} className="flex items-center gap-x-6 font-ptserif text-lg">
-                            <p>{item.name}</p>
+                        <div key={item._id} className="grid grid-flow-col justify-start gap-8 font-ptserif text-lg">
+                            <p className="w-4">{item._id}</p>
+                            <p className="w-52">{item.name}</p>
                             <div className="flex gap-x-2 items-center font-bold">
                                 <button
                                     type="button"
