@@ -113,6 +113,11 @@ public class DatabaseController {
         return Database.getAllItems();
     }
 
+    @GetMapping("/item/findAllAvailable")
+    public static List<Item> getAllAvailableItems() {
+        return Database.getAllAvailableItems();
+    }
+
     @GetMapping("/item/findById")
     public static List<Item> getItemsById(@RequestParam("itemIds") List<Integer> itemIds) {
         return Database.getItemsById(itemIds);
