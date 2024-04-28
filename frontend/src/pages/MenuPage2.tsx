@@ -29,8 +29,11 @@ const MenuPage2: React.FC = () => {
     }, [menuItems]);
     
     return (
-        <div className="w-full h-full p-8 relative">
-            <div className="menu-boards grid grid-cols-3 gap-4 my-16 mx-8">
+        <div className="w-full h-full p-8 overflow-hidden">
+            <div className="flex flex-col items-center justify-center">
+                <img src="/american-ribbon.svg" alt="Menu Items" className="block my-4 w-1/2 h-[5.75rem]" />
+            </div>
+            <div className="menu-boards grid grid-cols-2 gap-4 my-5 mx-8">
                 {Object.entries(groupedItems).map(([category, items], index) => (
                     index % 3 === 1 && (
                         <div key={category} className="border-4 border-black">
