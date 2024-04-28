@@ -108,6 +108,26 @@ public class DatabaseController {
         return new ResponseStatus(Database.deleteRole(role));
     }
 
+    @GetMapping("/log/findAll")
+    public static List<WorkLog> getAllWorkLogs() {
+        return Database.getAllWorkLogs();
+    }
+
+    @GetMapping("/log/findById")
+    public static List<WorkLog> getLogById(@RequestParam("ids") List<Integer> ids) {
+        return Database.getLogById(ids);
+    }
+
+    @PostMapping("/log/insert")
+    public static ResponseStatus insertWorkLog(@RequestBody WorkLog wl) {
+        return new ResponseStatus(Database.insertWorkLog(wl));
+    }
+
+    // @PostMapping("/log/edit")
+    // public static ResponseStatus editWorkLog(@RequestBody WorkLog wl) {
+    //     return new ResponseStatus(Database.editWorkLog(wl));
+    // }
+
     @GetMapping("/item/findAll")
     public static List<Item> getAllItems() {
         return Database.getAllItems();
