@@ -9,7 +9,7 @@ const MenuPage1: React.FC = () => {
     useEffect(() => {
         // Fetch data and group items
         async function fetchItems() {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
         }
