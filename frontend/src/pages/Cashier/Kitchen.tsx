@@ -140,7 +140,7 @@ const Kitchen = () => {
                 }) : [];
                 
                 
-                setOrders(ordersWithMaps);
+                //setOrders(ordersWithMaps);
             } catch (error) {
                 console.error('Failed to fetch orders:', error);
             }
