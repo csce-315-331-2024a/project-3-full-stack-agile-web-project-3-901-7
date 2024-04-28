@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Ingredient, Item, User } from "../../../types/dbTypes";
 import { getUserAuth } from "../../Login";
+import { ConfirmationPopup, IConfirmationPopupProps } from '../../../components/Confirmation';
 
 const itemIngredients = new Set<string>();
 
@@ -21,6 +22,21 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+
+  const [popupState, setPopupState] = useState<IConfirmationPopupProps>({ 
+    message: '',
+    active: false,
+    onConfirm() {},
+    onCancel() {
+      setPopupState(prevState => ({ ...prevState, active: false }));
+    },  
+  });
+
+  const getConfirmation = (message : string, onConfirm : () => void) => {
+    setPopupState(prevState => ({
+      ...prevState, active: true, message, onConfirm,
+    }));
+  }
 
   useEffect(() => {
     getUserAuth('manager')
@@ -117,9 +133,6 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   }
 
   async function postNewItem(item : Item) {
-    if (!validateItem(item))
-      return;
-
     await fetch(import.meta.env.VITE_BACKEND_URL + "/item/insert", {
       method: 'POST',
       headers: {
@@ -132,9 +145,6 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   }
 
   async function postUpdateItem(item : Item) {
-    if (!validateItem(item))
-      return;
-
     await fetch(import.meta.env.VITE_BACKEND_URL + "/item/edit", {
       method: 'POST',
       headers: {
@@ -156,25 +166,33 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   }
 
   const handleAction = (actionType : string) => {
-    if (!item.category || !item.ingredientInfo || !item.name || !item.picture || !item.price || !item.startDate || !item.itemDesc)
+    if (actionType !== 'delete' && !validateItem(item))
       return;
-    
-    if (actionType === 'create') {
-      postNewItem(item);
-    }
-    else if (actionType === 'delete') {
-      if (item._id)
-        postDeleteItem(item);
-    }
-    else if (actionType === 'update') {
-      if (item._id)
-        postUpdateItem(item);
-    }
+      
+    getConfirmation(`Are you sure you want to ${actionType} item "${item.name}"?`, () => {
+      if (!item.category || !item.ingredientInfo || !item.name || !item.picture || !item.price || !item.startDate || !item.itemDesc)
+        return;
+      
+      if (actionType === 'create') {
+        postNewItem(item);
+      }
+      else if (actionType === 'delete') {
+        if (item._id)
+          postDeleteItem(item);
+      }
+      else if (actionType === 'update') {
+        if (item._id)
+          postUpdateItem(item);
+      }
+    });
   };
 
   return (userProfile &&
     <>
       <ManagerNavbar userInfo={userProfile} />
+
+      <ConfirmationPopup {...popupState} />
+
       <div className="pl-8 pr-8 pb-8 pt-4">
           <h1 className="font-ptserif text-black mb-4">
             {itemId ? `Edit Item "${item.name}"` : 'Create New Item'}
