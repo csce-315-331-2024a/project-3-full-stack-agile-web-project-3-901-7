@@ -8,6 +8,7 @@ export default function AdminOrder() {
     const categories = ["Burger", "Chicken", "Side", "Salad", "Snack", "Beverage", "Dessert", "Seasonal"]
 
     const [items, setItems] = useState<Item[]>([]);
+    const [allItems, setAllItems] = useState<Item[]>([]);
     const [order, setOrder] = useState<OrderType>({
         numItems: 0,
         orderInfo: "",
@@ -15,12 +16,14 @@ export default function AdminOrder() {
         total: 0,
         date: new Date()
     });
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     useEffect(() => {
 
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
             const data = await response.json();
+            setAllItems(data);
             setItems(data);
         }
 
@@ -53,6 +56,15 @@ export default function AdminOrder() {
             alert("Uh oh something went wrong :(")
     }
 
+    function searchItem(e: React.ChangeEvent<HTMLInputElement>) {
+        setSearchTerm(e.target.value);
+        if (e.target.value === "") {
+            setItems(allItems);
+            return;
+        }
+        setItems(items.filter((item:Item) => item.name.toLowerCase().includes(e.target.value.toLowerCase())));
+    }
+
     return (
         <div className="w-full h-full p-8 flex flex-col gap-y-8">
 
@@ -64,6 +76,8 @@ export default function AdminOrder() {
                     <input
                         type="text"
                         placeholder="search item"
+                        onChange={searchItem}
+                        value={searchTerm}
                         className="w-full px-2 py-1 font-ptserif text-xl"
                     />
                 </div>
