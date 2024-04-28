@@ -17,6 +17,8 @@ export default function AdminOrder() {
         date: new Date()
     });
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [speedOrderId, setSpeedOrderId] = useState<string>("");
+    const [speedOrderQty, setSpeedOrderQty] = useState<string>("");
 
     useEffect(() => {
 
@@ -65,6 +67,40 @@ export default function AdminOrder() {
         setItems(items.filter((item:Item) => item.name.toLowerCase().includes(e.target.value.toLowerCase())));
     }
 
+    function addItemToOrder(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        // get values from form
+        const id = parseInt(speedOrderId);
+        const qty = parseInt(speedOrderQty);
+
+        // check if item exists
+        const exists = order.itemToQuantity.has(id);
+        if (exists) {
+            // if item exists, update quantity
+            const currentQty = order.itemToQuantity.get(id)!;
+            setOrder({
+                ...order,
+                numItems: order.numItems + qty - currentQty,
+                total: order.total + allItems.find((item:Item) => item._id === id)!.price * qty - allItems.find((item:Item) => item._id === id)!.price * currentQty,
+                orderInfo: order.orderInfo + allItems.find((item:Item) => item._id === id)!.name + "(" + qty + ")" + (order.orderInfo === "" ? "," : ""),
+                itemToQuantity: order.itemToQuantity.set(id, qty)
+            })
+        } else {
+            // if item doesn't exist, add item to order
+            setOrder({
+                ...order,
+                numItems: order.numItems + qty,
+                total: order.total + allItems.find((item:Item) => item._id === id)!.price * qty,
+                orderInfo: order.orderInfo + allItems.find((item:Item) => item._id === id)!.name + "(" + qty + ")" + (order.orderInfo === "" ? "," : ""),
+                itemToQuantity: order.itemToQuantity.set(id, qty)
+            })
+        }
+        
+        // reset form
+        setSpeedOrderId("");
+        setSpeedOrderQty("");
+    }
+
     return (
         <div className="w-full h-full p-8 flex flex-col gap-y-8">
 
@@ -89,6 +125,50 @@ export default function AdminOrder() {
                     submit order
                 </button>
             </div>
+
+            <form onSubmit={(e) => {addItemToOrder(e)}} className="flex gap-4 flex-col justify-center">
+                <label className="font-semibold text-lg">Quick Order Station</label>
+                <div className="flex items-center gap-x-4">
+                    <label className="font-semibold text-lg">Item ID</label>
+                    <input
+                        type="number"
+                        value={speedOrderId}
+                        placeholder={"Enter item id to quickly order..."}
+                        onChange={(e) => { 
+                            if (parseInt(e.target.value) < 1 || parseInt(e.target.value) > allItems.length){
+                                setSpeedOrderId("1")
+                                return
+                            }
+                            setSpeedOrderId(e.target.value)
+                        }}
+                        className="py-1 px-2 font-semibold w-64 text-lg border-2 border-black"
+                        required
+                    />
+                </div>
+                <div className="flex items-center gap-x-4">
+                    <label className="font-semibold text-lg">Quantity</label>
+                    <input
+                        type="number"
+                        value={speedOrderQty}
+                        placeholder={"Enter quantity..."}
+                        onChange={(e) => {
+                            if (parseInt(e.target.value) < 0) {
+                                setSpeedOrderQty("0");
+                                return;
+                            }
+                            setSpeedOrderQty(e.target.value)
+                        }}
+                        className="py-1 px-2 font-semibold w-64 text-lg border-2 border-black"
+                        required
+                    />
+                </div>
+                <button
+                    type="submit"
+                    className="w-fit px-4 py-2 bg-black text-white rounded-md font-ptserif"  
+                >
+                    add
+                </button>
+            </form>
 
             <div className="mt-8 flex flex-wrap gap-16 pb-12">
                 {categories.map((category, index) => {
@@ -116,7 +196,6 @@ interface AdminOrderItemContainerProps {
 }
 
 function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItemContainerProps) {
-    console.log(items);
     return (
         <div className="flex flex-col gap-y-2">
             <h4 className="font-bold text-2xl font-ptserif">{title}</h4>
