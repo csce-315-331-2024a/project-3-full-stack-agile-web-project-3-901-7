@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Item, OrderType } from "../../types/dbTypes";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
-import Cashier from "../Cashier/Cashier";
+import CashierNavbar from "../../components/CashierNavbar";
+import { getUserAuth } from "../Login";
+import { User } from "../../types/dbTypes";
 
 export default function AdminOrder() {
 
@@ -15,6 +17,14 @@ export default function AdminOrder() {
         total: 0,
         date: new Date()
     });
+
+    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+
+    useEffect(() => {
+        getUserAuth('cashier')
+            .then(setUserProfile)
+            .catch(console.error);
+    }, [])
 
     useEffect(() => {
 
@@ -55,8 +65,7 @@ export default function AdminOrder() {
 
     return (
         <div className="w-full h-full p-8 flex flex-col gap-y-8">
-
-            <Cashier/>
+            {userProfile && <CashierNavbar userInfo={userProfile} />}
 
             <div className="mt-8 flex items-end gap-x-12">
                 <div className="min-w-[320px] flex items-center border-b-2 border-black gap-x-4 px-4 py-2">
