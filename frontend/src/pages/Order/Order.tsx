@@ -10,7 +10,9 @@ import Modal from "../../components/Modal";
 
 interface OrderContextProps {
     order: OrderType;
-    setOrder: React.Dispatch<React.SetStateAction<OrderType>>;
+    addQty: (itemPrice: number, name: string, id: number) => void;
+    subQty: (itemPrice: number, name: string, id: number) => void;
+    inputHandler: (e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) => void;
 }
 
 interface ModalContextProps {
@@ -18,7 +20,7 @@ interface ModalContextProps {
     setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
 }
 
-export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, setOrder: () => {}});
+export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}});
 export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
 export default function Order() {
@@ -42,12 +44,47 @@ export default function Order() {
 
     }, [])
 
+    function addQty(itemPrice: number, name: string, id: number) {
+        setOrder({
+            ...order,
+            numItems: order.numItems + 1,
+            total: order.total + itemPrice,
+            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+        });
+    }
+
+    function subQty(itemPrice: number, name: string, id: number) {
+        if (order.itemToQuantity.get(id)! > 0) {
+            setOrder({
+                ...order,
+                numItems: order.numItems - 1,
+                total: order.total - itemPrice,
+                orderInfo: order.orderInfo.replace(name + " ", ""),
+                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+            })
+        }
+    }
+
+    function inputHandler(e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) {
+        const currentQty:number = (order.itemToQuantity.has(id) ? order.itemToQuantity.get(id)! : 0);
+        const input:string = e.target.value;
+        const value = (input === "") ? 0 : parseInt(e.target.value);
+        setOrder({
+            ...order,
+            numItems: order.numItems + value - currentQty,
+            total: order.total + itemPrice * value - itemPrice * currentQty,
+            orderInfo: order.orderInfo + name + "(" + value+")"+ (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, value)
+        })
+    }
+
     return (
         <div className="w-full h-full p-8 relative flex flex-col">
             
             <Navbar/>
 
-            <OrderContext.Provider value={{order, setOrder}}>
+            <OrderContext.Provider value={{order, addQty, subQty, inputHandler}}>
                 <ModalContext.Provider value={{setOpen, setModalMsg}}>
                 {(items.length === 0) ? <Loading/> :
                 <> 

@@ -1,7 +1,7 @@
 import { FaArrowRight } from "react-icons/fa";
 import { Item } from "../../types/dbTypes";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ModalContext, OrderContext } from "./Order";
 
 interface OrderReceiptProps {
@@ -108,43 +108,62 @@ interface OrderReceiptItemProps {
 
 function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}: OrderReceiptItemProps) {
     
-    const {order, setOrder} = useContext(OrderContext);
-    
-    function addQuantity() {
-        setOrder({
-            ...order,
-            numItems: order.numItems + 1,
-            total: order.total + itemPrice,
-            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
-            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
-        });
-    }
+    const {order, addQty, subQty, inputHandler} = useContext(OrderContext);
+    const [quantity, setQuantity] = useState<string>((order.itemToQuantity.has(id) ? order.itemToQuantity.get(id)! : 0).toString());
 
-    function subtractQuantity() {
-        if (qty > 0) {
-            setOrder({
-                ...order,
-                numItems: order.numItems - 1,
-                total: order.total - itemPrice,
-                orderInfo: order.orderInfo.replace(name + " ", ""),
-                itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
-            })
-        }
-    }
+    useEffect(() => {
+        setQuantity(qty.toString());
+    }, [order])
 
     return (
         <div className="w-[320px] h-24 flex items-center gap-x-4">
             <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black rounded-md p-2">
                 <img src={picture === "" ? "/no-image-icon.png" : picture} alt={`image of ${name}`} className="object-contain h-[100%] max-h-[100%]" />
             </div>
-            <div className="flex flex-col h-full justify-between">
+            <div className="w-full gap-y-2 flex flex-col h-full justify-between">
                 <h4 className="font-bold text-base font-ptserif">{name}</h4>
                 <p>{desc}</p>
-                <div className="flex w-full justify-between mb-2 gap-x-4">
+                <div className="flex w-fit items-center justify-between mb-2 gap-x-4">
                     <div className="flex gap-x-2 items-center">
-                        <button type="button" onClick={addQuantity} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaPlus/></button>
-                        <p className="font-bold font-inter">{qty}</p>
-                        <button type="button" onClick={subtractQuantity} className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"><FaMinus/></button>
+                        <button 
+                            type="button" 
+                            onClick={() => {
+                                addQty(itemPrice, name, id); 
+                                setQuantity((prev) => (parseInt(prev) + 1).toString());
+                            }} 
+                            className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"
+                        >
+                            <FaPlus/>
+                        </button>
+                        <input
+                            type="number"
+                            value={quantity}
+                            onBlur={() => {if (quantity === "" || parseInt(quantity) < 0) setQuantity("0");}}
+                            onChange={(e) => {
+                                if (parseInt(e.target.value) < 0) {
+                                    setQuantity("0");
+                                    return;
+                                }
+                                if (e.target.value === "") {
+                                    setQuantity("");
+                                    return;
+                                }
+                                inputHandler(e, id, itemPrice, name)
+                            }}
+                            className="py-1 font-bold font-inter w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        <button 
+                            type="button" 
+                            onClick={() => {
+                                subQty(itemPrice, name, id);
+                                setQuantity((prev) => {
+                                    if (parseInt(prev) > 0) return (parseInt(prev) - 1).toString();
+                                    return prev;
+                                })
+                            }} 
+                            className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center">
+                                <FaMinus/>
+                        </button>
                     </div>
                     <p className="font-bold font-ptserif">${Math.round(totalPrice*100)/100}</p>
                 </div>
