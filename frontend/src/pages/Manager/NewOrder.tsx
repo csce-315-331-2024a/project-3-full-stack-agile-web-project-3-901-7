@@ -117,35 +117,54 @@ interface AdminOrderItemContainerProps {
 
 function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItemContainerProps) {
 
-    function increaseItem(price:number, name: string, id:number) {
-        setOrder({
-            ...order,
-            numItems: order.numItems + 1,
-            total: order.total + price,
-            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
-            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
-        })
-    }
-
-    function decreaseItem(price:number, name:string, id:number) {
-        if (!order.itemToQuantity.has(id))
-            return
-        if (order.itemToQuantity.get(id)! <= 0)
-            return
-        setOrder({
-            ...order,
-            numItems: order.numItems - 1,
-            total: order.total - price,
-            orderInfo: order.orderInfo.replace(name + " ", ""),
-            itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
-        })
-    }
-
     return (
         <div className="flex flex-col gap-y-2">
             <h4 className="font-bold text-2xl font-ptserif">{title}</h4>
             <div>
                 {items.map((item:Item) => {
+                    
+                    const [quantity, setQuantity] = useState<string>("0");
+
+                    function increaseItem(price:number, name: string, id:number) {
+                        setQuantity((prev) => (parseInt(prev) + 1).toString());
+                        setOrder({
+                            ...order,
+                            numItems: order.numItems + 1,
+                            total: order.total + price,
+                            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
+                            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+                        })
+                    }
+                
+                    function decreaseItem(price:number, name:string, id:number) {
+                        if (!order.itemToQuantity.has(id))
+                            return
+                        if (order.itemToQuantity.get(id)! <= 0)
+                            return
+                        setQuantity((prev) => (parseInt(prev) - 1).toString());
+                        setOrder({
+                            ...order,
+                            numItems: order.numItems - 1,
+                            total: order.total - price,
+                            orderInfo: order.orderInfo.replace(name + " ", ""),
+                            itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
+                        })
+                    }
+                
+                    function inputHandler(e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) {
+                        setQuantity(e.target.value);
+                        const currentQty:number = (order.itemToQuantity.has(id) ? order.itemToQuantity.get(id)! : 0);
+                        const input:string = e.target.value;
+                        const value = (input === "") ? 0 : parseInt(e.target.value);
+                        setOrder({
+                            ...order,
+                            numItems: order.numItems + value - currentQty,
+                            total: order.total + itemPrice * value - itemPrice * currentQty,
+                            orderInfo: order.orderInfo + name + "(" + value+")"+ (order.orderInfo === "" ? "," : ""),
+                            itemToQuantity: order.itemToQuantity.set(id, value)
+                        })
+                    }
+
                     return (
                         <div key={item._id} className="grid grid-flow-col justify-start gap-8 font-ptserif text-lg">
                             <p className="w-4">{item._id}</p>
@@ -158,9 +177,19 @@ function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItem
                                 >
                                     <FaMinus/>
                                 </button>
-                                <p>
-                                    {(order.itemToQuantity.has(item._id)) ? order.itemToQuantity.get(item._id) : 0}
-                                </p>
+                                <input
+                                    type="number"
+                                    value={quantity}
+                                    onBlur={() => {if (quantity === "" || parseInt(quantity) < 0) setQuantity("0");}}
+                                    onChange={(e) => {
+                                        if (parseInt(e.target.value) < 0) {
+                                            setQuantity("0");
+                                            return;
+                                        }
+                                        inputHandler(e, item._id, item.price, item.name); 
+                                    }}
+                                    className="py-1 font-semibold w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
                                 <button
                                     type="button"
                                     onClick={() => increaseItem(item.price, item.name, item._id)}
