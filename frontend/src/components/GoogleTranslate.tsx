@@ -26,15 +26,16 @@ const GoogleTranslate: React.FC = () => {
     };
   }, []); 
 
+  
   return (
     <div 
       id="google_translate_element" 
       style={{ 
         float: 'right',
-        paddingTop: '2px',
-        paddingRight: '45px',
-        marginBottom: '-20px',
-        lineHeight: '0'
+        paddingLeft: '14px',
+        paddingRight: '14px', // Adjust the padding as needed for clickable area
+        lineHeight: '0',
+        // Other styles as needed
       }} 
     />
   );

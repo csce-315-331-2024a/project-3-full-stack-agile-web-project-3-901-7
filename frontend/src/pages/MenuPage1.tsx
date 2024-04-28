@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import MenuColumn from "../components/MenuColumn";
 import { Item } from "./Menu";
+import GoogleTranslate from "../components/GoogleTranslate";
 
 const MenuPage1: React.FC = () => {
     const [menuItems, setItems] = useState<Item[]>([]);
@@ -30,6 +31,7 @@ const MenuPage1: React.FC = () => {
     
     return (
         <div className="w-full h-full p-8 overflow-hidden">
+            <GoogleTranslate />
             <div className="flex flex-col items-center justify-center">
                 <img src="/revs-ribbon.svg" alt="Menu Items" className="block my-4 w-1/2 h-[5.75rem]" />
             </div>
