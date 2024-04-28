@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom"
+import GoogleTranslate from "./GoogleTranslate";
 
 export default function Navbar() {
     function changeLang() {
@@ -77,14 +78,11 @@ export default function Navbar() {
                 </button>
                 <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
                     <a href="/manager/login" className="hover:text-white">
-                        manager login
+                        worker login
                     </a>
                 </button>
-                <button
-                    onClick={changeLang}
-                    className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300"
-                >
-                    EN
+                <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
+                    <GoogleTranslate />
                 </button>
                 <div className="relative">
                     <button
