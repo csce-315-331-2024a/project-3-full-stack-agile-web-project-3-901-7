@@ -88,13 +88,13 @@ public class Database {
 
             if (fillIngredients) {
                 PreparedStatement ingStatement = connection.prepareStatement(
-                        "SELECT * \n" +
+                        "SELECT item.name as itemname, item.itemid as itemid2, ing.* \n" +
                                 "FROM \n" +
-                                "Items i \n" +
-                                "JOIN ItemIngredient_Junction ii ON i.itemId = ii.itemId \n" +
+                                "Items item \n" +
+                                "JOIN ItemIngredient_Junction ii ON item.itemid = ii.itemId \n" +
                                 "JOIN Ingredients ing ON ii.ingredientId = ing.ingredientId \n" +
                                 "WHERE \n" +
-                                "i.name = ?;");
+                                "item.name = ?;");
                 ingStatement.setString(1, item.name);
                 item.ingredients = runIngredientQuery(ingStatement);
             }
