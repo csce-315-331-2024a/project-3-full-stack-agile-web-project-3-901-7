@@ -42,6 +42,7 @@ export interface OrderType {
     itemToQuantity: Map<number, number>;
     total: number;
     date: Date;
+    status?: string;
 }
 
 export type SalesData = {

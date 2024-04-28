@@ -13,8 +13,7 @@ interface Order {
     orderInfo: string;
     itemToQuantity: Map<number, number>;
     total: number;
-    date: Date; 
-    status: string;
+    dateTime: Date;
 }
 
 interface OrderCardProps {
@@ -32,8 +31,7 @@ const mockOrders: Order[] = [
             [2, 3],
         ]),
         total: 14.99,
-        date: new Date('2024-12-12'),
-        status: "in progress",
+        dateTime: new Date('2024-12-12'),
     },
     {
         _id: 2,
@@ -44,8 +42,7 @@ const mockOrders: Order[] = [
             [2, 3],
         ]),
         total: 14.99,
-        date: new Date('2024-12-03'),
-        status: "in progress",
+        dateTime: new Date('2024-12-03'),
     },
     {
         _id: 3,
@@ -56,15 +53,12 @@ const mockOrders: Order[] = [
             [2, 3],
         ]),
         total: 14.99,
-        date: new Date('2024-12-18'),
-        status: "in progress",
+        dateTime: new Date('2024-12-18'),
     },
 ];
 
 const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
-
-    const getFormattedDate = (date: Date) => date.toLocaleDateString();
 
     useEffect(() => {
         async function fetchItemDetails() {
@@ -118,7 +112,7 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
           </div>
           <div className="mt-2 pt-2 border-t flex justify-between">
               <span className="font-bold">total: ${order.total.toFixed(2)}</span>
-              <span>{getFormattedDate(order.date)}</span>
+              <span>{order.dateTime.toString()}</span>
           </div>
       </div>
   );
@@ -126,7 +120,7 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
 
 
 const OrderHistory = () => {
-    const [orders, setOrders] = useState<Order[]>([]); // Declare once and initialize with an empty array
+    const [orders, setOrders] = useState<Order[]>([]);
     const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
@@ -134,35 +128,50 @@ const OrderHistory = () => {
 
     useEffect(() => {
         getUserAuth('manager')
-            .then(setUserProfile)
-            .catch(console.error);
-
-            async function fetchOrders() {
-                const orderLimit = 10;
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/findAll?limit=${orderLimit}`);
-                const data = await response.json();
-                
-                // Log the type of itemToQuantity
-                if (data && data.length > 0) {
-                    const firstOrder = data[0];
-                    if (firstOrder && typeof firstOrder.itemToQuantity === 'object' && firstOrder.itemToQuantity !== null && firstOrder.itemToQuantity instanceof Map) {
-                        console.log('itemToQuantity is a Map');
-                    } else {
-                        console.log('itemToQuantity is not a Map');
-                    }
-                } else {
-                    console.log('No orders found');
-                }
-                
-                setOrders(data);
-                console.log(data);
-            }
-            
-            fetchOrders();
-            
-
+        .then(setUserProfile)
+        .catch(console.error);
     }, []);
 
+    useEffect(() => {
+        async function fetchOrders() {
+            try {
+                const response = await fetch('http://localhost:8080/order/findAll?limit=20');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                // Ensure the data is an array before proceeding
+                if (!Array.isArray(data)) {
+                    throw new Error("Data is not an array");
+                }
+                const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
+                    // Log the raw itemToQuantity object from the data
+                    console.log(order.itemToQuantity);
+                    
+                    // Convert itemToQuantity from object to Map
+                    const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
+                
+                    // Log the date from the data
+                    console.log("date:", order.dateTime);
+                
+                    // Construct and return the new order object
+                    return {
+                        ...order,
+                        itemToQuantity: itemToQuantityMap,
+                        date: new Date(order.dateTime) // Convert string to Date object
+                    };
+                }) : [];
+                
+                
+                setOrders(ordersWithMaps);
+            } catch (error) {
+                console.error('Failed to fetch orders:', error);
+            }
+        }
+    
+        fetchOrders();
+    }, []);
+    
     const handleDeleteOrder = async (id: number) => {
       try {
           const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
@@ -183,8 +192,8 @@ const OrderHistory = () => {
 
     const filterByDateRange = () => {
         if (startDate && endDate) {
-            setOrders(mockOrders.filter(order => {
-                const orderDate = new Date(order.date);
+            setOrders(orders.filter(order => {
+                const orderDate = new Date(order.dateTime);
                 return orderDate >= startDate && orderDate <= endDate;
             }));
         }
