@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ManagerNavbar from "../../components/ManagerNavbar";
 import EditOrderPopup from "../../components/EditOrderPopUp";
+import DeleteConfirmation from '../../components/DeleteConfirmation';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from '../Login';
@@ -93,33 +94,10 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
         fetchItemDetails();
     }, [order]);
 
-    // const fetchOrders = async () => {
-    //     try {
-    //         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/order/findAll`);
-    //         const ordersData = await response.json();
-    //         setOrders(ordersData.map(order => ({
-    //             ...order,
-    //             itemToQuantity: new Map(Object.entries(order.itemToQuantity)),
-    //             dateTime: new Date(order.dateTime)
-    //         })));
-    //     } catch (error) {
-    //         console.error('Error fetching orders:', error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchOrders();
-    // }, []);
-
     const handleEditSave = () => {
         //fetchOrders(); // Refresh the orders after save
         setShowEditPopup(false); // Close the popup
     };
-
-    // const handleEditOrder = (order: Order) => {
-    //     //setSelectedOrder(order);
-    //     setShowEditPopup(true);
-    // };
 
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
@@ -178,6 +156,9 @@ const OrderHistory = () => {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    const [confirmDeleteOrderId, setConfirmDeleteOrderId] = useState<number | null>(null);
+
+    
 
     useEffect(() => {
         getUserAuth('manager')
@@ -224,32 +205,32 @@ const OrderHistory = () => {
     
         fetchOrders();
     }, []);
-
-    // const refreshOrders = () => {
-    //     fetchOrders();
-    // };
-
-    // const handleEditSave = () => {
-    //     refreshOrders();
-    //     setShowEditPopup(false); // Close the popup after saving
-    // };
     
     const handleDeleteOrder = async (id: number) => {
-      try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
-            method: 'POST',
-          });
-          const data = await response.json();
-          if (data) {
-              const updatedOrders = orders.filter(order => order._id !== id);
-              setOrders(updatedOrders);
-          } else {
-              throw new Error('Failed to delete the order');
-          }
-      } catch (error) {
-          console.error('Delete order error:', error);
-          alert('Failed to delete the order. Please try again.');
-      }
+        setConfirmDeleteOrderId(id);
+    };
+
+    const handleCancelDeleteOrder = () => {
+        setConfirmDeleteOrderId(null);
+    };
+
+    const handleConfirmDeleteOrder = async (id: number) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
+              method: 'POST',
+            });
+            const data = await response.json();
+            if (data) {
+                const updatedOrders = orders.filter(order => order._id !== id);
+                setOrders(updatedOrders);
+                setConfirmDeleteOrderId(null);
+            } else {
+                throw new Error('Failed to delete the order');
+            }
+        } catch (error) {
+            console.error('Delete order error:', error);
+            alert('Failed to delete the order. Please try again.');
+        }
     };
 
     const filterByDateRange = () => {
@@ -271,12 +252,6 @@ const OrderHistory = () => {
         <ManagerNavbar userInfo={userProfile}/>
         <div className="flex flex-col sm:flex-row items-center justify-between">
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
-            {/* <button
-              onClick={() => window.location.href = '/manager/orders/edit'}
-              className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white"
-            >
-              Edit Order
-            </button> */}
         </div>
         <div className="mb-4 flex gap-2">
             <DatePicker
@@ -300,9 +275,15 @@ const OrderHistory = () => {
             />
             <button onClick={filterByDateRange} className="border-2 border-black bg-white px-4 py-2 rounded">Filter by Date Range</button>
         </div>
+        {confirmDeleteOrderId !== null && (
+            <DeleteConfirmation
+                onCancel={handleCancelDeleteOrder}
+                onConfirm={() => handleConfirmDeleteOrder(confirmDeleteOrderId)}
+            />
+        )}
         <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
           {orders.map(order => (
-            <OrderCard key={order._id} deleteOrderCallback={handleDeleteOrder} order={order} />
+            <OrderCard key={order._id} deleteOrderCallback={() => handleDeleteOrder(order._id)} order={order} />
           ))}
         </div>
       </div>
