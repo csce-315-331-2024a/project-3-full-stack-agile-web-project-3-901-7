@@ -11,6 +11,15 @@ export default function OrderHeader({categories, currCategory, setCurrCategory}:
 
     const {setOpen, setModalMsg} = useContext(ModalContext);
 
+    async function fetchHelpRequest() {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/requestHelp`, { method: "POST", });
+        const status = await response.json();
+        
+        if (status.success)
+            return status;
+        throw Error("Failed to fetch help");
+    }
+
     return (
         <div className="flex flex-wrap gap-6 mt-14 items-center">
 
@@ -32,8 +41,14 @@ export default function OrderHeader({categories, currCategory, setCurrCategory}:
             <button 
                 type="button" 
                 onClick={() => {
-                    setOpen(true); 
-                    setModalMsg(<p>An employee will be with you shortly.<br/>Please wait...</p>);
+                    fetchHelpRequest()
+                        .then(() => {
+                            setOpen(true); 
+                            setModalMsg(<p>An employee will be with you shortly.<br/>Please wait...</p>);
+                        })
+                        .catch(() => {
+                            alert('Failed to request help');
+                        })
                 }} 
                 className="w-fit h-fit px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]"
             >
