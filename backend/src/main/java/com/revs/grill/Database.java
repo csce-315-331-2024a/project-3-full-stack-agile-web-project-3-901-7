@@ -578,6 +578,9 @@ public class Database {
     }
 
     public static int insertOrder(Order order) {
+        if (order.numItems <= 0) {
+            return -1;
+        }
         try {
             // insert item into database
             String orderInsertQuery = "INSERT INTO Orders (numItems, total, orderInfo, dateTime, status) VALUES (?, ?, ?, ?, ?)";
