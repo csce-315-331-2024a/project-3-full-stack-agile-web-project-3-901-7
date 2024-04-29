@@ -206,7 +206,7 @@ const SalesTrends = () => {
     );
 
     return (
-        userProfile && (
+        userProfile ? (
             <div className="p-4">
                 <ManagerNavbar userInfo={userProfile} />
                 <div className="p-4">
@@ -336,6 +336,8 @@ const SalesTrends = () => {
                     )}
                 </div>
             </div>
+        ) : (
+            loading && <Loading />
         )
     );
 };

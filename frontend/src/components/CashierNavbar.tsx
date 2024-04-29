@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CookieManager from "../utils/CookieManager";
 import { User } from "../types/dbTypes";
 import GoogleTranslate from "./GoogleTranslate";
+import CashierHelpQueue from "./CashierHelpQueue";
 
 const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
               <GoogleTranslate />
           </button>
+          <CashierHelpQueue />
       </div>
     </nav>
   );
