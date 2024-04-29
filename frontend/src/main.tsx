@@ -26,6 +26,7 @@ import EditMenuItemPage from './pages/Manager/Menu/EditMenuItem'
 import Cashier from './pages/Cashier/Cashier'
 import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
+import CashierLog from './pages/Cashier/CashierLog'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -50,6 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier" element={<Cashier/>}/>
                         <Route path="/cashier/signup" element={<Login type="cashier" signup/>}/>
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
+                        <Route path="cashier/log" element={<CashierLog />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>

@@ -44,6 +44,11 @@ const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
               </a>
           </button>
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
+              <a href="/cashier/log" className="hover:text-white">
+                  worklog
+              </a>
+          </button>
+          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
               <GoogleTranslate />
           </button>
       </div>

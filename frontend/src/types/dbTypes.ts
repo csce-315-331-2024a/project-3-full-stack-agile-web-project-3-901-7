@@ -65,3 +65,11 @@ export type PairItems = {
     item2: Item;
     frequency: number;
 };
+
+export interface Worklog {
+    log_id: number;
+    id: number | null;
+    checkin: string;
+    checkout: string;
+    comments: string;
+}
