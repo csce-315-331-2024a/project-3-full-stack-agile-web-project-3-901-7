@@ -7,7 +7,7 @@ interface Order {
     itemToQuantity: Map<number, number>;
     total: number;
     dateTime: Date;
-    status?: string;  // Assuming status might be optional or required based on your backend needs
+    status: string; 
 }
 
 interface ItemDetails {
@@ -72,27 +72,32 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
     
         const updatedOrder = {
             _id: order._id,
-            numItems: Object.keys(itemToQuantityObject).reduce((total, key) => total + itemToQuantityObject[Number(key)], 0),
+            numItems: Object.values(itemToQuantityObject).reduce((total, quantity) => total + quantity, 0),
             orderInfo: order.orderInfo,
             itemToQuantity: itemToQuantityObject,
             total: calculateTotal(),
             dateTime: order.dateTime.toString(),
-            status: order.status || "Pending"
+            status: order.status
         };
     
-        console.log('Sending updated order data to server:', JSON.stringify(updatedOrder));
-    
-        fetch('http://localhost:8080/order/edit', {
+        fetch(`${process.env.REACT_APP_BACKEND_URL}/order/edit`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedOrder)
         })
-        .then(response => response.json())
-        .then(data => console.log('Order update successful:', data))
-        .catch(error => console.error('Failed to update order:', error));
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Order update successful:', data);
+            onSave(); // This should trigger a refresh in the parent component
+        })
+        .catch(error => {
+            console.error('Failed to update order:', error);
+        });
     };
     
     

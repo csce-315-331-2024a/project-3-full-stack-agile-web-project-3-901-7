@@ -15,11 +15,13 @@ interface Order {
     itemToQuantity: Map<number, number>;
     total: number;
     dateTime: Date;
+    status: string;
 }
 
 interface OrderCardProps {
-  order: Order;
-  onDeleteOrder: (id: number) => void; 
+    order: Order;
+    onEdit: (order: Order) => void;
+    onDeleteOrder: (id: number) => void; 
 }
 
 const mockOrders: Order[] = [
@@ -33,6 +35,7 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         dateTime: new Date('2024-12-12'),
+        status: 'received',
     },
     {
         _id: 2,
@@ -44,6 +47,7 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         dateTime: new Date('2024-12-03'),
+        status: 'completed',
     },
     {
         _id: 3,
@@ -55,15 +59,16 @@ const mockOrders: Order[] = [
         ]),
         total: 14.99,
         dateTime: new Date('2024-12-18'),
+        status: 'in progress',
     },
 ];
 
 const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
+    const [orders, setOrders] = useState<Order[]>([]);
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
     const [showEditPopup, setShowEditPopup] = useState(false);
     //const [showConfirmation, setShowConfirmation] = useState(false);
-
-    
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         async function fetchItemDetails() {
@@ -88,12 +93,40 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
         fetchItemDetails();
     }, [order]);
 
+    // const fetchOrders = async () => {
+    //     try {
+    //         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/order/findAll`);
+    //         const ordersData = await response.json();
+    //         setOrders(ordersData.map(order => ({
+    //             ...order,
+    //             itemToQuantity: new Map(Object.entries(order.itemToQuantity)),
+    //             dateTime: new Date(order.dateTime)
+    //         })));
+    //     } catch (error) {
+    //         console.error('Error fetching orders:', error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchOrders();
+    // }, []);
+
+    const handleEditSave = () => {
+        //fetchOrders(); // Refresh the orders after save
+        setShowEditPopup(false); // Close the popup
+    };
+
+    // const handleEditOrder = (order: Order) => {
+    //     //setSelectedOrder(order);
+    //     setShowEditPopup(true);
+    // };
+
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
         {showEditPopup && (
                 <EditOrderPopup
                     order={order}
-                    onSave={() => setShowEditPopup(false)}
+                    onSave={handleEditSave}
                     onCancel={() => setShowEditPopup(false)}
                 />
             )}
