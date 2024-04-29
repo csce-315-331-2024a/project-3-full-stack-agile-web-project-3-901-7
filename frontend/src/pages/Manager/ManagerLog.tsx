@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import ManagerNavbar from "../../components/ManagerNavbar";
 import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
+import Navbar from "../../components/Navbar";
 
 export default function ManagerLog() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
@@ -9,7 +9,7 @@ export default function ManagerLog() {
     const [roleId, setRoleId] = useState<number>(-1);
     const [newLog, setNewLog] = useState<Worklog>({
         log_id: -1,
-        id: -1,
+        emp_id: -1,
         checkin: new Date().toISOString(),
         checkout: new Date().toISOString(),
         comments: "",
@@ -61,7 +61,7 @@ export default function ManagerLog() {
 
     return (
         <div>
-            {userProfile && <ManagerNavbar userInfo={userProfile} />}
+            {userProfile && <Navbar userInfo={userProfile} userType="manager" />}
             <div className="mt-4 ml-4">
                 <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 380px)" }}>
                     <table className="overflow-scroll w-full text-sm text-center text-black font-ptserif">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import AdminNavbar from "../../components/AdminNavbar";
 import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
+import Navbar from "../../components/Navbar";
 
 export default function Admin() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
@@ -13,6 +13,6 @@ export default function Admin() {
     }, [])
     
     return (userProfile &&
-        <AdminNavbar userInfo={userProfile} />
+        <Navbar userInfo={userProfile} userType="admin" />
     )
 }

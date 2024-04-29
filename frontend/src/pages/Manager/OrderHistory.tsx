@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import Order from "../Order/Order";
+import Navbar from "../../components/Navbar";
 
 interface Order {
     _id: number;
@@ -210,7 +210,7 @@ const OrderHistory = () => {
     return (
         userProfile && (
             <div className="p-4">
-                <ManagerNavbar userInfo={userProfile} />
+                <Navbar userInfo={userProfile} userType="manager"/>
                 <div className="flex flex-col sm:flex-row items-center justify-between">
                     <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
                     <button

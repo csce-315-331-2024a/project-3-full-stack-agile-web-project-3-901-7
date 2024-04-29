@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import CashierNavbar from "./CashierNavbar";
 import { getUserAuth } from "../pages/Login";
 import { User } from "../types/dbTypes";
 
