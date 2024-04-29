@@ -32,8 +32,6 @@ import ManagerLog from './pages/Manager/ManagerLog'
 import CashierHelpQueue from './components/CashierHelpQueue'
 
 import { TextSizeProvider } from './TextSizeContext'
-import EnlargeTextButton from './components/EnlargeTextButton'
-import TextSizeResetButton from './components/TextSizeResetButton'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

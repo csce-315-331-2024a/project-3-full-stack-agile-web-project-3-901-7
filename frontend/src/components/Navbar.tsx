@@ -33,7 +33,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
             setRoutes([
                 {name: "create order", path: "/manager/orders/new"},
                 {name: "order history", path: "/manager/orders"},
-                {name: "reports", path: "/manager/salestrend"},
+                {name: "reports", path: "/manager/salestrends"},
                 {name: "inventory", path: "/manager/inventory"},
                 {name: "menu", path: "/manager/menu"},
                 {name: "log", path: "/manager/logs"},
