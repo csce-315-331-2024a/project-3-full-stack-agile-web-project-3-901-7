@@ -69,7 +69,7 @@ interface OrderCategoryCardProps {
 function OrderCategoryCard({name, icon, active, setCurrentCategory}: OrderCategoryCardProps) {
     return (
     <button 
-        className={`w-[136px] h-[112px] rounded-md flex flex-col justify-center items-center cursor-pointer border-2 hover:border-black/80 duration-300 ${(active) ? "shadow-lg" : "shadow-sm"}`}
+        className={`w-[136px] h-[112px] rounded-md flex flex-col justify-center items-center cursor-pointer border-2 hover:border-black/80 dark:hover:border-white/80 duration-300 ${(active) ? "shadow-lg" : "shadow-sm"}`}
         type="button" 
         onClick={() => setCurrentCategory(name)}
     >
