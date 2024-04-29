@@ -68,7 +68,7 @@ export type PairItems = {
 
 export interface Worklog {
     log_id: number;
-    id: number | null;
+    emp_id: number | null;
     checkin: string;
     checkout: string;
     comments: string;

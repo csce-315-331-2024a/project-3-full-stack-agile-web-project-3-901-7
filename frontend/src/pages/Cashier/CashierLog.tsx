@@ -9,7 +9,7 @@ export default function CashierLog() {
     const [roleId, setRoleId] = useState<number>(-1);
     const [newLog, setNewLog] = useState<Worklog>({
         log_id: -1,
-        id: roleId,
+        emp_id: roleId,
         checkin: new Date().toISOString(),
         checkout: new Date().toISOString(),
         comments: "",

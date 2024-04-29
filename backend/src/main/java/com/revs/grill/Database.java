@@ -477,32 +477,6 @@ public class Database {
         }
     }
 
-//     public static boolean editWorkLog(WorkLog wl) {
-//         try {
-//             CREATE TABLE cashier_work_log (
-//     log_id SERIAL PRIMARY KEY,
-//     id INT REFERENCES roles(roleId),
-//     check_in_time TIMESTAMP,
-//     check_out_time TIMESTAMP,
-//     comments TEXT
-// );
-//             String ingredientEditQuery = "UPDATE cashier_work_log SET id = ?, check_in_time = ?, check_out_time = ?, comments = ? WHERE log_id = ?";
-//             PreparedStatement ingredientEditStatement = connection.prepareStatement(ingredientEditQuery);
-//             ingredientEditStatement.setString(1, ingredient.name);
-//             ingredientEditStatement.setInt(2, ingredient.quantity);
-//             ingredientEditStatement.setInt(3, ingredient.minQuantity);
-//             ingredientEditStatement.setDouble(4, ingredient.unitPrice);
-//             ingredientEditStatement.setString(5, ingredient.supplier);
-//             ingredientEditStatement.setInt(6, ingredient._id);
-//             ingredientEditStatement.executeUpdate();
-//             ingredientEditStatement.close();
-//             return true;
-
-//         } catch (SQLException e) {
-//             e.printStackTrace();
-//             return false;
-//         }
-//     }
 
     public static List<Item> getAllItems() {
         try {

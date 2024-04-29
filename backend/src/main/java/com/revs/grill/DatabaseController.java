@@ -123,11 +123,6 @@ public class DatabaseController {
         return new ResponseStatus(Database.insertWorkLog(wl));
     }
 
-    // @PostMapping("/log/edit")
-    // public static ResponseStatus editWorkLog(@RequestBody WorkLog wl) {
-    //     return new ResponseStatus(Database.editWorkLog(wl));
-    // }
-
     @GetMapping("/item/findAll")
     public static List<Item> getAllItems() {
         return Database.getAllItems();
