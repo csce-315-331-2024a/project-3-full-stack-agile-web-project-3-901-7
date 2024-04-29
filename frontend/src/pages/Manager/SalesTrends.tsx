@@ -22,78 +22,31 @@ import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
-import { User } from "../../types/dbTypes";
+import { Ingredient, Item, User } from "../../types/dbTypes";
 
-interface Ingredient {
-    name: string;
-    quantity: number;
-    date: Date;
-}
+type DateField = 'pu' | 'er' | 'ps'; 
 
-interface ItemPair {
-    item1: string;
-    item2: string;
+type SalesMapping = Map<string, number>;
+
+interface SoldTogether {
     count: number;
-    date: Date;
+    item1: Item;
+    item2: Item;
 }
 
-interface SalesData {
-    name: string;
-    sales: number;
-    date: Date;
+interface ISalesData {
+    productUsage: SalesMapping | undefined;
+    excess: Ingredient[];
+    pairSells: SoldTogether[];
+    sales: SalesMapping | undefined;
 }
-
-// Sample data
-const mockData = {
-    productUsage: [
-        { name: "Tomatoes", quantity: 80, date: new Date("2024-04-01") },
-        { name: "Onions", quantity: 50, date: new Date("2024-04-02") },
-    ],
-    excess: [
-        { name: "Cucumbers", quantity: 20, date: new Date("2024-04-03") },
-        { name: "Carrots", quantity: 10, date: new Date("2024-04-04") },
-    ],
-    pairSells: [
-        {
-            item1: "Burger",
-            item2: "Fries",
-            count: 100,
-            date: new Date("2024-04-05"),
-        },
-        {
-            item1: "Pizza",
-            item2: "Soda",
-            count: 85,
-            date: new Date("2024-04-06"),
-        },
-    ],
-    sales: [
-        { name: "Burger", sales: 300, date: new Date("2024-04-07") },
-        { name: "Pizza", sales: 200, date: new Date("2024-04-08") },
-        { name: "Salad", sales: 150, date: new Date("2024-04-09") },
-    ],
-};
-
-const filterDataByDate = (data, startDate, endDate) => {
-    return data.filter((item) => {
-        const itemDate = new Date(item.date);
-        itemDate.setHours(0, 0, 0, 0); // Remove time from the date for comparison
-
-        const start = startDate
-            ? new Date(startDate).setHours(0, 0, 0, 0)
-            : null;
-        const end = endDate ? new Date(endDate).setHours(0, 0, 0, 0) : null;
-
-        return (!start || itemDate >= start) && (!end || itemDate <= end);
-    });
-};
 
 const SalesTrends = () => {
-    const [data, setData] = useState({
-        productUsage: mockData.productUsage,
-        excess: mockData.excess,
-        pairSells: mockData.pairSells,
-        sales: mockData.sales,
+    const [data, setData] = useState<ISalesData>({
+        productUsage: undefined,
+        excess: [],
+        pairSells: [],
+        sales: undefined,
     });
     const [dates, setDates] = useState({
         pu: { start: null, end: null },
@@ -102,25 +55,56 @@ const SalesTrends = () => {
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
+    const setProductUsage = (productUsage : SalesMapping) => {
+        setData(prevData => ({ ...prevData, productUsage, }));
+    };
+    const setExcess = (excess : Ingredient[]) => {
+        setData(prevData => ({ ...prevData, excess, }));
+    };
+    const setPairSells = (pairSells : SoldTogether[]) => {
+        setData(prevData => ({ ...prevData, pairSells, }));
+    };
+    const setSales = (sales : SalesMapping) => {
+        setData(prevData => ({ ...prevData, sales, }));
+    };
+    
+    async function fetchProductUsage(start : Date, end : Date) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/inventoryUsed?start=${start.getTime()}&end=${end.getTime()}`);
+        const usage = new Map<string, number>(Object.entries(await response.json())) as SalesMapping;
+        console.log('product usage', usage);
+        setProductUsage(usage);
+    };
+    
+    async function fetchExcess(start : Date) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findExcess?start=${start.getTime()}`);
+        const excess = await response.json() as Ingredient[];
+        console.log('excess', excess);
+        setExcess(excess);
+    };
+    
+    async function fetchPairSells(start : Date, end : Date) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/sellsTogether?start=${start.getTime()}&end=${end.getTime()}`);
+        const pairSells = await response.json() as SoldTogether[];
+        console.log('pair sells', pairSells);
+        setPairSells(pairSells);
+    };
+    
+    async function fetchSalesReport(start : Date, end : Date) {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/salesReport?start=${start.getTime()}&end=${end.getTime()}`);
+        const report = new Map<string, number>(Object.entries(await response.json())) as SalesMapping;
+        console.log('sales reports', report);
+        setSales(report);
+    };
+
     useEffect(() => {
         getUserAuth("manager").then(setUserProfile).catch(console.error);
     }, []);
 
     useEffect(() => {
-        setData({
-            productUsage: filterDataByDate(
-                mockData.productUsage,
-                dates.pu.start,
-                dates.pu.end
-            ),
-            excess: filterDataByDate(mockData.excess, dates.er.start, null),
-            pairSells: filterDataByDate(
-                mockData.pairSells,
-                dates.ps.start,
-                dates.ps.end
-            ),
-            sales: mockData.sales, // Assuming no date filter for sales data
-        });
+        fetchProductUsage(dates.pu.start || new Date(0), dates.pu.end || new Date());
+        fetchPairSells(dates.ps.start || new Date(0), dates.ps.end || new Date());
+        fetchExcess(dates.er.start || new Date(0));
+        fetchSalesReport(new Date(0), new Date());
     }, [
         dates.pu.start,
         dates.pu.end,
@@ -129,7 +113,7 @@ const SalesTrends = () => {
         dates.ps.end,
     ]);
 
-    const handleDateChange = (field, bound) => (date) => {
+    const handleDateChange = (field : DateField, bound : 'start' | 'end') => (date : Date) => {
         setDates((prevDates) => ({
             ...prevDates,
             [field]: {
@@ -139,12 +123,28 @@ const SalesTrends = () => {
         }));
     };
 
-    const renderTable = (data, type) => (
+    function instanceOfSoldTogether(object : any) : object is SoldTogether {
+        return 'item1' in object;
+    }
+    function instanceOfIngredient(object : any) : object is Ingredient {
+        return 'quantity' in object;
+    }
+
+    function mapSalesMapping<T>(mapping : SalesMapping, mapFn : (key : string, val : number) => T) {
+        console.log('mapping for', mapping);
+        let mapped : T[] = [];
+        mapping.forEach((val, key) => { 
+            mapped.push(mapFn(key, val));
+        });
+        return mapped;
+    }
+
+    const renderTable = (data : Ingredient[] | SoldTogether[]) => ( data.length > 0 &&
         <TableContainer component={Paper} className="mb-4">
             <Table>
                 <TableHead>
                     <TableRow>
-                        {type === "ingredient" ? (
+                        {instanceOfIngredient(data) ? (
                             <>
                                 <TableCell>
                                     <b>Inventory Item</b>
@@ -171,17 +171,18 @@ const SalesTrends = () => {
                 <TableBody>
                     {data.map((row, index) => (
                         <TableRow key={index}>
-                            {type === "ingredient" ? (
+                            {instanceOfIngredient(row) && (
                                 <>
                                     <TableCell>{row.name}</TableCell>
                                     <TableCell align="right">
                                         {row.quantity}
                                     </TableCell>
                                 </>
-                            ) : (
+                            )}
+                            {instanceOfSoldTogether(row) && (
                                 <>
-                                    <TableCell>{row.item1}</TableCell>
-                                    <TableCell>{row.item2}</TableCell>
+                                    <TableCell>{row.item1.name}</TableCell>
+                                    <TableCell>{row.item2.name}</TableCell>
                                     <TableCell align="right">
                                         {row.count}
                                     </TableCell>
@@ -231,7 +232,15 @@ const SalesTrends = () => {
                                 className="border-2 border-black bg-white px-4 py-2 rounded"
                             />
                         </div>
-                        {renderTable(data.productUsage, "ingredient")}
+                        {data.productUsage && renderTable(
+                            mapSalesMapping<Ingredient>(
+                                data.productUsage, 
+                                (ingName, count) => ({ 
+                                    name: ingName,
+                                    quantity: count,
+                                }) as Ingredient
+                            )
+                        )}
                     </div>
 
                     <div className="mb-6">
@@ -239,7 +248,13 @@ const SalesTrends = () => {
                             Sales Report
                         </h2>
                         <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={data.sales}>
+                            <BarChart 
+                                data={data.sales && mapSalesMapping<{name: string, sales: number}>(
+                                    data.sales, (key, value) => ({
+                                        name: key, sales: value,
+                                    })
+                                )}
+                            >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" />
                                 <YAxis />
@@ -269,7 +284,7 @@ const SalesTrends = () => {
                                 className="border-2 border-black bg-white px-4 py-2 rounded"
                             />
                         </div>
-                        {renderTable(data.excess, "ingredient")}
+                        {data.excess && renderTable(data.excess)}
                     </div>
 
                     <div>
@@ -302,7 +317,7 @@ const SalesTrends = () => {
                                 className="border-2 border-black bg-white px-4 py-2 rounded"
                             />
                         </div>
-                        {renderTable(data.pairSells, "pair")}
+                        {data.pairSells && renderTable(data.pairSells)}
                     </div>
                 </div>
             </div>
