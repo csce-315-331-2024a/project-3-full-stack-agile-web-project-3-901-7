@@ -24,6 +24,7 @@ import ManagerMenu from './pages/Manager/Menu/ManagerMenu'
 import NewMenuItemPage from './pages/Manager/Menu/NewMenuItem'
 import EditMenuItemPage from './pages/Manager/Menu/EditMenuItem'
 import Cashier from './pages/Cashier/Cashier'
+import Kitchen from './pages/Cashier/Kitchen'
 import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
 import CashierLog from './pages/Cashier/CashierLog'
@@ -60,6 +61,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
                         <Route path="/cashier/log" element={<CashierLog />}/>
                         <Route path="/cashier/help" element={<CashierHelpQueue />}/>
+                        <Route path="/cashier/kitchen" element={<Kitchen />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>

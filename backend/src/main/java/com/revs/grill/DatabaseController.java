@@ -182,13 +182,13 @@ public class DatabaseController {
     }
 
     @PostMapping("/order/edit")
-    public static ResponseStatus editOrder(@RequestParam("order") Order order) {
+    public static ResponseStatus editOrder(@RequestBody Order order) {
         return new ResponseStatus(Database.editOrder(order));
     }
 
     @PostMapping("/order/deleteById")
-    public static ResponseStatus deleteOrder(@RequestParam("order") Order order) {
-        return new ResponseStatus(Database.deleteOrder(order));
+    public static ResponseStatus deleteOrder(@RequestParam("orderId") int orderId) {
+        return new ResponseStatus(Database.deleteOrder(Order.findOneById(orderId)));
     }
 
     @GetMapping("/order/findAll")

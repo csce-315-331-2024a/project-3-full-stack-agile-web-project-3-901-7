@@ -648,14 +648,13 @@ public class Database {
     public static boolean editOrder(Order order) {
         try {
             // update order table
-            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, dateTime = ?, status = ? WHERE orderId = ?";
+            String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, status = ? WHERE orderId = ?";
             PreparedStatement orderUpdateStatement = connection.prepareStatement(orderUpdateQuery);
             orderUpdateStatement.setInt(1, order.numItems);
             orderUpdateStatement.setDouble(2, order.total);
             orderUpdateStatement.setString(3, order.orderInfo);
-            orderUpdateStatement.setDate(4, order.dateTime);
-            orderUpdateStatement.setString(5, order.status);
-            orderUpdateStatement.setInt(6, order._id);
+            orderUpdateStatement.setString(4, order.status);
+            orderUpdateStatement.setInt(5, order._id);
             orderUpdateStatement.executeUpdate();
 
             // remove existing order-item junctions

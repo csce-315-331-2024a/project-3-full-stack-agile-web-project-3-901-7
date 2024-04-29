@@ -36,11 +36,14 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                 {name: "reports", path: "/manager/salestrend"},
                 {name: "inventory", path: "/manager/inventory"},
                 {name: "menu", path: "/manager/menu"},
+                {name: "log", path: "/manager/logs"},
                 {name: "cashier", path: "/cashier"},
             ])
         } else if (userType === "cashier") {
             setRoutes([
                 {name: "create order", path: "/manager/orders/new"},
+                {name: "kitchen", path: "/cashier/kitchen"},
+                {name: "log", path: "/cashier/log"},
             ])
         } else {
             setRoutes([
