@@ -149,6 +149,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                       <GoogleTranslate />
                     </button>
                     <button
+                        aria-label="dark-mode"
                         className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white"
                         onClick={toggleTheme}
                     >
@@ -156,6 +157,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                     </button>
                     <div className="relative">
                         <button
+                            aria-label="dropdown-button"
                             ref={buttonRef}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
