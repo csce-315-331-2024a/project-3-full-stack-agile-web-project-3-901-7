@@ -12,6 +12,18 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+class SoldTogether {
+    public int count;
+    public Item item1;
+    public Item item2;
+
+    public SoldTogether(int count, Item item1, Item item2) {
+        this.count = count;
+        this.item1 = item1;
+        this.item2 = item2;
+    }
+}
+
 @Configuration
 @PropertySource("classpath:application.properties")
 public class Database {
@@ -993,8 +1005,8 @@ public class Database {
         }
     }
 
-    public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(Date start, Date end) {
-        List<MutablePair<MutablePair<Item, Item>, Integer>> sellsTog = new ArrayList<>();
+    public static List<SoldTogether> getSellsTog(Date start, Date end) {
+        List<SoldTogether> sellsTog = new ArrayList<>();
         try {
             String sql = "" +
                     "WITH OrderItems AS ( \n" +
@@ -1036,8 +1048,7 @@ public class Database {
                 int item2Id = resultSet.getInt("item2");
                 int frequency = resultSet.getInt("frequency");
 
-                sellsTog.add(new MutablePair<>(new MutablePair<>(Item.findOneById(item1Id), Item.findOneById(item2Id)),
-                        frequency));
+                sellsTog.add(new SoldTogether(frequency, Item.findOneById(item1Id), Item.findOneById(item2Id)));
             }
 
         } catch (Exception e) {

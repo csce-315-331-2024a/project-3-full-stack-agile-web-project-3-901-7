@@ -148,12 +148,6 @@ public class DatabaseController {
         return new ResponseStatus(Database.deleteItem(itemId));
     }
 
-    @GetMapping("/item/sellsTogether")
-    public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(@RequestParam("start") Date start,
-            @RequestParam("end") Date end) {
-        return getSellsTog(start, end);
-    }
-
     @PostMapping("/order/insert")
     public static ResponseStatus insertOrder(@RequestBody Order order) {
         return new ResponseStatus(Database.insertOrder(order));
@@ -230,18 +224,22 @@ public class DatabaseController {
     }
 
     @GetMapping("/ingredient/findExcess")
-    public static List<Ingredient> getExcessIngredients(@RequestParam("start") Date start) {
-        return Database.getExcessIngredients(start);
+    public static List<Ingredient> getExcessIngredients(@RequestParam("start") long startTimeCode) {
+        return Database.getExcessIngredients(new Date(startTimeCode));
     }
 
     @GetMapping("/inventoryUsed")
-    public static Map<String, Integer> getAmtInventoryUsed(@RequestParam("start") Date start,
-            @RequestParam("end") Date end) {
-        return Database.getAmtInventoryUsed(start, end);
+    public static Map<String, Integer> getAmtInventoryUsed(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getAmtInventoryUsed(new Date(startTimeCode), new Date(endTimeCode));
     }
 
     @GetMapping("/salesReport")
-    public static Map<String, Double> getSalesReport(@RequestParam("start") Date start, @RequestParam("end") Date end) {
-        return Database.getSalesReport(start, end);
+    public static Map<String, Double> getSalesReport(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getSalesReport(new Date(startTimeCode), new Date(endTimeCode));
+    }
+
+    @GetMapping("/item/sellsTogether")
+    public static List<SoldTogether> getSellsTog(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getSellsTog(new Date(startTimeCode), new Date(endTimeCode));
     }
 }
