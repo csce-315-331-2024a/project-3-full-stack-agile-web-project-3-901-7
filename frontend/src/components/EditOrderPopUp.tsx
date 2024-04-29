@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-interface Order {
+export interface Order {
     _id: number;
     numItems: number;
     orderInfo: string;
@@ -15,18 +15,18 @@ interface ItemDetails {
     price: number;
 }
 
-const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () => void }> = ({ order, onSave, onCancel }) => {
+const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => void, onCancel: () => void }> = ({ order, onSave, onCancel }) => {
     // Transform the Map to an editable format
-    const [items, setItems] = useState<Map<number, { quantity: number; price?: number; }>>(() => {
-        const newMap = new Map<number, { quantity: number; price?: number; }>();
+    const [items, setItems] = useState<Map<number, { name: string; quantity: number; price?: number; }>>(() => {
+        const newMap = new Map<number, { name: string; quantity: number; price?: number; }>();
         order.itemToQuantity.forEach((quantity, itemId) => {
-            newMap.set(itemId, { quantity, price: 0 }); // Set default price as 0 or fetch if necessary
+            newMap.set(itemId, { name: "", quantity, price: 0 }); // Initialize name as empty string
         });
         return newMap;
     });
 
     useEffect(() => {
-        const fetchItemPrices = async () => {
+        const fetchItemDetails = async () => {
             const itemDetails = new Map();
             for (const [itemId, quantity] of order.itemToQuantity.entries()) {
                 try {
@@ -35,7 +35,7 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
                         throw new Error('Failed to fetch item details');
                     }
                     const data = await response.json();
-                    itemDetails.set(itemId, { quantity, price: data.price });
+                    itemDetails.set(itemId, { name: data.name, quantity, price: data.price });
                 } catch (error) {
                     console.error('Fetch error:', error);
                 }
@@ -43,7 +43,7 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
             setItems(itemDetails);
         };
 
-        fetchItemPrices();
+        fetchItemDetails();
     }, [order]); 
 
     const calculateTotal = () => {
@@ -65,19 +65,29 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
 
 
     const handleSave = () => {
-        const itemToQuantityObject: Record<number, number> = {};
+        const itemToQuantityObject: Map<number, number> = new Map<number, number>();
+        let numItems = 0;
         items.forEach((item, itemId) => {
-            itemToQuantityObject[itemId] = item.quantity;
+            itemToQuantityObject.set(itemId, item.quantity);
+            numItems += item.quantity;
         });
+
+        function mapToObj(map: Map<number, number>) {
+            let obj = Object.create(null);
+            for (let [k,v] of map) {
+                obj[k] = v;
+            }
+            return obj;
+        }    
     
         const updatedOrder = {
             _id: order._id,
-            numItems: Object.keys(itemToQuantityObject).reduce((total, key) => total + itemToQuantityObject[Number(key)], 0),
+            numItems,
             orderInfo: order.orderInfo,
             itemToQuantity: itemToQuantityObject,
             total: calculateTotal(),
-            dateTime: order.dateTime.toString(),
-            status: order.status || "Pending"
+            dateTime: order.dateTime,
+            status: order.status
         };
     
         console.log('Sending updated order data to server:', JSON.stringify(updatedOrder));
@@ -88,10 +98,16 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify(updatedOrder)
+            body: JSON.stringify({
+                ...updatedOrder,
+                itemToQuantity: mapToObj(updatedOrder.itemToQuantity),
+            })
         })
         .then(response => response.json())
-        .then(data => console.log('Order update successful:', data))
+        .then(data => {
+            console.log('Order update successful:', data);
+            onSave(updatedOrder);
+        })
         .catch(error => console.error('Failed to update order:', error));
     };
     
@@ -103,8 +119,8 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
             <div className="bg-white p-4 rounded">
                 <h2>Edit Order</h2>
                 {Array.from(items.entries()).map(([itemId, item]) => (
-                    <div key={itemId}>
-                        <span>{itemId}</span>
+                    <div key={itemId} className="flex items-center">
+                        <span className="text-sm">{item.name}</span> {/* Added text-sm class */}
                         <input
                             type="number"
                             value={item.quantity}

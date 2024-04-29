@@ -7,17 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from '../Login';
 import { User } from "../../types/dbTypes";
-import Order from '../Order/Order';
-
-interface Order {
-    _id: number;
-    numItems: number;
-    orderInfo: string;
-    itemToQuantity: Map<number, number>;
-    total: number;
-    dateTime: Date;
-    status: string;
-}
+import { Order } from "../../components/EditOrderPopUp";
 
 interface OrderCardProps {
     order: Order;
@@ -64,8 +54,8 @@ const mockOrders: Order[] = [
     },
 ];
 
-const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
-    const [orders, setOrders] = useState<Order[]>([]);
+const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.SetStateAction<Order[]>>
+    , deleteOrderCallback: (id: number) => void }> = ({order, setOrders, deleteOrderCallback}) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
     const [showEditPopup, setShowEditPopup] = useState(false);
     //const [showConfirmation, setShowConfirmation] = useState(false);
@@ -95,8 +85,8 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
     }, [order]);
 
     const handleEditSave = () => {
-        //fetchOrders(); // Refresh the orders after save
-        setShowEditPopup(false); // Close the popup
+        setShowEditPopup(false);
+        window.alert('Order edited successfully!');
     };
 
     return (
@@ -104,8 +94,12 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
         {showEditPopup && (
                 <EditOrderPopup
                     order={order}
-                    onSave={() => {
+                    onSave={(updatedOrder : Order) => {
                         handleEditSave();
+                        console.log('updated order', updatedOrder);
+                        setOrders((prevOrders) => prevOrders.map(prevOrder => 
+                            updatedOrder._id === prevOrder._id ? updatedOrder : prevOrder
+                        ))
                         setShowEditPopup(false);
                     }}
                     onCancel={() => setShowEditPopup(false)}
@@ -166,7 +160,7 @@ const OrderHistory = () => {
     useEffect(() => {
         async function fetchOrders() {
             try {
-                const response = await fetch('http://localhost:8080/order/findAll?limit=20');
+                const response = await fetch('http://localhost:8080/order/findAll?limit=5');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -280,7 +274,7 @@ const OrderHistory = () => {
         )}
         <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
           {orders.map(order => (
-            <OrderCard key={order._id} deleteOrderCallback={() => handleDeleteOrder(order._id)} order={order} />
+            <OrderCard key={order._id} setOrders={setOrders} deleteOrderCallback={() => handleDeleteOrder(order._id)} order={order} />
           ))}
         </div>
       </div>
