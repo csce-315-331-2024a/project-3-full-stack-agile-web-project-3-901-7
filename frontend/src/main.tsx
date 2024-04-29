@@ -56,6 +56,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
                         <Route path="/cashier/log" element={<CashierLog />}/>
                         <Route path="/cashier/help" element={<CashierHelpQueue />}/>
+                        <Route path="/cashier/kitchen" element={<Kitchen />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>

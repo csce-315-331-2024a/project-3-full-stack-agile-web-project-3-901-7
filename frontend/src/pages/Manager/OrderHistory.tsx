@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import { Order } from "../../components/EditOrderPopUp";
+import Navbar from "../../components/Navbar";
 
 interface OrderCardProps {
     order: Order;
@@ -243,7 +244,7 @@ const OrderHistory = () => {
 
     return (userProfile &&
       <div className="p-4">
-        <ManagerNavbar userInfo={userProfile}/>
+        <Navbar userType="manager" userInfo={userProfile}/>
         <div className="flex flex-col sm:flex-row items-center justify-between">
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
         </div>

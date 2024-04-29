@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import CashierNavbar from "../../components/CashierNavbar";
 import { useNavigate } from 'react-router-dom';
-import ManagerNavbar from "../../components/ManagerNavbar";
 import { getUserAuth } from '../Login';
 import { User } from "../../types/dbTypes";
 import Order from '../Order/Order';
+import Navbar from "../../components/Navbar";
 
 interface Order {
     _id: number;
@@ -186,7 +185,7 @@ const Kitchen = () => {
 
     return (
         <div className="p-4">
-            <ManagerNavbar userInfo={userProfile} />
+            <Navbar userType="cashier" userInfo={userProfile} />
             <div className="flex flex-col sm:flex-row items-center justify-between">
                 <h1 className="text-4xl font-bold my-4">Tickets</h1>
             </div>
