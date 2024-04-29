@@ -61,7 +61,7 @@ export default function ManagerLog() {
 
     return (
         <div>
-            {userProfile && <Navbar userInfo={userProfile} userType="manager" />}
+            {userProfile && <Navbar userInfo={userProfile} userType="manager"/>}
             <div className="mt-4 ml-4">
                 <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 380px)" }}>
                     <table className="overflow-scroll w-full text-sm text-center text-black font-ptserif">

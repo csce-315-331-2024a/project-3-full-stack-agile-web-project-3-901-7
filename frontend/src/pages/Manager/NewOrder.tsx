@@ -113,7 +113,7 @@ export default function AdminOrder() {
 
     return (
         <div className="w-full h-full p-8 flex flex-col gap-y-8">
-            {userProfile && <Navbar userInfo={userProfile} userType="cashier" />}
+            {userProfile && <Navbar userInfo={userProfile} userType="cashier"/>}
 
             <div className="mt-8 flex items-end gap-x-12">
                 <div className="min-w-[320px] flex items-center border-b-2 border-black gap-x-4 px-4 py-2">
