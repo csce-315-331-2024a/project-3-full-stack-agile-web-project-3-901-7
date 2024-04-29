@@ -99,7 +99,7 @@ const Kitchen = () => {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
-        getUserAuth('manager')
+        getUserAuth('cashier')
             .then(setUserProfile)
             .catch(console.error);
     }, []);
@@ -107,7 +107,7 @@ const Kitchen = () => {
     useEffect(() => {
         async function fetchOrders() {
             try {
-                const response = await fetch('http://localhost:8080/order/findByStatus?status=received');
+                const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findByStatus?status=received');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -156,7 +156,7 @@ const Kitchen = () => {
             );
 
             // Send a request to update the order status in the database
-            const response = await fetch('http://localhost:8080/order/edit', {
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/edit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
