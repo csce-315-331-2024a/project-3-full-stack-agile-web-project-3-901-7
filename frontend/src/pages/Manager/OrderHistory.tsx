@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ManagerNavbar from "../../components/ManagerNavbar";
+import EditOrderPopup from "../../components/EditOrderPopUp";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from '../Login';
@@ -59,12 +60,15 @@ const mockOrders: Order[] = [
 
 const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) => void }> = ({order, deleteOrderCallback}) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    //const [showConfirmation, setShowConfirmation] = useState(false);
+
+    
 
     useEffect(() => {
         async function fetchItemDetails() {
             const details: { [key: number]: { name: string, price: number } } = {};
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
                 try {
                     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
@@ -86,6 +90,22 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
 
     return (
       <div className="relative border-2 border-black p-4 m-2 flex flex-col" style={{ width: '350px', height: '400px', flexBasis: 'auto', flexGrow: 0, flexShrink: 0 }}>
+        {showEditPopup && (
+                <EditOrderPopup
+                    order={order}
+                    onSave={() => setShowEditPopup(false)}
+                    onCancel={() => setShowEditPopup(false)}
+                />
+            )}
+            {/* {showConfirmation && (
+                <ConfirmationPopup
+                    message="Order edit saved!"
+                    onClose={() => setShowConfirmation(false)}
+                />
+            )} */}
+            <button onClick={() => setShowEditPopup(true)} className="absolute top-2 right-10 bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded">
+                Edit
+            </button>
           <button onClick={() => deleteOrderCallback(order._id)} className="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white font-bold p-1 rounded">
               -
           </button>
@@ -171,6 +191,15 @@ const OrderHistory = () => {
     
         fetchOrders();
     }, []);
+
+    // const refreshOrders = () => {
+    //     fetchOrders();
+    // };
+
+    // const handleEditSave = () => {
+    //     refreshOrders();
+    //     setShowEditPopup(false); // Close the popup after saving
+    // };
     
     const handleDeleteOrder = async (id: number) => {
       try {
@@ -209,12 +238,12 @@ const OrderHistory = () => {
         <ManagerNavbar userInfo={userProfile}/>
         <div className="flex flex-col sm:flex-row items-center justify-between">
             <h1 className="text-4xl font-bold my-4">Recent Orders</h1>
-            <button
+            {/* <button
               onClick={() => window.location.href = '/manager/orders/edit'}
               className="border-2 border-black px-4 py-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white"
             >
               Edit Order
-            </button>
+            </button> */}
         </div>
         <div className="mb-4 flex gap-2">
             <DatePicker
