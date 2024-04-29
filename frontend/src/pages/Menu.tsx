@@ -72,7 +72,13 @@ export default function Menu() {
     );
 }
 
-function ItemCard({name, price, itemDesc} : Item) {
+interface ItemCardProps {
+    name: string;
+    price: number;
+    itemDesc: string;
+}
+
+function ItemCard({name, price, itemDesc} : ItemCardProps) {
     return (
         <>
             <div className="flex justify-between">
