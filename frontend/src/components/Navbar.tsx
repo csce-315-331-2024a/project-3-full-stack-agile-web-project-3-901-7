@@ -4,8 +4,9 @@ import CookieManager from "../utils/CookieManager"
 import { useEffect, useRef, useState } from "react";
 import GoogleTranslate from "./GoogleTranslate";
 import { GoPlus } from "react-icons/go";
-import { FaMoon } from "react-icons/fa";
+import { useTextSize } from "../TextSizeContext";
 
+import { FaMoon } from "react-icons/fa";
 interface NavbarProps {
     userInfo?: User;
     userType?: string;
@@ -19,6 +20,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const initialButtonWidth = useRef<number | null>(null);
+    const { enlargeText, resetTextSize } = useTextSize();
 
     useEffect(() => {
         if (userType === "admin") {
@@ -173,6 +175,18 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                                 >
                                     Weather
                                 </a>
+                                <button
+                                    onClick={enlargeText}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Enlarge Text
+                                </button>
+                                <button
+                                    onClick={resetTextSize}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Reset Text Size
+                                </button>
                             </div>
                         )}
                     </div>

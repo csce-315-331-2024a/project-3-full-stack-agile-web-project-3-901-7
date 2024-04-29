@@ -9,8 +9,13 @@
     box-sizing: border-box;
 }
 
+:root {
+    --text-size: 1rem; /* Default text size */
+  }  
+
 html, body, #root {
     width: 100vw;
     height: 100%;
     overflow-x: hidden;
+    font-size: var(--text-size);
 }
