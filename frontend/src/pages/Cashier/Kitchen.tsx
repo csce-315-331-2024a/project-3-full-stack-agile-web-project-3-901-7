@@ -96,17 +96,13 @@ const OrderCard : React.FC<{ order : Order, onChangeStatus: (id: number) => void
 
 
 const Kitchen = () => {
-    //const [orders, setOrders] = useState<Order[]>([]);
-    const [orders, setOrders] = useState<Order[]>(mockTickets);
-    const [sortDirection, setSortDirection] = useState<string>('asc');
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
         getUserAuth('manager')
-        .then(setUserProfile)
-        .catch(console.error);
+            .then(setUserProfile)
+            .catch(console.error);
     }, []);
 
     useEffect(() => {
@@ -122,57 +118,99 @@ const Kitchen = () => {
                     throw new Error("Data is not an array");
                 }
                 const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
-                    // Log the raw itemToQuantity object from the data
-                    console.log(order.itemToQuantity);
-                    
                     // Convert itemToQuantity from object to Map
                     const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
-                
-                    // Log the date from the data
-                    console.log("date:", order.dateTime);
-                
                     // Construct and return the new order object
                     return {
                         ...order,
                         itemToQuantity: itemToQuantityMap,
-                        date: new Date(order.dateTime) // Convert string to Date object
+                        date: new Date(order.dateTime)
                     };
                 }) : [];
-                
-                
-                //setOrders(ordersWithMaps);
+                setOrders(ordersWithMaps);
             } catch (error) {
                 console.error('Failed to fetch orders:', error);
             }
         }
-    
+
         fetchOrders();
     }, []);
-    
-    const handleChangeStatus = (id: number) => {
-        setOrders(orders.map(order => {
-            if (order._id === id) {
-                const newStatus = order.status === 'received' ? 'in progress' : 'completed';
-                return { ...order, status: newStatus };
+
+    const handleChangeStatus = async (id: number) => {
+        try {
+            // Find the order with the given id
+            const orderToUpdate = orders.find(order => order._id === id);
+
+            if (!orderToUpdate) {
+                console.error('Order not found');
+                return;
             }
-            return order;
-        }).filter(order => order.status !== 'completed')); // Hide completed orders
+
+            // Determine the new status based on the current status
+            const newStatus = orderToUpdate.status === 'received' ? 'in progress' : 'completed';
+
+            // Update the order status locally
+            setOrders(prevOrders =>
+                prevOrders.map(order =>
+                    order._id === id ? { ...order, status: newStatus } : order
+                )
+            );
+
+            // Send a request to update the order status in the database
+            const response = await fetch('http://localhost:8080/order/edit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ _id: id, status: newStatus })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update order status');
+            }
+
+            console.log('Order status updated successfully');
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
     };
 
+    if (!userProfile) {
+        return null; // Return null or a loading indicator while user profile is being fetched
+    }
 
-    return (userProfile &&
-      <div className="p-4">
-        <ManagerNavbar userInfo={userProfile}/>
-        <div className="flex flex-col sm:flex-row items-center justify-between">
-            <h1 className="text-4xl font-bold my-4">Tickets</h1>
+    // Separate orders into received and in progress
+    const receivedOrders = orders.filter(order => order.status === 'received');
+    const inProgressOrders = orders.filter(order => order.status === 'in progress');
+
+    return (
+        <div className="p-4">
+            <ManagerNavbar userInfo={userProfile} />
+            <div className="flex flex-col sm:flex-row items-center justify-between">
+                <h1 className="text-4xl font-bold my-4">Tickets</h1>
+            </div>
+
+            {/* Section for received orders */}
+            <div className="my-4">
+                <h2 className="text-xl font-bold">Received Orders</h2>
+                <div className="flex flex-wrap -mx-2">
+                    {receivedOrders.map(order => (
+                        <OrderCard key={order._id} order={order} onChangeStatus={handleChangeStatus} />
+                    ))}
+                </div>
+            </div>
+
+            {/* Section for in progress orders */}
+            <div className="my-4">
+                <h2 className="text-xl font-bold">In Progress Orders</h2>
+                <div className="flex flex-wrap -mx-2">
+                    {inProgressOrders.map(order => (
+                        <OrderCard key={order._id} order={order} onChangeStatus={handleChangeStatus} />
+                    ))}
+                </div>
+            </div>
         </div>
-            
-        <div className="flex flex-nowrap overflow-x-auto p-4" style={{ height: 'calc(100vh - 200px)' }}>
-            {orders.filter(order => order.status === 'received' || order.status === 'in progress').map(order => (
-                <OrderCard key={order._id} order={order} onChangeStatus={handleChangeStatus} />
-            ))}
-        </div>
-      </div>
     );
 };
 

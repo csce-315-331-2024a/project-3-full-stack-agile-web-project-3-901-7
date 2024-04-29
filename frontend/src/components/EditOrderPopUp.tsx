@@ -7,7 +7,7 @@ interface Order {
     itemToQuantity: Map<number, number>;
     total: number;
     dateTime: Date;
-    status: string; 
+    status?: string;  // Assuming status might be optional or required based on your backend needs
 }
 
 interface ItemDetails {
@@ -72,32 +72,27 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
     
         const updatedOrder = {
             _id: order._id,
-            numItems: Object.values(itemToQuantityObject).reduce((total, quantity) => total + quantity, 0),
+            numItems: Object.keys(itemToQuantityObject).reduce((total, key) => total + itemToQuantityObject[Number(key)], 0),
             orderInfo: order.orderInfo,
             itemToQuantity: itemToQuantityObject,
             total: calculateTotal(),
             dateTime: order.dateTime.toString(),
-            status: order.status
+            status: order.status || "Pending"
         };
     
-        fetch(`${process.env.REACT_APP_BACKEND_URL}/order/edit`, {
+        console.log('Sending updated order data to server:', JSON.stringify(updatedOrder));
+    
+        fetch('http://localhost:8080/order/edit', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify(updatedOrder)
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Order update successful:', data);
-            onSave(); // This should trigger a refresh in the parent component
-        })
-        .catch(error => {
-            console.error('Failed to update order:', error);
-        });
+        .then(response => response.json())
+        .then(data => console.log('Order update successful:', data))
+        .catch(error => console.error('Failed to update order:', error));
     };
     
     
@@ -109,11 +104,13 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:() => void, onCancel: () =
                 <h2>Edit Order</h2>
                 {Array.from(items.entries()).map(([itemId, item]) => (
                     <div key={itemId}>
+                        <span>{itemId}</span>
                         <input
                             type="number"
                             value={item.quantity}
                             onChange={(e) => setItems(new Map(items.set(itemId, { ...item, quantity: parseInt(e.target.value) })))}
-                            className="border-2 border-gray-300 p-2"
+                            className="border-2 border-gray-300 mx-4 my-2 px-4"
+                            style={{ width: '70px' }}
                         />
                         <button onClick={() => {
                             const newItems = new Map(items);

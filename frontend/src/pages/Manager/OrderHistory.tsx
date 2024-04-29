@@ -104,16 +104,13 @@ const OrderCard : React.FC<{ order : Order, deleteOrderCallback: (id: number) =>
         {showEditPopup && (
                 <EditOrderPopup
                     order={order}
-                    onSave={handleEditSave}
+                    onSave={() => {
+                        handleEditSave();
+                        setShowEditPopup(false);
+                    }}
                     onCancel={() => setShowEditPopup(false)}
                 />
             )}
-            {/* {showConfirmation && (
-                <ConfirmationPopup
-                    message="Order edit saved!"
-                    onClose={() => setShowConfirmation(false)}
-                />
-            )} */}
             <button onClick={() => setShowEditPopup(true)} className="absolute top-2 right-10 bg-blue-500 hover:bg-blue-700 text-white font-bold p-1 rounded">
                 Edit
             </button>
