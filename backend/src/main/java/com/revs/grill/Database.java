@@ -176,6 +176,7 @@ public class Database {
             order.dateTime = resultSet.getDate("dateTime");
             order.total = resultSet.getDouble("total");
             order.orderInfo = resultSet.getString("orderInfo");
+            order.status = resultSet.getString("status");
 
             PreparedStatement orderItemStatement = connection.prepareStatement(
                     "SELECT * \n" +

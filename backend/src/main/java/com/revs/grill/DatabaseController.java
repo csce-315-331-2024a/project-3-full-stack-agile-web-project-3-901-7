@@ -155,7 +155,7 @@ public class DatabaseController {
     }
 
     @PostMapping("/order/edit")
-    public static ResponseStatus editOrder(@RequestParam("order") Order order) {
+    public static ResponseStatus editOrder(@RequestBody Order order) {
         return new ResponseStatus(Database.editOrder(order));
     }
 
