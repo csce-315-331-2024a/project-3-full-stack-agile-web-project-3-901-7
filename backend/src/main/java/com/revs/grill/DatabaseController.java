@@ -3,6 +3,7 @@ package com.revs.grill;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,6 +51,9 @@ class UserInsertBody {
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class DatabaseController {
+    private static final int NUM_STATIONS = 5;
+    private static boolean[] isHelpNeeded = new boolean[NUM_STATIONS]; 
+    private static Random random = new Random();
 
     public DatabaseController() {
         Database.createConnection();
@@ -108,9 +112,34 @@ public class DatabaseController {
         return new ResponseStatus(Database.deleteRole(role));
     }
 
+    @GetMapping("/log/findAll")
+    public static List<WorkLog> getAllWorkLogs() {
+        return Database.getAllWorkLogs();
+    }
+
+    @GetMapping("/log/findById")
+    public static List<WorkLog> getLogById(@RequestParam("ids") List<Integer> ids) {
+        return Database.getLogById(ids);
+    }
+
+    @PostMapping("/log/insert")
+    public static ResponseStatus insertWorkLog(@RequestBody WorkLog wl) {
+        return new ResponseStatus(Database.insertWorkLog(wl));
+    }
+
+    @PostMapping("/log/edit")
+    public static ResponseStatus editWorkLog(@RequestBody WorkLog wl) {
+        return new ResponseStatus(Database.editWorkLog(wl));
+    }
+
     @GetMapping("/item/findAll")
     public static List<Item> getAllItems() {
         return Database.getAllItems();
+    }
+
+    @GetMapping("/item/findAllAvailable")
+    public static List<Item> getAllAvailableItems() {
+        return Database.getAllAvailableItems();
     }
 
     @GetMapping("/item/findById")
@@ -143,15 +172,13 @@ public class DatabaseController {
         return new ResponseStatus(Database.deleteItem(itemId));
     }
 
-    @GetMapping("/item/sellsTogether")
-    public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(@RequestParam("start") Date start,
-            @RequestParam("end") Date end) {
-        return getSellsTog(start, end);
-    }
-
     @PostMapping("/order/insert")
     public static ResponseStatus insertOrder(@RequestBody Order order) {
-        return new ResponseStatus(Database.insertOrder(order));
+        if (order.numItems > 0)
+        {
+            return new ResponseStatus(Database.insertOrder(order));
+        }
+        return new ResponseStatus(false);
     }
 
     @PostMapping("/order/edit")
@@ -225,18 +252,47 @@ public class DatabaseController {
     }
 
     @GetMapping("/ingredient/findExcess")
-    public static List<Ingredient> getExcessIngredients(@RequestParam("start") Date start) {
-        return Database.getExcessIngredients(start);
+    public static List<Ingredient> getExcessIngredients(@RequestParam("start") long startTimeCode) {
+        return Database.getExcessIngredients(new Date(startTimeCode));
     }
 
     @GetMapping("/inventoryUsed")
-    public static Map<String, Integer> getAmtInventoryUsed(@RequestParam("start") Date start,
-            @RequestParam("end") Date end) {
-        return Database.getAmtInventoryUsed(start, end);
+    public static Map<String, Integer> getAmtInventoryUsed(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getAmtInventoryUsed(new Date(startTimeCode), new Date(endTimeCode));
     }
 
     @GetMapping("/salesReport")
-    public static Map<String, Double> getSalesReport(@RequestParam("start") Date start, @RequestParam("end") Date end) {
-        return Database.getSalesReport(start, end);
+    public static Map<String, Double> getSalesReport(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getSalesReport(new Date(startTimeCode), new Date(endTimeCode));
+    }
+
+    @GetMapping("/item/sellsTogether")
+    public static List<SoldTogether> getSellsTog(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
+        return Database.getSellsTog(new Date(startTimeCode), new Date(endTimeCode));
+    }
+
+    @GetMapping("/helpStations")
+    public static List<Boolean> getHelpStations() {
+        List<Boolean> helpNeededList = new ArrayList<>();
+        for (int i = 0; i < NUM_STATIONS; i++) {
+            helpNeededList.add(isHelpNeeded[i]);
+        }
+        return helpNeededList;
+    }
+
+    @PostMapping("/requestHelp")
+    public static ResponseStatus requestHelp() {
+        int station = random.nextInt(NUM_STATIONS);
+        isHelpNeeded[station] = true;
+        return new ResponseStatus(true);
+    }
+
+    @PostMapping("/resolveHelp")
+    public static ResponseStatus resolveHelp(@RequestParam("station") int station) {
+        if (station < 0 || station >= NUM_STATIONS)
+            return new ResponseStatus(false);
+        
+        isHelpNeeded[station] = false;
+        return new ResponseStatus(true);
     }
 }

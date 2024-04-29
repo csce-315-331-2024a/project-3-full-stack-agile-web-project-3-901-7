@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ManagerNavbar from "../../components/ManagerNavbar";
+import React, { useState, useEffect } from "react";
 import EditOrderPopup from "../../components/EditOrderPopUp";
 import DeleteConfirmation from '../../components/DeleteConfirmation';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getUserAuth } from '../Login';
+import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import { Order } from "../../components/EditOrderPopUp";
 
@@ -63,18 +61,23 @@ const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.Set
 
     useEffect(() => {
         async function fetchItemDetails() {
-            const details: { [key: number]: { name: string, price: number } } = {};
+            const details: { [key: number]: { name: string; price: number } } =
+                {};
 
             for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
                 try {
-                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
+                    const response = await fetch(
+                        `${
+                            import.meta.env.VITE_BACKEND_URL
+                        }/item/findOneById?itemId=${itemId}`
+                    );
                     if (!response.ok) {
-                        throw new Error('Failed to fetch');
+                        throw new Error("Failed to fetch");
                     }
                     const data = await response.json();
                     details[itemId] = { name: data.name, price: data.price };
                 } catch (error) {
-                    console.error('Fetch error:', error);
+                    console.error("Fetch error:", error);
                 }
             }
 
@@ -235,7 +238,7 @@ const OrderHistory = () => {
 
     useEffect(() => {
         filterByDateRange();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [startDate, endDate]);
 
     return (userProfile &&

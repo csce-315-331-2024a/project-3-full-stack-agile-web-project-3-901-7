@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import AdminNavbar from "../../components/AdminNavbar";
 import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import { Role, UserType } from "../../types/dbTypes";
 import { toTitleCase } from "../../utils/utils";
+import Navbar from "../../components/Navbar";
 
 interface IRoleListProps {
   type: UserType;
@@ -152,7 +152,7 @@ export default function AdminRoles() {
   
   return (userProfile &&
     <>
-      <AdminNavbar userInfo={userProfile} />
+      <Navbar userInfo={userProfile} userType="admin"/>
       <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)'}}>
         {rolesByType(roles.concat(newRole ? [newRole] : [])).map(({userType, roles}) => (
           <RoleList

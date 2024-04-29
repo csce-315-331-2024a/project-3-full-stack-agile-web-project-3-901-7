@@ -1,12 +1,12 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
-import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
 import DeleteConfirmation from '../../components/DeleteConfirmation';
 import DataValidationWarning from '../../components/DataValidationWarning';
 import ConfirmationPopup from '../../components/ConfirmationPopup';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
+import Navbar from '../../components/Navbar';
 
 interface EditableCellProps {
     value: string | number;
@@ -272,6 +272,7 @@ const Inventory = () => {
       setSortOrder("asc");
     }
   };
+  
 
 
   useEffect(() => {
@@ -284,20 +285,28 @@ const Inventory = () => {
         const data = await response.json();
         const sortedData = data.sort((a: Ingredient, b: Ingredient) => {
           if (sortOrder === "asc") {
-            return Number(a[sortColumn]) - Number(b[sortColumn]);
+            if (sortColumn === "name" || sortColumn === "supplier") {
+              return a[sortColumn].localeCompare(b[sortColumn]);
+            } else {
+              return Number(a[sortColumn]) - Number(b[sortColumn]);
+            }
           } else {
-            return Number(b[sortColumn]) - Number(a[sortColumn]);
+            if (sortColumn === "name" || sortColumn === "supplier") {
+              return b[sortColumn].localeCompare(a[sortColumn]);
+            } else {
+              return Number(b[sortColumn]) - Number(a[sortColumn]);
+            }
           }
-        });        
+        });
         setIngredients(sortedData);
       } catch (error) {
         console.error("Fetch error:", error);
       }
     }
-
+  
     fetchIngredients();
   }, [sortColumn, sortOrder]);
-
+  
   const filterIngredients = (searchTerm: string) => {
     return ingredients.filter(ingredient =>
       ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -320,7 +329,7 @@ const Inventory = () => {
 
   return (userProfile &&
     <div className="p-4">
-      <ManagerNavbar userInfo={userProfile}/>
+      <Navbar userInfo={userProfile} userType="manager"/>
       <ManagerSearchbar 
         searchPlaceholder='search ingredient'
         onSearch={setSearchTerm}
@@ -353,26 +362,34 @@ const Inventory = () => {
           <thead className="text-m text-black bg-gray-50 font-ptserif">
             <tr>
               <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif">
-                  <button onClick={() => handleSort("_id")}>
-                      Ingredient ID {sortColumn === "_id" && (sortOrder === "asc" ? "▲" : "▼")}
-                  </button>
+              <button onClick={() => handleSort("_id")}>
+                Ingredient ID {sortColumn === "_id" && (sortOrder === "asc" ? "▲" : "▼")}
+              </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                  <button onClick={() => handleSort("name")}>
-                      Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
-                  </button>
+                <button onClick={() => handleSort("name")}>
+                  Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Quantity
+                <button onClick={() => handleSort("quantity")}>
+                  Quantity {sortColumn === "quantity" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("minQuantity")}>
-                Min Quantity
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+                <button onClick={() => handleSort("minQuantity")}>
+                  Min Quantity {sortColumn === "minQuantity" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("unitPrice")}>
-                Unit Price
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+                <button onClick={() => handleSort("unitPrice")}>
+                  Unit Price {sortColumn === "unitPrice" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
-              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif" onClick={() => handleSort("supplier")}>
-                Supplier
+              <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
+                <button onClick={() => handleSort("supplier")}>
+                  Supplier {sortColumn === "supplier" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Action
