@@ -173,6 +173,31 @@ public class Database {
         return roles;
     }
 
+    private static List<WorkLog> runWorkLogQuery(PreparedStatement queryStatement)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<WorkLog> log = new ArrayList<>();
+
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            WorkLog wl = new WorkLog();
+            wl.log_id = resultSet.getInt("log_id");
+            wl.emp_id = resultSet.getInt("id");
+            wl.checkin = resultSet.getTimestamp("check_in_time");
+            wl.checkout = resultSet.getTimestamp("check_out_time");
+            wl.comments = resultSet.getString("comments");
+            log.add(wl);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return log;
+    }
+
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
             createConnection();
@@ -405,6 +430,65 @@ public class Database {
             return false;
         }
     }
+
+    public static List<WorkLog> getAllWorkLogs() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM cashier_work_log;");
+            return runWorkLogQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int insertWorkLog(WorkLog wl) {
+        try {
+            String logInsertQuery = "INSERT INTO cashier_work_log (id, check_in_time, check_out_time, comments) VALUES (?, ?, ?, ?);";
+            PreparedStatement logInsertStatement = connection.prepareStatement(logInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            logInsertStatement.setInt(1, wl.emp_id);
+            logInsertStatement.setTimestamp(2, wl.checkin);
+            logInsertStatement.setTimestamp(3, wl.checkout);
+            logInsertStatement.setString(4, wl.comments);
+            logInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = logInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                logInsertStatement.close();
+                return -1;
+            }
+
+            int logId = generatedKeys.getInt(1);
+            return logId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static List<WorkLog> getLogById(List<Integer> ids) {
+        try {
+            String query = "SELECT * FROM cashier_work_log WHERE id IN " + buildPlaceholderString(ids.size());
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            int index = 1;
+            for (Integer id : ids) {
+                statement.setInt(index++, id);
+            }
+
+            return runWorkLogQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static List<Item> getAllItems() {
         try {

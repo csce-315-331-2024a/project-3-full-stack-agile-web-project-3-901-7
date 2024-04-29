@@ -66,6 +66,14 @@ export type PairItems = {
     frequency: number;
 };
 
+export interface Worklog {
+    log_id: number;
+    emp_id: number | null;
+    checkin: string;
+    checkout: string;
+    comments: string;
+}
+
 export interface Routes {
     name: string;
     path: string;
