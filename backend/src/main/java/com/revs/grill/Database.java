@@ -489,6 +489,36 @@ public class Database {
         }
     }
 
+    public static int editWorkLog(WorkLog wl) {
+        try {
+            String roleInsertQuery = "UPDATE cashier_work_log SET check_in_time = ?, check_out_time = ?, comments = ? WHERE log_id = ?;";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            roleInsertStatement.setTimestamp(1, wl.checkin);
+            roleInsertStatement.setTimestamp(2, wl.checkout);
+            roleInsertStatement.setString(3, wl.comments);
+            roleInsertStatement.setInt(4, wl.log_id);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 
     public static List<Item> getAllItems() {
         try {
