@@ -176,7 +176,11 @@ public class DatabaseController {
 
     @PostMapping("/order/insert")
     public static ResponseStatus insertOrder(@RequestBody Order order) {
-        return new ResponseStatus(Database.insertOrder(order));
+        if (order.numItems > 0)
+        {
+            return new ResponseStatus(Database.insertOrder(order));
+        }
+        return new ResponseStatus(false);
     }
 
     @PostMapping("/order/edit")
