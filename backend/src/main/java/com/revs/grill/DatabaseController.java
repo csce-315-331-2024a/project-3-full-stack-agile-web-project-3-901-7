@@ -277,14 +277,14 @@ public class DatabaseController {
 
     @PostMapping("/requestHelp")
     public static ResponseStatus requestHelp() {
-        int station = random.nextInt(NUM_STATIONS) + 1;
+        int station = random.nextInt(NUM_STATIONS);
         isHelpNeeded[station] = true;
         return new ResponseStatus(true);
     }
 
     @PostMapping("/resolveHelp")
     public static ResponseStatus resolveHelp(@RequestParam("station") int station) {
-        if (station <= 0 || station > NUM_STATIONS)
+        if (station < 0 || station >= NUM_STATIONS)
             return new ResponseStatus(false);
         
         isHelpNeeded[station] = false;

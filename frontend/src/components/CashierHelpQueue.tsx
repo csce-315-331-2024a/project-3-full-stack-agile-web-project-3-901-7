@@ -6,7 +6,7 @@ import { User } from "../types/dbTypes";
 export default function CashierHelpQueue() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [stations, setStations] = useState<boolean[]>([]);
-    const [active, setActive] = useState<number>(0);
+    const [active, setActive] = useState<number>(-1);
 
     useEffect(() => {
         getUserAuth('cashier')
