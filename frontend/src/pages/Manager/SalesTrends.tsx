@@ -23,6 +23,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
 import { Ingredient, Item, User } from "../../types/dbTypes";
+import Loading from "../../components/Loading";
 
 type DateField = 'pu' | 'er' | 'ps'; 
 
@@ -54,6 +55,7 @@ const SalesTrends = () => {
         ps: { start: null, end: null },
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    const [loading, setLoading] = useState(true);
 
     const setProductUsage = (productUsage : SalesMapping) => {
         setData(prevData => ({ ...prevData, productUsage, }));
@@ -68,6 +70,17 @@ const SalesTrends = () => {
         setData(prevData => ({ ...prevData, sales, }));
     };
     
+    async function fetchData() {
+        setLoading(true);
+        await Promise.all([
+            fetchProductUsage(dates.pu.start || new Date(0), dates.pu.end || new Date()),
+            fetchPairSells(dates.ps.start || new Date(0), dates.ps.end || new Date()),
+            fetchExcess(dates.er.start || new Date(0)),
+            fetchSalesReport(new Date(0), new Date())
+        ]);
+        setLoading(false);
+    }
+
     async function fetchProductUsage(start : Date, end : Date) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/inventoryUsed?start=${start.getTime()}&end=${end.getTime()}`);
         const usage = new Map<string, number>(Object.entries(await response.json())) as SalesMapping;
@@ -101,10 +114,7 @@ const SalesTrends = () => {
     }, []);
 
     useEffect(() => {
-        fetchProductUsage(dates.pu.start || new Date(0), dates.pu.end || new Date());
-        fetchPairSells(dates.ps.start || new Date(0), dates.ps.end || new Date());
-        fetchExcess(dates.er.start || new Date(0));
-        fetchSalesReport(new Date(0), new Date());
+        fetchData();
     }, [
         dates.pu.start,
         dates.pu.end,
@@ -201,124 +211,129 @@ const SalesTrends = () => {
                 <ManagerNavbar userInfo={userProfile} />
                 <div className="p-4">
                     <h1 className="text-3xl font-bold mb-6">Sales Trends</h1>
-
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold mb-4">
-                            Product Usage
-                        </h2>
-                        <div className="mb-4 flex gap-2">
-                            <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                Filter by Date Range:
-                            </div>
-                            <DatePicker
-                                selected={dates.pu.start}
-                                onChange={handleDateChange("pu", "start")}
-                                selectsStart
-                                startDate={dates.pu.start}
-                                endDate={dates.pu.end}
-                                maxDate={new Date()}
-                                placeholderText="Start Date"
-                                className="border-2 border-black bg-white px-4 py-2 rounded"
-                            />
-                            <DatePicker
-                                selected={dates.pu.end}
-                                onChange={handleDateChange("pu", "end")}
-                                selectsEnd
-                                startDate={dates.pu.start}
-                                endDate={dates.pu.end}
-                                minDate={dates.pu.start}
-                                maxDate={new Date()}
-                                placeholderText="End Date"
-                                className="border-2 border-black bg-white px-4 py-2 rounded"
-                            />
-                        </div>
-                        {data.productUsage && renderTable(
-                            mapSalesMapping<Ingredient>(
-                                data.productUsage, 
-                                (ingName, count) => ({ 
-                                    name: ingName,
-                                    quantity: count,
-                                }) as Ingredient
-                            )
-                        )}
-                    </div>
-
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold mb-4">
-                            Sales Report
-                        </h2>
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart 
-                                data={data.sales && mapSalesMapping<{name: string, sales: number}>(
-                                    data.sales, (key, value) => ({
-                                        name: key, sales: value,
-                                    })
+                    {loading ? (
+                        <Loading />
+                    ) : (
+                        <>
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold mb-4">
+                                    Product Usage
+                                </h2>
+                                <div className="mb-4 flex gap-2">
+                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                        Filter by Date Range:
+                                    </div>
+                                    <DatePicker
+                                        selected={dates.pu.start}
+                                        onChange={handleDateChange("pu", "start")}
+                                        selectsStart
+                                        startDate={dates.pu.start}
+                                        endDate={dates.pu.end}
+                                        maxDate={new Date()}
+                                        placeholderText="Start Date"
+                                        className="border-2 border-black bg-white px-4 py-2 rounded"
+                                    />
+                                    <DatePicker
+                                        selected={dates.pu.end}
+                                        onChange={handleDateChange("pu", "end")}
+                                        selectsEnd
+                                        startDate={dates.pu.start}
+                                        endDate={dates.pu.end}
+                                        minDate={dates.pu.start}
+                                        maxDate={new Date()}
+                                        placeholderText="End Date"
+                                        className="border-2 border-black bg-white px-4 py-2 rounded"
+                                    />
+                                </div>
+                                {data.productUsage && renderTable(
+                                    mapSalesMapping<Ingredient>(
+                                        data.productUsage, 
+                                        (ingName, count) => ({ 
+                                            name: ingName,
+                                            quantity: count,
+                                        }) as Ingredient
+                                    )
                                 )}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar
-                                    dataKey="sales"
-                                    fill="#8884d8"
-                                    name="Sales Volume"
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold mb-4">
-                            Excess Inventory
-                        </h2>
-                        <div className="mb-4 flex gap-2">
-                            <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                Filter by Date:
                             </div>
-                            <DatePicker
-                                selected={dates.er.start}
-                                onChange={handleDateChange("er", "start")}
-                                placeholderText="Start Date"
-                                className="border-2 border-black bg-white px-4 py-2 rounded"
-                            />
-                        </div>
-                        {data.excess && renderTable(data.excess)}
-                    </div>
 
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">
-                            Pairs of Items That Sell Together
-                        </h2>
-                        <div className="mb-4 flex gap-2">
-                            <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                Filter by Date Range:
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold mb-4">
+                                    Sales Report
+                                </h2>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart 
+                                        data={data.sales && mapSalesMapping<{name: string, sales: number}>(
+                                            data.sales, (key, value) => ({
+                                                name: key, sales: value,
+                                            })
+                                        )}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" />
+                                        <YAxis />
+                                        <Tooltip />
+                                        <Legend />
+                                        <Bar
+                                            dataKey="sales"
+                                            fill="#8884d8"
+                                            name="Sales Volume"
+                                        />
+                                    </BarChart>
+                                </ResponsiveContainer>
                             </div>
-                            <DatePicker
-                                selected={dates.ps.start}
-                                onChange={handleDateChange("ps", "start")}
-                                selectsStart
-                                startDate={dates.ps.start}
-                                endDate={dates.ps.end}
-                                maxDate={new Date()}
-                                placeholderText="Start Date"
-                                className="border-2 border-black bg-white px-4 py-2 rounded"
-                            />
-                            <DatePicker
-                                selected={dates.ps.end}
-                                onChange={handleDateChange("ps", "end")}
-                                selectsEnd
-                                startDate={dates.ps.start}
-                                endDate={dates.ps.end}
-                                minDate={dates.ps.start}
-                                maxDate={new Date()}
-                                placeholderText="End Date"
-                                className="border-2 border-black bg-white px-4 py-2 rounded"
-                            />
-                        </div>
-                        {data.pairSells && renderTable(data.pairSells)}
-                    </div>
+
+                            <div className="mb-6">
+                                <h2 className="text-2xl font-bold mb-4">
+                                    Excess Inventory
+                                </h2>
+                                <div className="mb-4 flex gap-2">
+                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                        Filter by Date:
+                                    </div>
+                                    <DatePicker
+                                        selected={dates.er.start}
+                                        onChange={handleDateChange("er", "start")}
+                                        placeholderText="Start Date"
+                                        className="border-2 border-black bg-white px-4 py-2 rounded"
+                                    />
+                                </div>
+                                {data.excess && renderTable(data.excess)}
+                            </div>
+
+                            <div>
+                                <h2 className="text-2xl font-bold mb-4">
+                                    Pairs of Items That Sell Together
+                                </h2>
+                                <div className="mb-4 flex gap-2">
+                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                        Filter by Date Range:
+                                    </div>
+                                    <DatePicker
+                                        selected={dates.ps.start}
+                                        onChange={handleDateChange("ps", "start")}
+                                        selectsStart
+                                        startDate={dates.ps.start}
+                                        endDate={dates.ps.end}
+                                        maxDate={new Date()}
+                                        placeholderText="Start Date"
+                                        className="border-2 border-black bg-white px-4 py-2 rounded"
+                                    />
+                                    <DatePicker
+                                        selected={dates.ps.end}
+                                        onChange={handleDateChange("ps", "end")}
+                                        selectsEnd
+                                        startDate={dates.ps.start}
+                                        endDate={dates.ps.end}
+                                        minDate={dates.ps.start}
+                                        maxDate={new Date()}
+                                        placeholderText="End Date"
+                                        className="border-2 border-black bg-white px-4 py-2 rounded"
+                                    />
+                                </div>
+                                {data.pairSells && renderTable(data.pairSells)}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         )
