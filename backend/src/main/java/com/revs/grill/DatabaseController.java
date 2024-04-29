@@ -108,6 +108,21 @@ public class DatabaseController {
         return new ResponseStatus(Database.deleteRole(role));
     }
 
+    @GetMapping("/log/findAll")
+    public static List<WorkLog> getAllWorkLogs() {
+        return Database.getAllWorkLogs();
+    }
+
+    @GetMapping("/log/findById")
+    public static List<WorkLog> getLogById(@RequestParam("ids") List<Integer> ids) {
+        return Database.getLogById(ids);
+    }
+
+    @PostMapping("/log/insert")
+    public static ResponseStatus insertWorkLog(@RequestBody WorkLog wl) {
+        return new ResponseStatus(Database.insertWorkLog(wl));
+    }
+
     @GetMapping("/item/findAll")
     public static List<Item> getAllItems() {
         return Database.getAllItems();
@@ -150,7 +165,11 @@ public class DatabaseController {
 
     @PostMapping("/order/insert")
     public static ResponseStatus insertOrder(@RequestBody Order order) {
-        return new ResponseStatus(Database.insertOrder(order));
+        if (order.numItems > 0)
+        {
+            return new ResponseStatus(Database.insertOrder(order));
+        }
+        return new ResponseStatus(false);
     }
 
     @PostMapping("/order/edit")
