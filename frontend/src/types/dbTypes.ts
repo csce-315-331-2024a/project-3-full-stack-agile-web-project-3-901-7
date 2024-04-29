@@ -65,3 +65,8 @@ export type PairItems = {
     item2: Item;
     frequency: number;
 };
+
+export interface Routes {
+    name: string;
+    path: string;
+};
