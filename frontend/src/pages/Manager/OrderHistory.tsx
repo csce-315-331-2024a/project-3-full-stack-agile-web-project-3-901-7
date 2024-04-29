@@ -15,6 +15,11 @@ interface Order {
     date: Date;
 }
 
+interface OrderCardProps {
+  order: Order;
+  onDeleteOrder: (id: number) => void; 
+}
+
 const mockOrders: Order[] = [
     {
         _id: 1,
@@ -147,6 +152,7 @@ const OrderCard: React.FC<{
         </div>
     );
 };
+
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState<Order[]>(mockOrders);
