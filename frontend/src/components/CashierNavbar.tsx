@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import CookieManager from "../utils/CookieManager";
 import { User } from "../types/dbTypes";
+import GoogleTranslate from "./GoogleTranslate";
 
 const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
   const navigate = useNavigate();
@@ -38,9 +39,12 @@ const CashierNavbar : React.FC<{userInfo: User}> = ({userInfo}) => {
       </div>
       <div className="mt-4 flex flex-wrap justify-start">
           <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
-              <a href="/order" className="hover:text-white">
+              <a href="/manager/orders/new" className="hover:text-white">
                   create order
               </a>
+          </button>
+          <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 m-2 rounded-md text-lg font-medium font-ptserif">
+              <GoogleTranslate />
           </button>
       </div>
     </nav>

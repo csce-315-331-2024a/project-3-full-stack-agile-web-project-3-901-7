@@ -27,15 +27,12 @@ import Cashier from './pages/Cashier/Cashier'
 import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
 
-import GoogleTranslate from './components/GoogleTranslate';
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
         <React.StrictMode>
             <BrowserRouter>
                 <div>
-                    <GoogleTranslate />
                     <Routes>
 
                         {/* Landing */}

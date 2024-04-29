@@ -21,7 +21,7 @@ export default function Menu() {
     useEffect(() => {
 
         async function fetchItems() {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
         }

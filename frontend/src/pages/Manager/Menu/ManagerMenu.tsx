@@ -6,15 +6,6 @@ import ManagerSearchbar from '../../../components/ManagerSearchbar';
 import ManagerTable from './ManagerTable';
 import { getUserAuth } from '../../Login';
 
-const ManagerMenuItemCard : React.FC<{item: Item}> = ({item}) => {
-  return (
-    <div >
-      <img width={50} height={50} src={item.picture} />
-      <h2>{item.name}</h2>
-    </div>
-  );
-}
-
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
