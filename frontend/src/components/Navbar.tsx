@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import GoogleTranslate from "./GoogleTranslate";
 import { GoPlus } from "react-icons/go";
 import { useTextSize } from "../TextSizeContext";
+
+import { FaMoon } from "react-icons/fa";
 interface NavbarProps {
     userInfo?: User;
     userType?: string;
@@ -88,6 +90,17 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
         }
     }, [isDropdownOpen]);
 
+    function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            localStorage.setItem('theme', 'light');
+            document.documentElement.classList.remove('dark');
+        } else {
+            localStorage.setItem('theme', 'dark');
+            document.documentElement.classList.add('dark');
+        }
+    }
+
     return (
         <nav className="px-4 py-2 shadow-sm rounded flex flex-col gap-y-4">
             <div className="w-full flex justify-between items-center">
@@ -106,7 +119,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                         CookieManager.delete('tokenResponse');
                         navigate('/cashier/login');
                         }}
-                        className="flex gap-x-2 items-center border-2 border-black hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300"
+                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300"
                     >
                         <img
                             src={userInfo.picture || "/icons/profile.png"} 
@@ -128,15 +141,21 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                         </Link>
                     ))}
                     <button 
-                        className="px-4 py-2 border-2 border-black rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
                     >
                       <GoogleTranslate />
+                    </button>
+                    <button
+                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white"
+                        onClick={toggleTheme}
+                    >
+                        <FaMoon/>
                     </button>
                     <div className="relative">
                         <button
                             ref={buttonRef}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="border-2 border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
                         >
                             <span
                                 className={`block transition-transform duration-300 ${isDropdownOpen ? 'rotate-45' : ''}`}
@@ -179,7 +198,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                     <Link 
                         key={index}
                         to={route.path}
-                        className="px-4 py-2 border-2 border-black rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
                     >
                         {route.name}
                     </Link>

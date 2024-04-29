@@ -80,7 +80,7 @@ export default function Order() {
     }
 
     return (
-        <div className="w-full h-full p-8 relative flex flex-col">
+        <div className="w-full h-full p-8 relative flex flex-col dark:bg-black text-black dark:text-white">
             
             <Navbar/>
 

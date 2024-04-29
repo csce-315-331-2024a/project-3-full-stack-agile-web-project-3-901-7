@@ -53,31 +53,31 @@ const Landing: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-full p-8 relative bg-white">
+        <div className="w-full h-full p-8 relative dark:bg-black dark:text-white border-black dark:border-white">
             <Navbar />
             <div className="text-center mt-20">
                 <h1 className="font-bold text-4xl font-ptserif mb-8">Welcome to Rev's Grill!</h1>
                 <div className="flex justify-center gap-4 mb-8">
                     <button
-                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        className="border-[2px] hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
                         onClick={() => navigate('/menu')}
                     >
                         I am a customer
                     </button>
                     <button
-                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        className="border-[2px] hover:bg-black hover:text-white dark:border-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
                         onClick={() => navigate('/cashier/login')}
                     >
                         I am a cashier
                     </button>
                     <button
-                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        className="border-[2px] hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
                         onClick={() => navigate('/manager/login')}
                     >
                         I am a manager
                     </button>
                     <button
-                        className="border-[2px] border-black bg-white hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
+                        className="border-[2px] hover:bg-black hover:text-white px-6 py-3 rounded-md text-lg font-medium font-ptserif transition-colors duration-200"
                         onClick={() => navigate('/admin/login')}
                     >
                         I am an administrator
