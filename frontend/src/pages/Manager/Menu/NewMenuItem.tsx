@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Ingredient, Item, User } from "../../../types/dbTypes";
 import { getUserAuth } from "../../Login";
 import { ConfirmationPopup, IConfirmationPopupProps } from '../../../components/Confirmation';
+import Navbar from "../../../components/Navbar";
 
 const itemIngredients = new Set<string>();
 
@@ -189,7 +189,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
 
   return (userProfile &&
     <>
-      <ManagerNavbar userInfo={userProfile} />
+      <Navbar userInfo={userProfile} userType="manager"/>
 
       <ConfirmationPopup {...popupState} />
 

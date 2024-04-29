@@ -73,3 +73,8 @@ export interface Worklog {
     checkout: string;
     comments: string;
 }
+
+export interface Routes {
+    name: string;
+    path: string;
+};

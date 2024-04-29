@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Paper,
     Table,
@@ -18,12 +18,12 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
-import ManagerNavbar from "../../components/ManagerNavbar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
 import { Ingredient, Item, User } from "../../types/dbTypes";
 import Loading from "../../components/Loading";
+import Navbar from "../../components/Navbar";
 
 type DateField = 'pu' | 'er' | 'ps'; 
 
@@ -208,7 +208,7 @@ const SalesTrends = () => {
     return (
         userProfile && (
             <div className="p-4">
-                <ManagerNavbar userInfo={userProfile} />
+                <Navbar userInfo={userProfile} userType="manager"/>
                 <div className="p-4">
                     <h1 className="text-3xl font-bold mb-6">Sales Trends</h1>
                     {loading ? (
