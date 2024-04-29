@@ -23,5 +23,9 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./setupTest.ts"],
     include: ["src/**/*.test.tsx"],
+    coverage: {
+      provider: "istanbul",
+      reportsDirectory: "src/__tests__/coverage"
+    }
   }
 });
