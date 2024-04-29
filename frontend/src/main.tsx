@@ -28,6 +28,7 @@ import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
 import CashierLog from './pages/Cashier/CashierLog'
 import ManagerLog from './pages/Manager/ManagerLog'
+import CashierHelpQueue from './components/CashierHelpQueue'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -52,7 +53,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier" element={<Cashier/>}/>
                         <Route path="/cashier/signup" element={<Login type="cashier" signup/>}/>
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
-                        <Route path="cashier/log" element={<CashierLog />}/>
+                        <Route path="/cashier/log" element={<CashierLog />}/>
+                        <Route path="/cashier/help" element={<CashierHelpQueue />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>

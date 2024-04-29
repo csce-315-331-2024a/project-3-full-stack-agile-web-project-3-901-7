@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import CashierNavbar from "../../components/CashierNavbar";
 import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
+import Navbar from "../../components/Navbar";
 
 export default function CashierLog() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
@@ -166,7 +166,7 @@ export default function CashierLog() {
 
     return (
         <div>
-            {userProfile && <CashierNavbar userInfo={userProfile} />}
+            {userProfile && <Navbar userInfo={userProfile} userType="cashier"/>}
             <div className="mt-4 ml-4">
                 <div className="mb-4">
                     <h2 className="font-ptserif text-black mb-2">

@@ -1,12 +1,25 @@
 import { useEffect, useState } from "react";
-import ManagerNavbar from "../../components/ManagerNavbar";
 import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
+import Navbar from "../../components/Navbar";
 
 export default function ManagerLog() {
+<<<<<<< HEAD
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
   const [cashierLogs, setCashierLogs] = useState<Worklog[]>([]);
   const [editingLog, setEditingLog] = useState<Worklog | null>(null);
+=======
+    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    const [cashierLogs, setCashierLogs] = useState<Worklog[]>([]);
+    const [roleId, setRoleId] = useState<number>(-1);
+    const [newLog, setNewLog] = useState<Worklog>({
+        log_id: -1,
+        emp_id: -1,
+        checkin: new Date().toISOString(),
+        checkout: new Date().toISOString(),
+        comments: "",
+    });
+>>>>>>> main
 
   useEffect(() => {
     const authenticateUser = async () => {
@@ -39,6 +52,7 @@ export default function ManagerLog() {
   const handleEditLogChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
+<<<<<<< HEAD
     setEditingLog(prevLog => {
       if (!prevLog) return null;
 
@@ -167,6 +181,37 @@ export default function ManagerLog() {
               ))}
             </tbody>
           </table>
+=======
+    return (
+        <div>
+            {userProfile && <Navbar userInfo={userProfile} userType="manager"/>}
+            <div className="mt-4 ml-4">
+                <div className="overflow-y-auto" style={{ maxHeight: "calc(100vh - 380px)" }}>
+                    <table className="overflow-scroll w-full text-sm text-center text-black font-ptserif">
+                        <thead className="text-s text-black bg-gray-50 font-ptserif">
+                            <tr>
+                                {headerColumns.map((columnTitle) => (
+                                    <th key={columnTitle} scope="col" className="py-3 px-6 font-ptserif">
+                                        {columnTitle}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cashierLogs.map((log) => (
+                                <tr key={log.log_id} className="bg-white hover:bg-gray-50 border-b">
+                                    <th className="py-4 px-6 font-ptserif">{log.log_id}</th>
+                                    <th className="py-4 px-6 font-ptserif">{log.emp_id}</th>
+                                    <td className="py-4 px-6 font-ptserif">{formatDateTime(log.checkin)}</td>
+                                    <td className="py-4 px-6 font-ptserif">{formatDateTime(log.checkout)}</td>
+                                    <td className="py-4 px-6 font-ptserif">{log.comments}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+>>>>>>> main
         </div>
       </div>
     </div>

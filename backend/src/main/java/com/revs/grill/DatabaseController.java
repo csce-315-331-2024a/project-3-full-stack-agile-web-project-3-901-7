@@ -3,6 +3,7 @@ package com.revs.grill;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,6 +51,9 @@ class UserInsertBody {
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class DatabaseController {
+    private static final int NUM_STATIONS = 5;
+    private static boolean[] isHelpNeeded = new boolean[NUM_STATIONS]; 
+    private static Random random = new Random();
 
     public DatabaseController() {
         Database.createConnection();
@@ -265,5 +269,30 @@ public class DatabaseController {
     @GetMapping("/item/sellsTogether")
     public static List<SoldTogether> getSellsTog(@RequestParam("start") long startTimeCode, @RequestParam("end") long endTimeCode) {
         return Database.getSellsTog(new Date(startTimeCode), new Date(endTimeCode));
+    }
+
+    @GetMapping("/helpStations")
+    public static List<Boolean> getHelpStations() {
+        List<Boolean> helpNeededList = new ArrayList<>();
+        for (int i = 0; i < NUM_STATIONS; i++) {
+            helpNeededList.add(isHelpNeeded[i]);
+        }
+        return helpNeededList;
+    }
+
+    @PostMapping("/requestHelp")
+    public static ResponseStatus requestHelp() {
+        int station = random.nextInt(NUM_STATIONS);
+        isHelpNeeded[station] = true;
+        return new ResponseStatus(true);
+    }
+
+    @PostMapping("/resolveHelp")
+    public static ResponseStatus resolveHelp(@RequestParam("station") int station) {
+        if (station < 0 || station >= NUM_STATIONS)
+            return new ResponseStatus(false);
+        
+        isHelpNeeded[station] = false;
+        return new ResponseStatus(true);
     }
 }
