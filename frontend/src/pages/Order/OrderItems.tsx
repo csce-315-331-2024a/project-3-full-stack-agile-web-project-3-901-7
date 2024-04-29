@@ -45,13 +45,13 @@ function OrderItemCard({id, name, price, picture} : ItemCardProps) {
     }, [order])
 
     return (
-        <div className="w-[280px] h-[280px] relative rounded-md bg-white shadow-md">
+        <div className="w-[280px] h-[280px] relative rounded-md bg-white shadow-md dark:bg-black dark:border-white dark:border-2">
 
-            <div className="absolute left-4 top-4 flex flex-col items-center bg-white rounded-md">
+            <div className="absolute left-4 top-4 flex flex-col items-center bg-white dark:bg-black rounded-md">
                 <button 
                     type="button"
                     onClick={() => {addQty(price, name, id); setQuantity((prev) => (parseInt(prev) + 1).toString());}}
-                    className="p-1 border-2 border-black text-black font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
+                    className="p-1 border-2 border-black dark:border-white text-black dark:text-white font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
                 >
                     <FaPlus />
                 </button>
@@ -67,7 +67,7 @@ function OrderItemCard({id, name, price, picture} : ItemCardProps) {
                         inputHandler(e, id, price, name); 
                         setQuantity(e.target.value);
                     }}
-                    className="py-1 font-semibold w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="py-1 font-semibold w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none dark:bg-black dark:text-white"
                 />
                 <button
                     type="button"
@@ -78,7 +78,7 @@ function OrderItemCard({id, name, price, picture} : ItemCardProps) {
                             return prev;
                         })
                     }}
-                    className="p-1 border-2 border-black text-black font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
+                    className="p-1 border-2 border-black dark:border-white text-black dark:text-white font-ptserif rounded-md hover:bg-black duration-300 hover:text-white"
                 >
                     <FaMinus />
                 </button>

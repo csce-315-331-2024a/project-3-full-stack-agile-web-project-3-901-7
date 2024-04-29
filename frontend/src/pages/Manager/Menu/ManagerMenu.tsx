@@ -1,10 +1,10 @@
 import '../../../index.css';
 import { useEffect, useState } from "react"
-import ManagerNavbar from "../../../components/ManagerNavbar";
 import { Item, User } from '../../../types/dbTypes';
 import ManagerSearchbar from '../../../components/ManagerSearchbar';
 import ManagerTable from './ManagerTable';
 import { getUserAuth } from '../../Login';
+import Navbar from '../../../components/Navbar';
 
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -39,7 +39,7 @@ const ManagerMenu = () => {
 
   return (userProfile &&
     <>
-      <ManagerNavbar userInfo={userProfile} />
+      <Navbar userInfo={userProfile} userType='manager'/>
       <div className='pl-4 pr-4 pb-4'>
         <ManagerSearchbar 
           searchPlaceholder='search item'

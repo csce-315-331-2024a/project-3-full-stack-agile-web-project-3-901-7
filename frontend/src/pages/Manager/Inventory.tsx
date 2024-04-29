@@ -1,12 +1,12 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
-import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
 import DeleteConfirmation from '../../components/DeleteConfirmation';
 import DataValidationWarning from '../../components/DataValidationWarning';
 import ConfirmationPopup from '../../components/ConfirmationPopup';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
+import Navbar from '../../components/Navbar';
 
 interface EditableCellProps {
     value: string | number;
@@ -329,7 +329,7 @@ const Inventory = () => {
 
   return (userProfile &&
     <div className="p-4">
-      <ManagerNavbar userInfo={userProfile}/>
+      <Navbar userInfo={userProfile} userType="manager"/>
       <ManagerSearchbar 
         searchPlaceholder='search ingredient'
         onSearch={setSearchTerm}
