@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MenuColumn from "../components/MenuColumn";
-import { Item } from "./Menu";
 import GoogleTranslate from "../components/GoogleTranslate";
+import Loading from "../components/Loading";
+import { Item } from "../types/dbTypes";
 
 const MenuPage2: React.FC = () => {
     const [menuItems, setItems] = useState<Item[]>([]);
@@ -28,6 +29,10 @@ const MenuPage2: React.FC = () => {
 
         setGroupedItems(grouped);
     }, [menuItems]);
+
+    if (menuItems.length === 0) {
+        return <Loading/>;
+    }
     
     return (
         <div className="w-full h-full p-8 overflow-hidden">

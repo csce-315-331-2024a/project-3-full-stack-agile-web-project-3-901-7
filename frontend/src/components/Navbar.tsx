@@ -96,7 +96,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
     function toggleTheme() {
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') {
-            localStorage.setItem('theme', 'light');
+            localStorage.setItem('theme', '');
             document.documentElement.classList.remove('dark');
         } else {
             localStorage.setItem('theme', 'dark');
@@ -122,7 +122,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                         CookieManager.delete('tokenResponse');
                         navigate('/cashier/login');
                         }}
-                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300"
+                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300 dark:hover:bg-white dark:hover:text-black"
                     >
                         <img
                             src={userInfo.picture || "/icons/profile.png"} 
@@ -150,7 +150,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                     </button>
                     <button
                         aria-label="dark-mode"
-                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white"
+                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                         onClick={toggleTheme}
                     >
                         <FaMoon/>
@@ -203,7 +203,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                     <Link 
                         key={index}
                         to={route.path}
-                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                     >
                         {route.name}
                     </Link>
