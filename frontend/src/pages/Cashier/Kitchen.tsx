@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import { getUserAuth } from '../Login';
 import { User } from "../../types/dbTypes";
 import Order from '../Order/Order';
@@ -14,22 +13,6 @@ interface Order {
     dateTime: Date;
     status: string; // 'received', 'in progress', or 'completed'
 }
-
-const mockTickets: Order[] = [
-    {
-        _id: 1,
-        numItems: 2,
-        orderInfo: "Cheeseburger,Fries",
-        itemToQuantity: new Map([
-            [1, 2],
-            [2, 3],
-        ]),
-        total: 14.99,
-        dateTime: new Date('2024-12-12'),
-        status: 'received',
-    },
-];
-
 
 interface OrderCardProps {
   order: Order;
@@ -84,7 +67,7 @@ const OrderCard : React.FC<{ order : Order, onChangeStatus: (id: number) => void
           </div>
           <div className="mt-2 pt-2 border-t flex justify-between">
               <span className="font-bold">total: ${order.total.toFixed(2)}</span>
-              <span>{order.dateTime.toString()}</span>
+              <span>{order.dateTime.getFullYear()}-{order.dateTime.getMonth()+1}-{order.dateTime.getDate()+1}</span>
           </div>
           <button onClick={() => onChangeStatus(order._id)} className="mt-2 border-2 border-black bg-white px-4 py-2 rounded">
               {order.status === 'received' ? "Start Order" : "Complete Order"}
@@ -95,7 +78,9 @@ const OrderCard : React.FC<{ order : Order, onChangeStatus: (id: number) => void
 
 
 const Kitchen = () => {
-    const [orders, setOrders] = useState<Order[]>([]);
+
+    const [receivedOrders, setReceivedOrders] = useState<Order[]>([]);
+    const [inProgressOrders, setInProgressOrders] = useState<Order[]>([]);
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
@@ -105,7 +90,7 @@ const Kitchen = () => {
     }, []);
 
     useEffect(() => {
-        async function fetchOrders() {
+        async function fetchReceivedOrders() {
             try {
                 const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findByStatus?status=received');
                 if (!response.ok) {
@@ -123,21 +108,49 @@ const Kitchen = () => {
                     return {
                         ...order,
                         itemToQuantity: itemToQuantityMap,
-                        date: new Date(order.dateTime)
+                        dateTime: new Date(order.dateTime)
                     };
                 }) : [];
-                setOrders(ordersWithMaps);
+                setReceivedOrders(ordersWithMaps);
+            } catch (error) {
+                console.error('Failed to fetch orders:', error);
+            }
+        }
+        async function fetchInProgressOrders() {
+            try {
+                const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findByStatus?status=in%20progress');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                // Ensure the data is an array before proceeding
+                if (!Array.isArray(data)) {
+                    throw new Error("Data is not an array");
+                }
+                const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
+                    // Convert itemToQuantity from object to Map
+                    const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
+                    // Construct and return the new order object
+                    return {
+                        ...order,
+                        itemToQuantity: itemToQuantityMap,
+                        dateTime: new Date(order.dateTime)
+                    };
+                }) : [];
+                setInProgressOrders(ordersWithMaps);
             } catch (error) {
                 console.error('Failed to fetch orders:', error);
             }
         }
 
-        fetchOrders();
+        fetchReceivedOrders();
+        fetchInProgressOrders();
     }, []);
 
     const handleChangeStatus = async (id: number) => {
         try {
             // Find the order with the given id
+            const orders = [...receivedOrders, ...inProgressOrders];
             const orderToUpdate = orders.find(order => order._id === id);
 
             if (!orderToUpdate) {
@@ -149,20 +162,38 @@ const Kitchen = () => {
             const newStatus = orderToUpdate.status === 'received' ? 'in progress' : 'completed';
 
             // Update the order status locally
-            setOrders(prevOrders =>
-                prevOrders.map(order =>
-                    order._id === id ? { ...order, status: newStatus } : order
-                )
-            );
+            if (newStatus === 'in progress') {
+                setReceivedOrders(prevOrders => prevOrders.filter(order => order._id !== id));
+                setInProgressOrders(prevOrders => [...prevOrders, orderToUpdate]);
+            } else if (newStatus === 'completed') {
+                setInProgressOrders(prevOrders => prevOrders.filter(order => order._id !== id));
+            }
+
+            function mapToObj(map: Map<number, number>) {
+                let obj = Object.create(null);
+                for (let [k,v] of map) {
+                    obj[k] = v;
+                }
+                return obj;
+            }
 
             // Send a request to update the order status in the database
+            const body = {
+                _id: orderToUpdate._id,
+                numItems: orderToUpdate.numItems,
+                orderInfo: orderToUpdate.orderInfo,
+                itemToQuantity: mapToObj(orderToUpdate.itemToQuantity),
+                total: orderToUpdate.total,
+                dateTime: orderToUpdate.dateTime,
+                status: newStatus
+            }
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/edit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ _id: id, status: newStatus })
+                body: JSON.stringify(body)
             });
 
             if (!response.ok) {
@@ -178,10 +209,6 @@ const Kitchen = () => {
     if (!userProfile) {
         return null; // Return null or a loading indicator while user profile is being fetched
     }
-
-    // Separate orders into received and in progress
-    const receivedOrders = orders.filter(order => order.status === 'received');
-    const inProgressOrders = orders.filter(order => order.status === 'in progress');
 
     return (
         <div className="p-4">
