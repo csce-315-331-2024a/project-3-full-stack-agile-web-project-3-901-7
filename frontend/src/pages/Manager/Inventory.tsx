@@ -1,9 +1,12 @@
 import '../../index.css';
 import { useEffect, useState } from "react"
-import ManagerNavbar from "../../components/ManagerNavbar";
 import ManagerSearchbar from '../../components/ManagerSearchbar';
+import DeleteConfirmation from '../../components/DeleteConfirmation';
+import DataValidationWarning from '../../components/DataValidationWarning';
+import ConfirmationPopup from '../../components/ConfirmationPopup';
 import { Ingredient, User } from '../../types/dbTypes';
 import { getUserAuth } from '../Login';
+import Navbar from '../../components/Navbar';
 
 interface EditableCellProps {
     value: string | number;
@@ -20,7 +23,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
     field,
     ingredientId,
     placeholder = "",
-    isEditable = true  // Ensuring this allows entering edit mode
+    isEditable = true  
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [currentValue, setCurrentValue] = useState(value.toString());
@@ -67,22 +70,27 @@ const EditableCell: React.FC<EditableCellProps> = ({
     );
 };
 
-
-
 const Inventory = () => {
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [showLowStock, setShowLowStock] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddingNew, setIsAddingNew] = useState(false);
+    const [showWarning, setShowWarning] = useState<boolean>(false);
+    const [warningMessage, setWarningMessage] = useState<string>('');
+    const [confirmation, setConfirmation] = useState<'add' | 'edit' | null>(null);
+    const [sortColumn, setSortColumn] = useState<keyof Ingredient>("_id");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
     const [newIngredient, setNewIngredient] = useState<Ingredient>({
         _id: -1,
-        name: 'Enter name',
+        name: '',
         quantity: 0,
         minQuantity: 0,
-        unitPrice: 0.00,
-        supplier: 'Enter supplier',
+        unitPrice: 1.00,
+        supplier: '',
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
     useEffect(() => {
       getUserAuth('manager')
@@ -95,76 +103,62 @@ const Inventory = () => {
         setNewIngredient({
             _id: -1, // Temporary ID until saved
             name: '',
-            quantity: 0,
-            minQuantity: 0,
-            unitPrice: 0,
+            quantity: -1,
+            minQuantity: -1,
+            unitPrice: -1,
             supplier: '',
         });
+        const tableElement = document.getElementById("inventory-table");
+        if (tableElement) {
+          setTimeout(() => {
+            tableElement.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
+        }
     };
     
 
-  const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
-    const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
-    console.log(ingredientToEdit);
-    console.log(id, field, newValue);
+    const handleEdit = async (id: number, field: keyof Ingredient, newValue: string | number) => {
+        const ingredientToEdit = ingredients.find(ingredient => ingredient._id === id);
 
-    if (ingredientToEdit) {
-        console.log("ingredientToEdit", ingredientToEdit);
-        const updatedIngredient = { ...ingredientToEdit, [field]: newValue };
+        if (ingredientToEdit) {
+            // Check if the entered value meets the specified constraints
+            if ((field === 'quantity' || field === 'minQuantity') && (isNaN(Number(newValue)) || Number(newValue) < 0 || !Number.isInteger(Number(newValue)))) {
+                setWarningMessage(`Please enter a positive integer for ${field}`);
+                setShowWarning(true);
+                return;
+            } else if (field === 'unitPrice' && (isNaN(Number(newValue)) || Number(newValue) <= 0)) {
+                setWarningMessage('Please enter a positive number for unit price');
+                setShowWarning(true);
+                return;
+            }
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/edit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedIngredient),
-            });
-            const data = await response.json();
+            const updatedIngredient = { ...ingredientToEdit, [field]: newValue };
 
-            setIngredients(ingredients.map(ingredient =>
-                ingredient._id === id ? updatedIngredient : ingredient
-            ));
-        } catch (error) {
-            console.error('Fetch error:', error);
-            setIngredients(ingredients);
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/edit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedIngredient),
+                });
+                const data = await response.json();
+
+                setIngredients(ingredients.map(ingredient =>
+                    ingredient._id === id ? updatedIngredient : ingredient
+                ));
+                
+                setConfirmation('edit');
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
         }
-    }
-  };
-
-  const handleAddIngredient = async () => {
-    if (newIngredient) {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/insert`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newIngredient),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.ingredientId) {
-        setIngredients([...ingredients, { ...newIngredient, _id: data.ingredientId }]);
-        setIsAddingNew(false);
-      } else {
-        alert("Failed to add ingredient");
-      }
-    } else {
-      alert("Please fill all fields");
-    }
-  };
+        
+    };
 
   
   const handleDeleteIngredient = async (id: number) => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${id}`, {
-        method: 'POST',
-      });
-      const data = await response.json();
-      if (data) {
-        setIngredients(ingredients.filter((ingredient) => ingredient._id !== id));
-      } else {
-        throw new Error('Failed to delete the ingredient');
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-    }
+    setConfirmDeleteId(id);
+    
   };
 
   const handleCancelNewIngredient = () => {
@@ -172,7 +166,74 @@ const Inventory = () => {
   };
 
 
+  const handleCancelDelete = () => {
+    setConfirmDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (confirmDeleteId !== null) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/deleteById?ingredientId=${confirmDeleteId}`, {
+          method: 'POST',
+        });
+        const data = await response.json();
+        if (data) {
+          setIngredients(ingredients.filter((ingredient) => ingredient._id !== confirmDeleteId));
+          setConfirmDeleteId(null);
+        } else {
+          throw new Error('Failed to delete the ingredient');
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setConfirmDeleteId(null);
+      }
+    }
+  };
+
+
+
   const handleSaveNewIngredient = async () => {
+    if (!newIngredient.name.trim()) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for name");
+      return;
+    }
+    if (newIngredient.quantity == -1) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for quantity");
+      return;
+    }
+    if (newIngredient.minQuantity == -1) {
+        setShowWarning(true);
+        setWarningMessage("Enter value for minimum quantity");
+        return;
+    }
+    if (newIngredient.unitPrice == -1) {
+        setShowWarning(true);
+        setWarningMessage("Enter value for unit price");
+        return;
+    }
+    if (!newIngredient.supplier.trim()) {
+      setShowWarning(true);
+      setWarningMessage("Enter value for supplier");
+      return;
+    }
+    if (newIngredient.quantity < 0 || !Number.isInteger(newIngredient.quantity)) {
+      setShowWarning(true);
+      setWarningMessage("Quantity must be a positive integer");
+      return;
+    }
+    if (newIngredient.minQuantity < 0 || !Number.isInteger(newIngredient.minQuantity)) {
+      setShowWarning(true);
+      setWarningMessage("Min quantity must be a positive integer");
+      return;
+    }
+    if (isNaN(newIngredient.unitPrice) || newIngredient.unitPrice <= 0) {
+      setShowWarning(true);
+      setWarningMessage("Unit price must be a positive number");
+      return;
+    }
+
     const ingredientToSave = {
       name: newIngredient.name,
       quantity: Number(newIngredient.quantity),
@@ -196,40 +257,76 @@ const Inventory = () => {
       alert('Failed to save new ingredient');
     }
   };
+  
+  const handleCancelConfirmation = () => {
+      setConfirmation(null); 
+  };
+
+  const handleSort = (column: keyof Ingredient) => {
+    if (column === sortColumn) {
+      // Toggle sorting order if the same column is clicked again
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      // Set the new column and default to ascending order
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
+  
+
 
   useEffect(() => {
     async function fetchIngredients() {
-      console.log(import.meta.env.VITE_BACKEND_URL);
       try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findAll`);
-        const data = await response.json();
-        if (response.ok) {
-          const sortedData = data.sort((a: Ingredient, b: Ingredient) => a._id - b._id);
-          setIngredients(sortedData);
-        } else {
-          throw new Error('Failed to fetch ingredients');
+        if (!response.ok) {
+          throw new Error("Failed to fetch ingredients");
         }
+        const data = await response.json();
+        const sortedData = data.sort((a: Ingredient, b: Ingredient) => {
+          if (sortOrder === "asc") {
+            if (sortColumn === "name" || sortColumn === "supplier") {
+              return a[sortColumn].localeCompare(b[sortColumn]);
+            } else {
+              return Number(a[sortColumn]) - Number(b[sortColumn]);
+            }
+          } else {
+            if (sortColumn === "name" || sortColumn === "supplier") {
+              return b[sortColumn].localeCompare(a[sortColumn]);
+            } else {
+              return Number(b[sortColumn]) - Number(a[sortColumn]);
+            }
+          }
+        });
+        setIngredients(sortedData);
       } catch (error) {
-        console.error('Fetch error:', error);
+        console.error("Fetch error:", error);
       }
     }
   
     fetchIngredients();
-  }, []);
-
+  }, [sortColumn, sortOrder]);
+  
   const filterIngredients = (searchTerm: string) => {
     return ingredients.filter(ingredient =>
       ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 
-  const handleRestock = () => {
-    const restockedIngredients = ingredients.map(ingredient => {
+  const handleRestock = async () => {
+    const restockedIngredients = await Promise.all(ingredients.map(async (ingredient) => {
       if (ingredient.quantity < ingredient.minQuantity) {
+        // update backend
+        const body = {...ingredient, quantity: ingredient.minQuantity};
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/edit", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
+        const data = await response.json();
+        if (!data.success) {
+          console.log(`error restocking ingredient id: ${ingredient._id}`)
+        }
         return { ...ingredient, quantity: ingredient.minQuantity };
       }
       return ingredient;
-    });
+    }));
     setIngredients(restockedIngredients);
   };
 
@@ -239,7 +336,7 @@ const Inventory = () => {
 
   return (userProfile &&
     <div className="p-4">
-      <ManagerNavbar userInfo={userProfile}/>
+      <Navbar userInfo={userProfile} userType="manager"/>
       <ManagerSearchbar 
         searchPlaceholder='search ingredient'
         onSearch={setSearchTerm}
@@ -252,29 +349,54 @@ const Inventory = () => {
         ]}
       />
     <div>
+
+    {confirmDeleteId !== null && (
+        <DeleteConfirmation
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+      {showWarning && (
+          <DataValidationWarning message={warningMessage} onCancel={() => setShowWarning(false)} />
+      )}
+      {confirmation && (
+          <ConfirmationPopup action={confirmation} onClose={() => setConfirmation(null)} />
+      )}
         
       </div>
       <div className="mt-4 ml-4 mr-64 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 380px)' }}>
-        <table className="overflow-scroll w-full text-sm text-center text-black border border-black font-ptserif">
+        <table id="inventory-table" className="overflow-scroll w-full text-sm text-center text-black border border-black font-ptserif">
           <thead className="text-m text-black bg-gray-50 font-ptserif">
             <tr>
               <th scope="col" className="w-20 py-3 px-6 border border-black font-ptserif">
-                Ingredient ID
+              <button onClick={() => handleSort("_id")}>
+                Ingredient ID {sortColumn === "_id" && (sortOrder === "asc" ? "▲" : "▼")}
+              </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Name
+                <button onClick={() => handleSort("name")}>
+                  Name {sortColumn === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Quantity
+                <button onClick={() => handleSort("quantity")}>
+                  Quantity {sortColumn === "quantity" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Min Quantity
+                <button onClick={() => handleSort("minQuantity")}>
+                  Min Quantity {sortColumn === "minQuantity" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Unit Price
+                <button onClick={() => handleSort("unitPrice")}>
+                  Unit Price {sortColumn === "unitPrice" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
-                Supplier
+                <button onClick={() => handleSort("supplier")}>
+                  Supplier {sortColumn === "supplier" && (sortOrder === "asc" ? "▲" : "▼")}
+                </button>
               </th>
               <th scope="col" className="w-32 py-3 px-6 border border-black font-ptserif">
                 Action
@@ -282,7 +404,49 @@ const Inventory = () => {
             </tr>
           </thead>
           <tbody>
-          {isAddingNew && newIngredient && (
+            {filteredIngredients.map((ingredient) => (
+              <tr key={ingredient._id} className="bg-white border-b">
+                <th scope="row" className="py-4 px-6 font-medium text-black whitespace-nowrap border border-black font-ptserif">
+                  {ingredient._id}
+                </th>
+                <EditableCell
+                    value={ingredient.name}
+                    onEdit={handleEdit}
+                    field="name"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.quantity}
+                    onEdit={handleEdit}
+                    field="quantity"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.minQuantity}
+                    onEdit={handleEdit}
+                    field="minQuantity"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.unitPrice}
+                    onEdit={handleEdit}
+                    field="unitPrice"
+                    ingredientId={ingredient._id}
+                />
+                <EditableCell
+                    value={ingredient.supplier}
+                    onEdit={handleEdit}
+                    field="supplier"
+                    ingredientId={ingredient._id}
+                />
+                <td className="py-4 px-6 border border-black font-ptserif">
+                <button onClick={() => handleDeleteIngredient(ingredient._id)} className=" border-2 border-black px-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
+                    -
+                </button>
+                </td>
+              </tr>
+            ))}
+            {isAddingNew && newIngredient && (
               <tr>
                 <td className="px-5 py-5 border-b border-black bg-white text-sm">
                   New
@@ -302,41 +466,11 @@ const Inventory = () => {
                 </td>
               </tr>
             )}
-            {filteredIngredients.map((ingredient) => (
-              <tr key={ingredient._id} className="bg-white border-b">
-                <th scope="row" className="py-4 px-6 font-medium text-black whitespace-nowrap border border-black font-ptserif">
-                  {ingredient._id}
-                </th>
-                <EditableCell
-                    value={ingredient.name}
-                    onEdit={handleEdit}
-                    field="name"
-                    ingredientId={ingredient._id}
-                />
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.quantity}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.minQuantity}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  ${ingredient.unitPrice.toFixed(2)}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                  {ingredient.supplier}
-                </td>
-                <td className="py-4 px-6 border border-black font-ptserif">
-                <button onClick={() => handleDeleteIngredient(ingredient._id)} className=" border-2 border-black px-2 rounded-md text-lg font-medium bg-white text-black hover:bg-black hover:text-white font-ptserif">
-                    -
-                </button>
-                </td>
-              </tr>
-            ))}
-            
           </tbody>
         </table>
       </div>
     </div>
+    
   );
 };
 

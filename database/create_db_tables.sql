@@ -63,3 +63,11 @@ CREATE TABLE OrderItem_Junction (
   numOfItem INTEGER,
   PRIMARY KEY (orderId, ItemId)
 );
+
+CREATE TABLE cashier_work_log (
+    log_id SERIAL PRIMARY KEY,
+    id INT REFERENCES roles(roleId),
+    check_in_time TIMESTAMP,
+    check_out_time TIMESTAMP,
+    comments TEXT
+);

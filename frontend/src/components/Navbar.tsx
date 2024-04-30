@@ -1,20 +1,58 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Routes, User } from "../types/dbTypes"
+import CookieManager from "../utils/CookieManager"
+import { useEffect, useRef, useState } from "react";
 import GoogleTranslate from "./GoogleTranslate";
+import { GoPlus } from "react-icons/go";
+import { useTextSize } from "../TextSizeContext";
 
-export default function Navbar() {
-    function changeLang() {
-        console.log("language change");
-    }
+import { FaMoon } from "react-icons/fa";
+interface NavbarProps {
+    userInfo?: User;
+    userType?: string;
+}
 
+export default function Navbar({userInfo, userType}: NavbarProps) {
+
+    const navigate = useNavigate();
+    const [routes, setRoutes] = useState<Routes[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const initialButtonWidth = useRef<number | null>(null);
+    const { enlargeText, resetTextSize } = useTextSize();
 
-    function toggleDropdown() {
-        setIsDropdownOpen(!isDropdownOpen);
-    }
+    useEffect(() => {
+        if (userType === "admin") {
+            setRoutes([
+                {name: "edit roles", path: "/admin/roles"},
+                {name: "manager page", path: "/manager"},
+                {name: "cashier page", path: "/cashier"},
+            ])
+        } else if (userType === "manager") {
+            setRoutes([
+                {name: "create order", path: "/manager/orders/new"},
+                {name: "order history", path: "/manager/orders"},
+                {name: "reports", path: "/manager/salestrends"},
+                {name: "inventory", path: "/manager/inventory"},
+                {name: "menu", path: "/manager/menu"},
+                {name: "log", path: "/manager/logs"},
+                {name: "cashier", path: "/cashier"},
+            ])
+        } else if (userType === "cashier") {
+            setRoutes([
+                {name: "create order", path: "/manager/orders/new"},
+                {name: "kitchen", path: "/cashier/kitchen"},
+                {name: "log", path: "/cashier/log"},
+            ])
+        } else {
+            setRoutes([
+                {name: "menu", path: "/menu"},
+                {name: "order", path: "/order"},
+                {name: "login", path: "/manager/login"},
+            ])
+        }
+    }, [])
 
     useEffect(() => {
         if (buttonRef.current && initialButtonWidth.current === null) {
@@ -55,75 +93,125 @@ export default function Navbar() {
         }
     }, [isDropdownOpen]);
 
+    function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            localStorage.setItem('theme', '');
+            document.documentElement.classList.remove('dark');
+        } else {
+            localStorage.setItem('theme', 'dark');
+            document.documentElement.classList.add('dark');
+        }
+    }
+
     return (
-        <nav className="text-black pb-2 flex justify-between items-center shadow-sm border-hidden rounded px-3">
-            <div className="flex items-center flex-1">
-                <Link to={"/"} className="square-black border-black border-[2px] rounded">
-                    <img src="/logo.png" alt="Logo"></img>
-                </Link>
-                <span className="font-bold text-4xl ml-2 font-ptserif">
-                    Welcome to Rev's Grill
-                </span>
-            </div>
-            <div className="flex items-center justify-end flex-2">
-                <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <a href="/menu" className="hover:text-white">
-                        view menu
-                    </a>
-                </button>
-                <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <a href="/order" className="hover:text-white">
-                        start order
-                    </a>
-                </button>
-                <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <a href="/manager/login" className="hover:text-white">
-                        worker login
-                    </a>
-                </button>
-                <button className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300">
-                    <GoogleTranslate />
-                </button>
-                <div className="relative">
+        <nav className="px-4 py-2 shadow-sm rounded flex flex-col gap-y-4">
+            <div className="w-full flex justify-between items-center">
+                <div className="flex gap-x-4 items-center">
+                    <Link to={"/"}>
+                        <img src="/logo.png" alt="Logo" width={40} height={40} className="border-2 rounded-sm border-black"/>
+                    </Link>
+                    <h1 className="font-bold text-2xl font-ptserif">
+                        {userInfo ? `Welcome ${userInfo.given_name}` : "Welcome to Rev's Grill"}
+                    </h1>
+                </div>
+                <div className="flex items-center gap-x-6">
+                    {userInfo ? (
                     <button
-                        ref={buttonRef}
-                        onClick={toggleDropdown}
-                        className="border-[1px] border-black bg-white hover:bg-black hover:text-white px-4 py-2 ml-2 rounded-md text-lg font-medium font-ptserif transition-all duration-300"
+                        onClick={() => {
+                        CookieManager.delete('tokenResponse');
+                        navigate('/cashier/login');
+                        }}
+                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300 dark:hover:bg-white dark:hover:text-black"
                     >
-                        <span
-                            className={`block transition-transform duration-300 ${isDropdownOpen ? 'rotate-45' : ''}`}
-                            style={{ display: 'inline-block' }}
-                        >
-                            +
-                        </span>
+                        <img
+                            src={userInfo.picture || "/icons/profile.png"} 
+                            alt="Profile"
+                            className="w-6 h-6"
+                        />
+                        <p className="font-bold text-lg font-ptserif">
+                            {userInfo.name}
+                        </p>
                     </button>
-                    {isDropdownOpen && (
-                        <div
-                            ref={dropdownRef}
-                            className="absolute right-0 mt-2 py-2 w-auto bg-white shadow-xl border rounded-md transition-all duration-300"
+                    ) : (
+                    routes.map((route, index:number) => 
+                        <Link 
+                            key={index}
+                            to={route.path}
+                            className="text-lg font-bold font-ptserif transition-all duration-300 hover:underline underline-offset-4"
                         >
-                            <a
-                                href="/weather"
-                                className="block px-4 py-2 text-black hover:bg-gray-100"
+                            {route.name}
+                        </Link>
+                    ))}
+                    <button 
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
+                    >
+                      <GoogleTranslate />
+                    </button>
+                    <button
+                        aria-label="dark-mode"
+                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                        onClick={toggleTheme}
+                    >
+                        <FaMoon/>
+                    </button>
+                    <div className="relative">
+                        <button
+                            aria-label="dropdown-button"
+                            ref={buttonRef}
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                        >
+                            <span
+                                className={`block transition-transform duration-300 ${isDropdownOpen ? 'rotate-45' : ''}`}
+                                style={{ display: 'inline-block' }}
                             >
-                                Weather
-                            </a>
-                            <a
-                                href="#"
-                                className="block px-4 py-2 text-black hover:bg-gray-100"
+                                <GoPlus/>
+                            </span>
+                        </button>
+                        {isDropdownOpen && (
+                            <div
+                                ref={dropdownRef}
+                                className="absolute right-0 mt-2 py-2 w-auto bg-white shadow-xl border rounded-md transition-all duration-300"
                             >
-                                Option 2
-                            </a>
-                            <a
-                                href="#"
-                                className="block px-4 py-2 text-black hover:bg-gray-100"
-                            >
-                                A Longer Option 3
-                            </a>
-                        </div>
-                    )}
+                                <a
+                                    href="/weather"
+                                    className="block px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Weather
+                                </a>
+                                <button
+                                    onClick={enlargeText}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Enlarge Text
+                                </button>
+                                <button
+                                    onClick={resetTextSize}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Reset Text Size
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+            {userInfo ? (
+            <div className="flex gap-x-4 items-center">
+                {routes.map((route, index:number) => 
+                    <Link 
+                        key={index}
+                        to={route.path}
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                    >
+                        {route.name}
+                    </Link>
+                )}
+            </div>
+            ) : (
+                <></>
+            )}
         </nav>
-    );
+    )
 }

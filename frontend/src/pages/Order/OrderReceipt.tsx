@@ -3,6 +3,7 @@ import { Item } from "../../types/dbTypes";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext, OrderContext } from "./Order";
+import { defaultOrder } from "../../types/defaults";
 
 interface OrderReceiptProps {
     items: Item[];
@@ -13,7 +14,7 @@ interface OrderReceiptProps {
 export default function OrderReceipt({items}: OrderReceiptProps) {
 
     const {setOpen, setModalMsg} = useContext(ModalContext);
-    const {order} = useContext(OrderContext);
+    const {order, clearOrder} = useContext(OrderContext);
 
     let receiptItem:any = []
     order.itemToQuantity.forEach((value, key) => {
@@ -44,15 +45,18 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
         }
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
         const data = await response.json();
-        if(data.success === true)
+        if(data.success === true) {
             setModalMsg("Order successfully submitted!")
-        else
-        setModalMsg("Uh oh something went wrong :(, contact staff for help.")
+            clearOrder()
+        }
+        else {
+            setModalMsg("Uh oh something went wrong :(, contact staff for help.")
+        }
         setOpen(true);
     }
 
     return (
-        <div className="min-w-[320px] p-4 border-2 border-black rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
+        <div className="min-w-[320px] p-4 border-2 border-black dark:border-white rounded-md flex flex-col items-center gap-y-6 h-fit order-[-1] md:order-1">
 
             <h1 className="text-3xl font-bold font-ptserif">My <em>Order</em></h1>
 
@@ -77,14 +81,14 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
             <div className="w-full flex flex-col font-ptserif text-base">
 
                 <div className="w-full px-4 py-2 flex justify-between items-center">
-                    <p className="text-black/60">Total</p>
-                    <p className="text-black">${Math.round(order.total*100)/100}</p>
+                    <p className="text-black/60 dark:text-white/60">Total</p>
+                    <p className="text-black dark:text-white">${Math.round(order.total*100)/100}</p>
                 </div>
 
                 <button
                     type="button"
                     onClick={sendOrder}
-                    className="w-full px-4 py-2 flex justify-between items-center bg-black text-white rounded-md cursor-pointer duration-500 hover:bg-green-700">
+                    className="w-full px-4 py-2 flex justify-between items-center bg-black dark:bg-white text-white  dark:text-black rounded-md cursor-pointer duration-500 hover:bg-green-700">
                     <p>Checkout</p>
                     <FaArrowRight/>
                 </button>
@@ -117,7 +121,7 @@ function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}:
 
     return (
         <div className="w-[320px] h-24 flex items-center gap-x-4">
-            <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black rounded-md p-2">
+            <div className="flex justify-center items-center h-full w-32 aspect-video border-2 border-black dark:border-white rounded-md p-2">
                 <img src={picture === "" ? "/no-image-icon.png" : picture} alt={`image of ${name}`} className="object-contain h-[100%] max-h-[100%]" />
             </div>
             <div className="w-full gap-y-2 flex flex-col h-full justify-between">
@@ -131,7 +135,7 @@ function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}:
                                 addQty(itemPrice, name, id); 
                                 setQuantity((prev) => (parseInt(prev) + 1).toString());
                             }} 
-                            className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center"
+                            className="w-5 h-5 p-1 rounded-full border-2 border-black dark:border-white flex justify-center items-center"
                         >
                             <FaPlus/>
                         </button>
@@ -150,7 +154,7 @@ function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}:
                                 }
                                 inputHandler(e, id, itemPrice, name)
                             }}
-                            className="py-1 font-bold font-inter w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="py-1 font-bold font-inter w-6 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none dark:bg-black dark:text-white"
                         />
                         <button 
                             type="button" 
@@ -161,7 +165,7 @@ function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}:
                                     return prev;
                                 })
                             }} 
-                            className="w-5 h-5 p-1 rounded-full border-2 border-black flex justify-center items-center">
+                            className="w-5 h-5 p-1 rounded-full border-2 border-black dark:border-white flex justify-center items-center">
                                 <FaMinus/>
                         </button>
                     </div>

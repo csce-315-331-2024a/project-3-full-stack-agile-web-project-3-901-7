@@ -24,15 +24,25 @@ import ManagerMenu from './pages/Manager/Menu/ManagerMenu'
 import NewMenuItemPage from './pages/Manager/Menu/NewMenuItem'
 import EditMenuItemPage from './pages/Manager/Menu/EditMenuItem'
 import Cashier from './pages/Cashier/Cashier'
+import Kitchen from './pages/Cashier/Kitchen'
 import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
+import CashierLog from './pages/Cashier/CashierLog'
+import ManagerLog from './pages/Manager/ManagerLog'
+import CashierHelpQueue from './components/CashierHelpQueue'
 
+import { TextSizeProvider } from './TextSizeContext'
+
+const currentTheme = localStorage.getItem('theme')
+if (currentTheme) {
+    document.documentElement.classList.add(currentTheme)
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
         <React.StrictMode>
             <BrowserRouter>
-                <div>
+            <TextSizeProvider>
                     <Routes>
 
                         {/* Landing */}
@@ -50,6 +60,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier" element={<Cashier/>}/>
                         <Route path="/cashier/signup" element={<Login type="cashier" signup/>}/>
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
+                        <Route path="/cashier/log" element={<CashierLog />}/>
+                        <Route path="/cashier/help" element={<CashierHelpQueue />}/>
+                        <Route path="/cashier/kitchen" element={<Kitchen />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>
@@ -63,6 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/manager/orders/edit" element={<EditOrderHistory/>}/>
                         <Route path="/manager/orders/new" element={<AdminOrder/>}/>
                         <Route path="/manager/salestrends" element={<SalesTrends/>}/>
+                        <Route path="/manager/logs" element={<ManagerLog />}/>
 
                         {/* Admin-side */}
                         <Route path="/admin" element={<Admin/>}/>
@@ -71,7 +85,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/admin/roles" element={<AdminRoles/>}/>
 
                     </Routes>
-                </div>
+                </TextSizeProvider>
             </BrowserRouter>
         </React.StrictMode>
     </GoogleOAuthProvider>
