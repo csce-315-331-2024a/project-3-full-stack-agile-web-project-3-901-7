@@ -8,7 +8,7 @@ interface PageLayoutProps {
 export default function PageLayout({ children, className }: PageLayoutProps) {
     return (
         <div
-            className={twMerge("w-full h-full p-8 relative bg-white dark:bg-black border-black dark:border-white text-black dark:text-white", (className) ? className : "")}
+            className={twMerge("w-full h-full flex flex-col p-8 relative bg-white dark:bg-black border-black dark:border-white text-black dark:text-white", (className) ? className : "")}
         >
             {(children) ? children : <></>}
         </div>

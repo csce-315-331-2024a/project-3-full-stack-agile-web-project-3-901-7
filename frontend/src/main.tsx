@@ -41,7 +41,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <React.StrictMode>
             <BrowserRouter>
             <TextSizeProvider>
-                <div>
                     <Routes>
 
                         {/* Landing */}
@@ -84,9 +83,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/admin/roles" element={<AdminRoles/>}/>
 
                     </Routes>
-                    {/* <EnlargeTextButton/>
-                    <TextSizeResetButton/> */}
-                </div>
                 </TextSizeProvider>
             </BrowserRouter>
         </React.StrictMode>

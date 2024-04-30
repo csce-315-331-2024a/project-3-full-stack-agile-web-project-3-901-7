@@ -7,6 +7,7 @@ import OrderHeader from "./OrderHeader";
 import OrderItems from "./OrderItems";
 import OrderReceipt from "./OrderReceipt";
 import Modal from "../../components/Modal";
+import PageLayout from "../../layouts/PageLayout";
 
 interface OrderContextProps {
     order: OrderType;
@@ -31,6 +32,7 @@ export default function Order() {
     const [currCategory, setCurrCategory] = useState<string>("Burger");
     const [open, setOpen] = useState<boolean>(false);
     const [modalMsg, setModalMsg] = useState<string | JSX.Element>("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -38,11 +40,16 @@ export default function Order() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
+            setIsLoading(false);
         }
 
         fetchItems();
 
     }, [])
+
+    if (isLoading) {
+        return <Loading/>;
+    }
 
     function addQty(itemPrice: number, name: string, id: number) {
         setOrder({
@@ -80,14 +87,12 @@ export default function Order() {
     }
 
     return (
-        <div className="w-full h-full p-8 relative flex flex-col dark:bg-black text-black dark:text-white">
+        <PageLayout>
             
             <Navbar/>
 
             <OrderContext.Provider value={{order, addQty, subQty, inputHandler}}>
                 <ModalContext.Provider value={{setOpen, setModalMsg}}>
-                {(items.length === 0) ? <Loading/> :
-                <> 
 
                     <OrderHeader 
                         categories={categories} 
@@ -107,8 +112,7 @@ export default function Order() {
                         />
                     
                     </div>
-                </>
-                }
+
                 </ModalContext.Provider>
             </OrderContext.Provider>
 
@@ -118,6 +122,6 @@ export default function Order() {
                 setOpen={setOpen}
             />
 
-        </div>
+        </PageLayout>
     )
 }

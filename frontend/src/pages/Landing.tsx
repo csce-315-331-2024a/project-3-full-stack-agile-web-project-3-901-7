@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import Loading from '../components/Loading';
 
 interface Item {
     _id: number;
@@ -18,18 +19,25 @@ interface Item {
 }
 
 const Landing: React.FC = () => {
+
     const navigate = useNavigate();
     const [menuItems, setItems] = useState<Item[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
+            setIsLoading(false);
         }
 
         fetchItems();
     }, []);
+
+    if (isLoading) {
+        return <Loading/>;
+    }
 
     const settings = {
         dots: true,
