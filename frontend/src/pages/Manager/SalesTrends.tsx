@@ -154,7 +154,7 @@ const SalesTrends = () => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        {instanceOfIngredient(data) ? (
+                        {instanceOfIngredient(data.at(0)) ? (
                             <>
                                 <TableCell>
                                     <b>Inventory Item</b>
