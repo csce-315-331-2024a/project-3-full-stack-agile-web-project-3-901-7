@@ -7,6 +7,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    IconButton,
 } from "@mui/material";
 import {
     BarChart,
@@ -18,6 +19,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
+import ArrowCircleUpRoundedIcon from '@mui/icons-material/ArrowCircleUpRounded';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
@@ -56,6 +58,17 @@ const SalesTrends = () => {
     });
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [loading, setLoading] = useState(true);
+    const [activeSection, setActiveSection] = useState("menu");
+    const [hasScrolled, setHasScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setHasScrolled(window.scrollY > 0);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     const setProductUsage = (productUsage : SalesMapping) => {
         setData(prevData => ({ ...prevData, productUsage, }));
@@ -197,149 +210,200 @@ const SalesTrends = () => {
                                         {row.count}
                                     </TableCell>
                                 </>
-                            )}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
-    );
+                           )}
+                       </TableRow>
+                   ))}
+               </TableBody>
+           </Table>
+       </TableContainer>
+   );
 
-    return (
-        userProfile ? (
-            <div className="p-4">
-                <Navbar userInfo={userProfile} userType="manager"/>
-                <div className="p-4">
-                    <h1 className="text-3xl font-bold mb-6">Sales Trends</h1>
-                    {loading ? (
-                        <Loading />
-                    ) : (
-                        <>
-                            <div className="mb-6">
-                                <h2 className="text-2xl font-bold mb-4">
-                                    Product Usage
-                                </h2>
-                                <div className="mb-4 flex gap-2">
-                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                        Filter by Date Range:
-                                    </div>
-                                    <DatePicker
-                                        selected={dates.pu.start}
-                                        onChange={handleDateChange("pu", "start")}
-                                        selectsStart
-                                        startDate={dates.pu.start}
-                                        endDate={dates.pu.end}
-                                        maxDate={new Date()}
-                                        placeholderText="Start Date"
-                                        className="border-2 border-black bg-white px-4 py-2 rounded"
-                                    />
-                                    <DatePicker
-                                        selected={dates.pu.end}
-                                        onChange={handleDateChange("pu", "end")}
-                                        selectsEnd
-                                        startDate={dates.pu.start}
-                                        endDate={dates.pu.end}
-                                        minDate={dates.pu.start}
-                                        maxDate={new Date()}
-                                        placeholderText="End Date"
-                                        className="border-2 border-black bg-white px-4 py-2 rounded"
-                                    />
-                                </div>
-                                {data.productUsage && renderTable(
-                                    mapSalesMapping<Ingredient>(
-                                        data.productUsage, 
-                                        (ingName, count) => ({ 
-                                            name: ingName,
-                                            quantity: count,
-                                        }) as Ingredient
-                                    )
-                                )}
-                            </div>
+   const scrollToSection = (section) => {
+       const element = document.getElementById(section);
+       if (element) {
+           element.scrollIntoView({ behavior: "smooth" });
+           setActiveSection(section);
+       }
+   };
 
-                            <div className="mb-6">
-                                <h2 className="text-2xl font-bold mb-4">
-                                    Sales Report
-                                </h2>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <BarChart 
-                                        data={data.sales && mapSalesMapping<{name: string, sales: number}>(
-                                            data.sales, (key, value) => ({
-                                                name: key, sales: value,
-                                            })
-                                        )}
-                                    >
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Legend />
-                                        <Bar
-                                            dataKey="sales"
-                                            fill="#8884d8"
-                                            name="Sales Volume"
-                                        />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+   
 
-                            <div className="mb-6">
-                                <h2 className="text-2xl font-bold mb-4">
-                                    Excess Inventory
-                                </h2>
-                                <div className="mb-4 flex gap-2">
-                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                        Filter by Date:
-                                    </div>
-                                    <DatePicker
-                                        selected={dates.er.start}
-                                        onChange={handleDateChange("er", "start")}
-                                        placeholderText="Start Date"
-                                        className="border-2 border-black bg-white px-4 py-2 rounded"
-                                    />
-                                </div>
-                                {data.excess && renderTable(data.excess)}
-                            </div>
+   return (
+       userProfile ? (
+           <div id="menu" className="p-4">
+               <Navbar userInfo={userProfile} userType="manager"/>
+               <div className="p-4">
+                   <h1 className="text-3xl font-bold mb-6">Sales Trends</h1>
+                   <div className="mb-6 flex justify-center gap-4">
+                        <button
+                            aria-label="product-button"
+                            variant={activeSection === "productUsage" ? "contained" : "outlined"}
+                            onClick={() => scrollToSection("productUsage")}
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                        >Product Usage</button>
+                        <button
+                            aria-label="salesreport-button"
+                            variant={activeSection === "salesReport" ? "contained" : "outlined"}
+                            onClick={() => scrollToSection("salesReport")}
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                        >Sales Report</button>
+                        <button
+                            aria-label="excessinv-button"
+                            variant={activeSection === "excessInventory" ? "contained" : "outlined"}
+                            onClick={() => scrollToSection("excessInventory")}
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                        >Excess Inventory</button>
+                        <button
+                            aria-label="itempairs-button"
+                            variant={activeSection === "itemPairs" ? "contained" : "outlined"}
+                            onClick={() => scrollToSection("itemPairs")}
+                            className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
+                        >Item Pairs</button>
+                   </div>
+                   {loading ? (
+                       <Loading />
+                   ) : (
+                       <>
+                           <div id="productUsage" className="mb-6">
+                               <h2 className="text-2xl font-bold mb-4">
+                                   Product Usage
+                               </h2>
+                               <div className="mb-4 flex gap-2">
+                                   <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                       Filter by Date Range:
+                                   </div>
+                                   <DatePicker
+                                       selected={dates.pu.start}
+                                       onChange={handleDateChange("pu", "start")}
+                                       selectsStart
+                                       startDate={dates.pu.start}
+                                       endDate={dates.pu.end}
+                                       maxDate={new Date()}
+                                       placeholderText="Start Date"
+                                       className="border-2 border-black bg-white px-4 py-2 rounded"
+                                   />
+                                   <DatePicker
+                                       selected={dates.pu.end}
+                                       onChange={handleDateChange("pu", "end")}
+                                       selectsEnd
+                                       startDate={dates.pu.start}
+                                       endDate={dates.pu.end}
+                                       minDate={dates.pu.start}
+                                       maxDate={new Date()}
+                                       placeholderText="End Date"
+                                       className="border-2 border-black bg-white px-4 py-2 rounded"
+                                   />
+                               </div>
+                               {data.productUsage && renderTable(
+                                   mapSalesMapping<Ingredient>(
+                                       data.productUsage, 
+                                       (ingName, count) => ({ 
+                                           name: ingName,
+                                           quantity: count,
+                                       }) as Ingredient
+                                   )
+                               )}
+                           </div>
 
-                            <div>
-                                <h2 className="text-2xl font-bold mb-4">
-                                    Pairs of Items That Sell Together
-                                </h2>
-                                <div className="mb-4 flex gap-2">
-                                    <div className="border-2 border-black bg-white px-4 py-2 rounded">
-                                        Filter by Date Range:
-                                    </div>
-                                    <DatePicker
-                                        selected={dates.ps.start}
-                                        onChange={handleDateChange("ps", "start")}
-                                        selectsStart
-                                        startDate={dates.ps.start}
-                                        endDate={dates.ps.end}
-                                        maxDate={new Date()}
-                                        placeholderText="Start Date"
-                                        className="border-2 border-black bg-white px-4 py-2 rounded"
-                                    />
-                                    <DatePicker
-                                        selected={dates.ps.end}
-                                        onChange={handleDateChange("ps", "end")}
-                                        selectsEnd
-                                        startDate={dates.ps.start}
-                                        endDate={dates.ps.end}
-                                        minDate={dates.ps.start}
-                                        maxDate={new Date()}
-                                        placeholderText="End Date"
-                                        className="border-2 border-black bg-white px-4 py-2 rounded"
-                                    />
-                                </div>
-                                {data.pairSells && renderTable(data.pairSells)}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-        ) : (
-            loading && <Loading />
-        )
-    );
+                           <div id="salesReport" className="mb-6">
+                               <h2 className="text-2xl font-bold mb-4">
+                                   Sales Report
+                               </h2>
+                               <ResponsiveContainer width="100%" height={300}>
+                                   <BarChart 
+                                       data={data.sales && mapSalesMapping<{name: string, sales: number}>(
+                                           data.sales, (key, value) => ({
+                                               name: key, sales: value,
+                                           })
+                                       )}
+                                   >
+                                       <CartesianGrid strokeDasharray="3 3" />
+                                       <XAxis dataKey="name" />
+                                       <YAxis />
+                                       <Tooltip />
+                                       <Legend />
+                                       <Bar
+                                           dataKey="sales"
+                                           fill="#8884d8"
+                                           name="Sales Volume"
+                                       />
+                                   </BarChart>
+                               </ResponsiveContainer>
+                           </div>
+
+                           <div id="excessInventory" className="mb-6">
+                               <h2 className="text-2xl font-bold mb-4">
+                                   Excess Inventory
+                               </h2>
+                               <div className="mb-4 flex gap-2">
+                                   <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                       Filter by Date:
+                                   </div>
+                                   <DatePicker
+                                       selected={dates.er.start}
+                                       onChange={handleDateChange("er", "start")}
+                                       placeholderText="Start Date"
+                                       className="border-2 border-black bg-white px-4 py-2 rounded"
+                                   />
+                               </div>
+                               {data.excess && renderTable(data.excess)}
+                           </div>
+
+                           <div id="itemPairs">
+                               <h2 className="text-2xl font-bold mb-4">
+                                   Pairs of Items That Sell Together
+                               </h2>
+                               <div className="mb-4 flex gap-2">
+                                   <div className="border-2 border-black bg-white px-4 py-2 rounded">
+                                       Filter by Date Range:
+                                   </div>
+                                   <DatePicker
+                                       selected={dates.ps.start}
+                                       onChange={handleDateChange("ps", "start")}
+                                       selectsStart
+                                       startDate={dates.ps.start}
+                                       endDate={dates.ps.end}
+                                       maxDate={new Date()}
+                                       placeholderText="Start Date"
+                                       className="border-2 border-black bg-white px-4 py-2 rounded"
+                                   />
+                                   <DatePicker
+                                       selected={dates.ps.end}
+                                       onChange={handleDateChange("ps", "end")}
+                                       selectsEnd
+                                       startDate={dates.ps.start}
+                                       endDate={dates.ps.end}
+                                       minDate={dates.ps.start}
+                                       maxDate={new Date()}
+                                       placeholderText="End Date"
+                                       className="border-2 border-black bg-white px-4 py-2 rounded"
+                                   />
+                               </div>
+                               {data.pairSells && renderTable(data.pairSells)}
+                           </div>
+                       </>
+                   )}
+               </div>
+               {hasScrolled && (
+                    <IconButton
+                        aria-label="Back to menu"
+                        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        style={{
+                            position: 'fixed',
+                            bottom: 20,
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            zIndex: 1000
+                        }}
+                    >
+                        <ArrowCircleUpRoundedIcon />
+                    </IconButton>
+                )}
+           </div>
+       ) : (
+           loading && <Loading />
+       )
+   );
 };
 
 export default SalesTrends;
