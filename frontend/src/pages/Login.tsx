@@ -28,7 +28,12 @@ const icons = {
     },
 };
 
-export function authLevel(type : UserType) {
+/**
+ * Returns the authorization level for a given user type.
+ * @param type - The user type.
+ * @returns The authorization level.
+ */
+export function authLevel(type: UserType) {
     return {
         'customer': 1,
         'cashier': 2,
@@ -37,11 +42,17 @@ export function authLevel(type : UserType) {
     }[type];
 }
 
-export async function getUserAuth(type : UserType) {
-    let tokenResponseStr = CookieManager.get('tokenResponse');
+/**
+ * Retrieves the user authentication information.
+ * @param type - The user type.
+ * @returns The user profile.
+ * @throws {Error} If the authentication is invalid or the role is not set up.
+ */
+export async function getUserAuth(type: UserType) {
+    const tokenResponseStr = CookieManager.get('tokenResponse');
     if (tokenResponseStr) {
-        let credCache = JSON.parse(tokenResponseStr) as CredCache;
-        let userProfile : User | undefined = undefined;
+        const credCache = JSON.parse(tokenResponseStr) as CredCache;
+        let userProfile: User | undefined = undefined;
 
         if (credCache.googleResponse) {
             const userResponse = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${credCache.googleResponse.access_token}`, {
@@ -125,12 +136,18 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     );
 };
 
+/**
+ * Interface for the login props.
+ */
 interface ILoginProps {
     type: UserType;
     signup?: boolean;
 }
 
-export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
+/**
+ * Login page component.
+ */
+export const Login: React.FC<ILoginProps> = (props: ILoginProps) => {
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [userInfo, setUserInfo] = useState<User>({
@@ -142,13 +159,18 @@ export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
         picture: '',
     });
 
+    /**
+     * Handles the login success event.
+     * @param cred - The credential object.
+     */
     const onLoginSuccess = (cred: { googleResponse?: TokenResponse, userInfo?: User, type: UserType }) => {
-        const credCache : CredCache = {
+        const credCache: CredCache = {
             googleResponse: cred.googleResponse,
             userInfo: cred.userInfo,
             type: cred.type,
         };
         CookieManager.create('tokenResponse', JSON.stringify(credCache), cred.googleResponse && cred.googleResponse.expires_in);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         getUserAuth(props.type).then(_ => {
             navigate(`/${props.type}`);
         });

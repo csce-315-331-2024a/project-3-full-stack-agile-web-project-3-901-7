@@ -6,6 +6,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Loading from '../components/Loading';
 
+/**
+ * Interface for an item in the menu.
+ */
 interface Item {
     _id: number;
     name: string;
@@ -18,6 +21,9 @@ interface Item {
     itemDesc: string;
 }
 
+/**
+ * Landing page component.
+ */
 const Landing: React.FC = () => {
 
     const navigate = useNavigate();
@@ -25,6 +31,9 @@ const Landing: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        /**
+         * Fetches the available menu items from the backend.
+         */
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();

@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 
+/**
+ * Google translate component
+ * @returns Google translate
+ */
 const GoogleTranslate: React.FC = () => {
   const scriptLoaded = useRef<boolean>(false);
   
@@ -13,12 +17,12 @@ const GoogleTranslate: React.FC = () => {
       script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
 
-      window.googleTranslateElementInit = function () {
-        new window.google.translate.TranslateElement(
-          { pageLanguage: 'en',layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
-          id
-        );
-      };
+      // window.googleTranslateElementInit = function () {
+      //   new window.google.translate.TranslateElement(
+      //     { pageLanguage: 'en',layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
+      //     id
+      //   );
+      // };
 
       document.body.appendChild(script);
       scriptLoaded.current = true;

@@ -5,6 +5,10 @@ interface ConfirmationPopupProps {
     onClose: () => void;
 }
 
+/**
+ *  Confirmation popup component
+ * @returns Confirmation popup
+ */
 const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({ action, onClose }) => {
     let message = '';
     if (action === 'add') {

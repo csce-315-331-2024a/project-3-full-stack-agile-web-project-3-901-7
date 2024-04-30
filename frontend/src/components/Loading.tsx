@@ -1,6 +1,10 @@
 import { CgSpinner } from "react-icons/cg";
 import FullLayout from "../layouts/FullLayout";
 
+/**
+ * Loading component
+ * @returns Loading component
+ */
 export default function Loading() {
     return (
         <FullLayout>

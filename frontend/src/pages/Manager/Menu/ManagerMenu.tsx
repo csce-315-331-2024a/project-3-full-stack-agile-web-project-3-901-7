@@ -6,18 +6,27 @@ import ManagerTable from './ManagerTable';
 import { getUserAuth } from '../../Login';
 import Navbar from '../../../components/Navbar';
 
+/**
+ * Represents the Manager Menu page.
+ */
 const ManagerMenu = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
   useEffect(() => {
+    /**
+     * Fetches the user authentication for the manager.
+     */
     getUserAuth('manager')
       .then(setUserProfile)
       .catch(console.error);
   }, [])
 
   useEffect(() => {
+    /**
+     * Fetches all the items from the backend.
+     */
     async function fetchItems() {
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
       const data = await response.json();
@@ -27,6 +36,12 @@ const ManagerMenu = () => {
     fetchItems();
   }, []);
 
+  /**
+   * Filters the items based on the search query.
+   * @param items - The list of items to filter.
+   * @param query - The search query.
+   * @returns The filtered list of items.
+   */
   const getFilteredItems = (items: Item[], query : string) => {
     const compare = (a : string, b : string) => a.toLowerCase().includes(b.toLowerCase());
 

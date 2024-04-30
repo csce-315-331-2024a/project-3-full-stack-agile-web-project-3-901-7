@@ -9,6 +9,9 @@ import OrderReceipt from "./OrderReceipt";
 import Modal from "../../components/Modal";
 import PageLayout from "../../layouts/PageLayout";
 
+/**
+ * The context for managing the order state and related functions.
+ */
 interface OrderContextProps {
     order: OrderType;
     addQty: (itemPrice: number, name: string, id: number) => void;
@@ -17,6 +20,9 @@ interface OrderContextProps {
     clearOrder: () => void;
 }
 
+/**
+ * The context for managing the modal state and related functions.
+ */
 interface ModalContextProps {
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
@@ -25,6 +31,9 @@ interface ModalContextProps {
 export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}, clearOrder: () => {}});
 export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
+/**
+ * The Order component.
+ */
 export default function Order() {
 
     const categories = defaultCategories;
@@ -37,6 +46,9 @@ export default function Order() {
 
     useEffect(() => {
 
+        /**
+         * Fetches the available items from the backend.
+         */
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
@@ -52,6 +64,12 @@ export default function Order() {
         return <Loading/>;
     }
 
+    /**
+     * Adds quantity to the order.
+     * @param itemPrice - The price of the item.
+     * @param name - The name of the item.
+     * @param id - The ID of the item.
+     */
     function addQty(itemPrice: number, name: string, id: number) {
         setOrder({
             ...order,
@@ -62,6 +80,12 @@ export default function Order() {
         });
     }
 
+    /**
+     * Subtracts quantity from the order.
+     * @param itemPrice - The price of the item.
+     * @param name - The name of the item.
+     * @param id - The ID of the item.
+     */
     function subQty(itemPrice: number, name: string, id: number) {
         if (order.itemToQuantity.get(id)! > 0) {
             setOrder({
@@ -74,6 +98,13 @@ export default function Order() {
         }
     }
 
+    /**
+     * Handles the input change for quantity.
+     * @param e - The input change event.
+     * @param id - The ID of the item.
+     * @param itemPrice - The price of the item.
+     * @param name - The name of the item.
+     */
     function inputHandler(e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) {
         const currentQty:number = (order.itemToQuantity.has(id) ? order.itemToQuantity.get(id)! : 0);
         const input:string = e.target.value;
@@ -87,6 +118,9 @@ export default function Order() {
         })
     }
 
+    /**
+     * Clears the order.
+     */
     function clearOrder() {
         setOrder({
             numItems: 0,

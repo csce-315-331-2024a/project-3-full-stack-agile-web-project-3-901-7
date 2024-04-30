@@ -5,6 +5,12 @@ interface PageLayoutProps {
     className?: string;
 }
 
+/**
+ * Renders a page layout component.
+ * 
+ * @param {PageLayoutProps} props - The props for the PageLayout component.
+ * @returns {JSX.Element} The rendered PageLayout component.
+ */
 export default function PageLayout({ children, className }: PageLayoutProps) {
     return (
         <div

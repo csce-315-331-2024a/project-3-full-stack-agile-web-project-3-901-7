@@ -3,12 +3,18 @@ import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 
+/**
+ * ManagerLog component displays the work logs for cashiers and allows the manager to edit them.
+ */
 export default function ManagerLog() {
-    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
-    const [cashierLogs, setCashierLogs] = useState<Worklog[]>([]);
-    const [editingLog, setEditingLog] = useState<Worklog | null>(null);
+  const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+  const [cashierLogs, setCashierLogs] = useState<Worklog[]>([]);
+  const [editingLog, setEditingLog] = useState<Worklog | null>(null);
 
   useEffect(() => {
+    /**
+     * Authenticates the user as a manager and fetches the cashier logs.
+     */
     const authenticateUser = async () => {
       const user = await getUserAuth('manager');
       setUserProfile(user);
@@ -22,6 +28,9 @@ export default function ManagerLog() {
       .catch(console.error);
   }, []);
 
+  /**
+   * Fetches the cashier logs from the backend.
+   */
   const fetchCashierLogs = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/log/findAll`);
@@ -32,10 +41,18 @@ export default function ManagerLog() {
     }
   };
 
+  /**
+   * Sets the editingLog state to the selected log for editing.
+   * @param log - The log to be edited.
+   */
   const handleEdit = (log: Worklog) => {
     setEditingLog(log);
   };
 
+  /**
+   * Updates the editingLog state with the changes made in the input fields.
+   * @param e - The change event triggered by the input fields.
+   */
   const handleEditLogChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -58,6 +75,9 @@ export default function ManagerLog() {
     });
   };
 
+  /**
+   * Updates the log in the backend and updates the cashierLogs state with the updated log.
+   */
   const handleUpdateLog = async () => {
     if (editingLog) {
       try {
@@ -84,6 +104,11 @@ export default function ManagerLog() {
 
   const headerColumns = ["Log ID", "Employee ID", "Check-in Time", "Check-out Time", "Comments", "Actions"];
 
+  /**
+   * Formats the given date-time string to a localized date-time string.
+   * @param dateTimeString - The date-time string to be formatted.
+   * @returns The formatted date-time string.
+   */
   const formatDateTime = (dateTimeString: string | null) => {
     if (!dateTimeString) return "-";
     const utcDateTime = new Date(dateTimeString);

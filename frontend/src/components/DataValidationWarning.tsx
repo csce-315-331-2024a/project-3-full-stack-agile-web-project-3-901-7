@@ -5,6 +5,10 @@ interface DataValidationWarningProps {
   onCancel: () => void;
 }
 
+/**
+ * Data validation warning component
+ * @returns Data validation warning
+ */
 const DataValidationWarning: React.FC<DataValidationWarningProps> = ({ message, onCancel }) => {
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">

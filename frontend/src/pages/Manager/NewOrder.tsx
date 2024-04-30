@@ -5,10 +5,12 @@ import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 
+/**
+ * Component for managing new orders by the manager.
+ */
 export default function AdminOrder() {
-
+    // State variables
     const categories = ["Burger", "Chicken", "Side", "Salad", "Snack", "Beverage", "Dessert", "Seasonal"]
-
     const [items, setItems] = useState<Item[]>([]);
     const [allItems, setAllItems] = useState<Item[]>([]);
     const [order, setOrder] = useState<OrderType>({
@@ -21,36 +23,46 @@ export default function AdminOrder() {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [speedOrderId, setSpeedOrderId] = useState<string>("");
     const [speedOrderQty, setSpeedOrderQty] = useState<string>("");
-
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
+    /**
+     * Fetches the user authentication information for the cashier.
+     */
     useEffect(() => {
         getUserAuth('cashier')
             .then(setUserProfile)
             .catch(console.error);
     }, [])
 
+    /**
+     * Fetches the available items from the backend.
+     */
     useEffect(() => {
-
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setAllItems(data);
             setItems(data);
         }
-
         fetchItems();
-
     }, [])
 
+    /**
+     * Converts a Map object to a plain JavaScript object.
+     * @param map - The Map object to convert.
+     * @returns The converted plain JavaScript object.
+     */
     function mapToObj(map: Map<number, number>) {
-        let obj = Object.create(null);
-        for (let [k,v] of map) {
+        const obj = Object.create(null);
+        for (const [k,v] of map) {
             obj[k] = v;
         }
         return obj;
     }
 
+    /**
+     * Sends the order to the backend for processing.
+     */
     async function sendOrder() {
         const body = {
             numItems: order.numItems,
@@ -68,6 +80,10 @@ export default function AdminOrder() {
             alert("Uh oh something went wrong :(")
     }
 
+    /**
+     * Searches for an item based on the search term.
+     * @param e - The event object.
+     */
     function searchItem(e: React.ChangeEvent<HTMLInputElement>) {
         setSearchTerm(e.target.value);
         if (e.target.value === "") {
@@ -77,6 +93,10 @@ export default function AdminOrder() {
         setItems(items.filter((item:Item) => item.name.toLowerCase().includes(e.target.value.toLowerCase())));
     }
 
+    /**
+     * Adds an item to the order.
+     * @param e - The event object.
+     */
     function addItemToOrder(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         // get values from form
@@ -197,6 +217,9 @@ export default function AdminOrder() {
     )
 }
 
+/**
+ * Props for the AdminOrderItemContainer component.
+ */
 interface AdminOrderItemContainerProps {
     title: string;
     items: Item[];
@@ -204,6 +227,13 @@ interface AdminOrderItemContainerProps {
     setOrder: React.Dispatch<React.SetStateAction<OrderType>>;
 }
 
+/**
+ * Component for displaying a container of order items.
+ * @param title - The title of the container.
+ * @param items - The items to display in the container.
+ * @param order - The current order.
+ * @param setOrder - The function to update the order.
+ */
 function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItemContainerProps) {
     return (
         <div className="flex flex-col gap-y-2">
@@ -217,16 +247,31 @@ function AdminOrderItemContainer({title, items, order, setOrder}: AdminOrderItem
     )
 }
 
-interface AdminOrderItem {
+/**
+ * Props for the AdminOrderItem component.
+ */
+interface AdminOrderItemProps {
     item: Item;
     order: OrderType;
     setOrder: React.Dispatch<React.SetStateAction<OrderType>>;
 }
 
-function AdminOrderItem({item, order, setOrder}: AdminOrderItem) {
+/**
+ * Component for displaying an order item.
+ * @param item - The item to display.
+ * @param order - The current order.
+ * @param setOrder - The function to update the order.
+ */
+function AdminOrderItem({item, order, setOrder}: AdminOrderItemProps) {
 
     const [quantity, setQuantity] = useState<string>("0");
 
+    /**
+     * Increases the quantity of the item in the order.
+     * @param price - The price of the item.
+     * @param name - The name of the item.
+     * @param id - The ID of the item.
+     */
     function increaseItem(price:number, name: string, id:number) {
         setQuantity((prev) => (parseInt(prev) + 1).toString());
         setOrder({
@@ -238,6 +283,12 @@ function AdminOrderItem({item, order, setOrder}: AdminOrderItem) {
         })
     }
 
+    /**
+     * Decreases the quantity of the item in the order.
+     * @param price - The price of the item.
+     * @param name - The name of the item.
+     * @param id - The ID of the item.
+     */
     function decreaseItem(price:number, name:string, id:number) {
         if (!order.itemToQuantity.has(id))
             return

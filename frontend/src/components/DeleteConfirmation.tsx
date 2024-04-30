@@ -5,6 +5,10 @@ interface DeleteConfirmationProps {
   onConfirm: () => void;
 }
 
+/**
+ * Delete confirmation component 
+ * @returns Delete confirmation
+ */
 const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ onCancel, onConfirm }) => {
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-900 bg-opacity-50 z-50">

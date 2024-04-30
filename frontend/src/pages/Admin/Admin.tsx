@@ -3,6 +3,10 @@ import { getUserAuth } from "../Login";
 import { User } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 
+/**
+ * Represents the Admin component.
+ * @component
+ */
 export default function Admin() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 

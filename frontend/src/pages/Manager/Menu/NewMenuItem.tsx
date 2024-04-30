@@ -6,7 +6,13 @@ import Navbar from "../../../components/Navbar";
 
 const itemIngredients = new Set<string>();
 
-const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
+/**
+ * Represents the NewMenuItemPage component.
+ */
+const NewMenuItemPage: React.FC<{ itemId?: number }> = ({ itemId }) => {
+  /**
+   * Represents the item state.
+   */
   const [item, setItem] = useState<Item>({
     _id: -1,
     name: '',
@@ -19,20 +25,39 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     itemDesc: '',
   });
 
+  /**
+   * Represents the ingredients state.
+   */
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+  /**
+   * Represents the categories state.
+   */
   const [categories, setCategories] = useState<string[]>([]);
+
+  /**
+   * Represents the userProfile state.
+   */
   const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
-  const [popupState, setPopupState] = useState<IConfirmationPopupProps>({ 
+  /**
+   * Represents the popupState state.
+   */
+  const [popupState, setPopupState] = useState<IConfirmationPopupProps>({
     message: '',
     active: false,
-    onConfirm() {},
+    onConfirm() { },
     onCancel() {
       setPopupState(prevState => ({ ...prevState, active: false }));
-    },  
+    },
   });
 
-  const getConfirmation = (message : string, onConfirm : () => void) => {
+  /**
+   * Gets the confirmation for an action.
+   * @param message - The confirmation message.
+   * @param onConfirm - The callback function to execute on confirmation.
+   */
+  const getConfirmation = (message: string, onConfirm: () => void) => {
     setPopupState(prevState => ({
       ...prevState, active: true, message, onConfirm,
     }));
@@ -47,12 +72,12 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
   useEffect(() => {
     itemIngredients.clear();
 
-    async function fetchItem(itemId : number) {
+    async function fetchItem(itemId: number) {
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findOneById?itemId=" + itemId);
       const prevItem = await response.json() as Item;
 
       itemIngredients.clear();
-      for (let ingName of prevItem.ingredientInfo.split(',')) {
+      for (const ingName of prevItem.ingredientInfo.split(',')) {
         itemIngredients.add(ingName);
       }
 
@@ -66,7 +91,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }
 
     async function fetchCategories() {
-      function findUnique(value : string, index : number, array : string[]) {
+      function findUnique(value: string, index: number, array: string[]) {
         return array.indexOf(value) === index;
       }
 
@@ -84,7 +109,11 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     fetchCategories();
   }, []);
 
-  const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Handles the change event of an input element.
+   * @param e - The change event.
+   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setItem(prevItem => ({
       ...prevItem,
@@ -92,7 +121,11 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }));
   };
 
-  const handleCategoryChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Handles the change event of a category input element.
+   * @param e - The change event.
+   */
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked, value } = e.target;
     if (checked) {
       setItem(prevItem => ({
@@ -102,7 +135,11 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }
   };
 
-  const handleIngredientChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+  /**
+   * Handles the change event of an ingredient input element.
+   * @param e - The change event.
+   */
+  const handleIngredientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked, value } = e.target;
     if (checked) {
       itemIngredients.add(value);
@@ -111,8 +148,8 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       itemIngredients.delete(value);
     }
 
-    let ingredientsList : string[] = [];
-    for (let ingName of itemIngredients) {
+    const ingredientsList: string[] = [];
+    for (const ingName of itemIngredients) {
       ingredientsList.push(ingName);
     }
 
@@ -122,7 +159,12 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     }));
   };
 
-  function validateItem(item : Item) {
+  /**
+   * Validates an item.
+   * @param item - The item to validate.
+   * @returns True if the item is valid, false otherwise.
+   */
+  function validateItem(item: Item) {
     if (!item.category) return false;
     if (!item.ingredientInfo) return false;
     if (!item.name) return false;
@@ -132,7 +174,11 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     return true;
   }
 
-  async function postNewItem(item : Item) {
+  /**
+   * Posts a new item to the backend.
+   * @param item - The item to post.
+   */
+  async function postNewItem(item: Item) {
     await fetch(import.meta.env.VITE_BACKEND_URL + "/item/insert", {
       method: 'POST',
       headers: {
@@ -140,11 +186,15 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       },
       body: JSON.stringify(item),
     });
-    
+
     window.location.href = '/manager/menu';
   }
 
-  async function postUpdateItem(item : Item) {
+  /**
+   * Posts an updated item to the backend.
+   * @param item - The item to update.
+   */
+  async function postUpdateItem(item: Item) {
     await fetch(import.meta.env.VITE_BACKEND_URL + "/item/edit", {
       method: 'POST',
       headers: {
@@ -156,7 +206,11 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     window.location.href = '/manager/menu';
   }
 
-  async function postDeleteItem(item : Item) {
+  /**
+   * Deletes an item from the backend.
+   * @param item - The item to delete.
+   */
+  async function postDeleteItem(item: Item) {
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/deleteById?itemId=" + item._id, {
       method: 'POST',
     });
@@ -165,14 +219,18 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
     window.location.href = '/manager/menu';
   }
 
-  const handleAction = (actionType : string) => {
+  /**
+   * Handles an action on the item.
+   * @param actionType - The type of action.
+   */
+  const handleAction = (actionType: string) => {
     if (actionType !== 'delete' && !validateItem(item))
       return;
-      
+
     getConfirmation(`Are you sure you want to ${actionType} item "${item.name}"?`, () => {
       if (!item.category || !item.ingredientInfo || !item.name || !item.picture || !item.price || !item.startDate || !item.itemDesc)
         return;
-      
+
       if (actionType === 'create') {
         postNewItem(item);
       }

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * Represents an order.
+ */
 export interface Order {
     _id: number;
     numItems: number;
@@ -10,13 +13,10 @@ export interface Order {
     status?: string;  // Assuming status might be optional or required based on your backend needs
 }
 
-interface ItemDetails {
-    name: string;
-    price: number;
-}
-
+/**
+ * Represents the Edit Order Popup component.
+ */
 const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => void, onCancel: () => void }> = ({ order, onSave, onCancel }) => {
-    // Transform the Map to an editable format
     const [items, setItems] = useState<Map<number, { name: string; quantity: number; price?: number; }>>(() => {
         const newMap = new Map<number, { name: string; quantity: number; price?: number; }>();
         order.itemToQuantity.forEach((quantity, itemId) => {
@@ -26,6 +26,9 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
     });
 
     useEffect(() => {
+        /**
+         * Fetches item details from the backend.
+         */
         const fetchItemDetails = async () => {
             const itemDetails = new Map();
             for (const [itemId, quantity] of order.itemToQuantity.entries()) {
@@ -46,6 +49,10 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
         fetchItemDetails();
     }, [order]); 
 
+    /**
+     * Calculates the total price of the order.
+     * @returns The total price of the order.
+     */
     const calculateTotal = () => {
         let total = 0;
         items.forEach(item => {
@@ -55,15 +62,9 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
         return total;
     };
 
-    const transformItemsToMap = () => {
-        const itemsMap = new Map<number, number>();
-        items.forEach((item, itemId) => {
-            itemsMap.set(itemId, item.quantity);
-        });
-        return itemsMap;
-    };
-
-
+    /**
+     * Handles the save action.
+     */
     const handleSave = () => {
         const itemToQuantityObject: Map<number, number> = new Map<number, number>();
         let numItems = 0;
@@ -72,9 +73,14 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
             numItems += item.quantity;
         });
 
+        /**
+         * Converts a Map to an object.
+         * @param map - The Map to convert.
+         * @returns The converted object.
+         */
         function mapToObj(map: Map<number, number>) {
-            let obj = Object.create(null);
-            for (let [k,v] of map) {
+            const obj = Object.create(null);
+            for (const [k,v] of map) {
                 obj[k] = v;
             }
             return obj;
@@ -109,9 +115,7 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
             onSave(updatedOrder);
         })
         .catch(error => console.error('Failed to update order:', error));
-    };
-    
-    
+    };    
 
 
     return (
@@ -120,7 +124,7 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
                 <h2>Edit Order</h2>
                 {Array.from(items.entries()).map(([itemId, item]) => (
                     <div key={itemId} className="flex items-center">
-                        <span className="text-sm">{item.name}</span> {/* Added text-sm class */}
+                        <span className="text-sm">{item.name}</span>
                         <input
                             type="number"
                             value={item.quantity}

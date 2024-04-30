@@ -4,18 +4,32 @@ interface IManagerTableProps {
   headerColumns: string[];
   thumbnails?: string[];
   onEdit?: (key : number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any[][];
 }
+/**
+ * Represents the sorting order of the table.
+ */
+type SortOrdering = 'ascending' | 'descending';
 
-type SortOrdering = 'ascending' | 'descending'
-
+/**
+ * Represents the sort options for the table.
+ */
 interface ISortOptions {
   column: number;
   order: SortOrdering;
 }
 
-function compare(a : any, b : any, order : SortOrdering) {
-  let orderFactor = ((order === 'ascending') ? 1 : -1);
+/**
+ * Compares two values based on the specified sort order.
+ * @param a - The first value to compare.
+ * @param b - The second value to compare.
+ * @param order - The sort order.
+ * @returns A negative number if a is less than b, a positive number if a is greater than b, or 0 if they are equal.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function compare(a: any, b: any, order: SortOrdering) {
+  const orderFactor = ((order === 'ascending') ? 1 : -1);
 
   if (!b)
     return orderFactor;
@@ -34,9 +48,29 @@ function compare(a : any, b : any, order : SortOrdering) {
   return 0;
 }
 
-const ManagerTable : React.FC<IManagerTableProps> = (props) => {
+/**
+ * Represents the props for the ManagerTable component.
+ */
+interface IManagerTableProps {
+  headerColumns: string[];
+  thumbnails?: string[];
+  onEdit?: (key: number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[][];
+}
+
+/**
+ * Represents a table component for the manager page.
+ * @param props - The component props.
+ * @returns The rendered ManagerTable component.
+ */
+const ManagerTable: React.FC<IManagerTableProps> = (props) => {
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
 
+  /**
+   * Handles the hover event on a table row.
+   * @param index - The index of the hovered row.
+   */
   const handleRowHover = (index: number | null) => {
     setHoveredRowIndex(index);
   };
@@ -46,9 +80,13 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
     order: 'ascending',
   });
 
-  const toggleSort = (column : number) => {
+  /**
+   * Toggles the sort order for a column.
+   * @param column - The index of the column to toggle.
+   */
+  const toggleSort = (column: number) => {
     setSortOptions((prevSort) => {
-      let newSort : ISortOptions = { column, order: 'ascending' };  
+      const newSort: ISortOptions = { column, order: 'ascending' };
       if (prevSort.column === column)
         newSort.order = prevSort.order === 'ascending' ? 'descending' : 'ascending';
       return newSort;
@@ -63,10 +101,10 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
             {props.thumbnails && (
               <th scope="col" className="py-3 px-6  font-ptserif" />
             )}
-            {props.headerColumns.map((columnTitle, colIdx) => 
-              <th 
+            {props.headerColumns.map((columnTitle, colIdx) =>
+              <th
                 className="py-3 px-6  font-ptserif whitespace-nowrap cursor-pointer"
-                scope="col" 
+                scope="col"
                 onClick={() => toggleSort(colIdx)}
               >
                 {columnTitle + (colIdx === sortOptions.column ? (sortOptions.order === 'ascending' ? ' ↓' : ' ↑') : '')}
@@ -79,9 +117,9 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
           {props.data
             .map((row, i) => ({ thumbnail: props.thumbnails && props.thumbnails[i], row }))
             .sort((a, b) => compare(a.row[sortOptions.column], b.row[sortOptions.column], sortOptions.order))
-            .map(({row, thumbnail}, i) => (
-              <tr 
-                key={row[0]} 
+            .map(({ row, thumbnail }, i) => (
+              <tr
+                key={row[0]}
                 className={`bg-white hover:bg-gray-50 cursor-pointer border-b ${
                   i === hoveredRowIndex ? 'relative' : ''
                 }`}
@@ -110,7 +148,7 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
                 {/* Edit Icon */}
                 {(i === hoveredRowIndex) && props.onEdit && (
                   <td className="absolute right-0 top-0 bottom-0 flex items-center justify-center">
-                    <button 
+                    <button
                       onClick={() => {
                         if (row[0] && props.onEdit)
                           props.onEdit(row[0]);
@@ -123,14 +161,14 @@ const ManagerTable : React.FC<IManagerTableProps> = (props) => {
                         height={24}
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        >
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                      >
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                       </svg>
                     </button>
                   </td>
                 )}
               </tr>
-          ))}
+            ))}
         </tbody>
       </table>
     </div>

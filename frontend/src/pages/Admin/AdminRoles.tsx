@@ -14,8 +14,23 @@ interface IRoleListProps {
   saveRole: (updatedRole: Role) => void;
   deleteRole: (toDelete: Role) => void;
 }
-
+/**
+ * Renders a list of roles for a specific user type.
+ * 
+ * @param type - The user type.
+ * @param roles - The list of roles for the user type.
+ * @param updateNewRoleState - Callback function to update the new role state.
+ * @param updateRoleState - Callback function to update an existing role state.
+ * @param insertRole - Callback function to insert a new role.
+ * @param saveRole - Callback function to save an updated role.
+ * @param deleteRole - Callback function to delete a role.
+ */
 const RoleList : React.FC<IRoleListProps> = (props) => {
+  /**
+   * Updates the role state.
+   * 
+   * @param updatedRole - The updated role.
+   */
   const updateRole = (updatedRole : Role) => {
     if (updatedRole._id >= 0) {
       props.updateRoleState(updatedRole);
@@ -24,10 +39,22 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
     }
   }
 
+  /**
+   * Handles the email change event.
+   * 
+   * @param e - The change event.
+   * @param role - The role object.
+   */
   const onEmailChange = (e : React.ChangeEvent<HTMLInputElement>, role : Role) => {
     updateRole({...role, email : e.target.value});
   };
 
+  /**
+   * Handles the type change event.
+   * 
+   * @param e - The change event.
+   * @param role - The role object.
+   */
   const onTypeChange = (e : React.ChangeEvent<HTMLSelectElement>, role : Role) => {
     if (role.type === 'admin' && props.roles.length === 1)
       alert('There must be at least one administrator');
@@ -35,6 +62,11 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
       props.saveRole({...role, type : e.target.value as UserType});
   };
 
+  /**
+   * Handles the delete action for a role.
+   * 
+   * @param role - The role object to delete.
+   */
   const onDelete = (role : Role) => {
     if (role.type === 'admin' && props.roles.length === 1)
       alert('There must be at least one administrator');
@@ -42,6 +74,11 @@ const RoleList : React.FC<IRoleListProps> = (props) => {
       props.deleteRole(role)
   }
 
+  /**
+   * Saves a new role.
+   * 
+   * @param role - The new role to save.
+   */
   const saveRole = (role : Role) => {
     if (!role)
       return;

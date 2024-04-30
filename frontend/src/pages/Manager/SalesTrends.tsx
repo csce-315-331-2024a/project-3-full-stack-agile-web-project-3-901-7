@@ -25,16 +25,28 @@ import { Ingredient, Item, User } from "../../types/dbTypes";
 import Loading from "../../components/Loading";
 import Navbar from "../../components/Navbar";
 
+/**
+ * Type representing the date field used in the `dates` state.
+ */
 type DateField = 'pu' | 'er' | 'ps'; 
 
+/**
+ * Type representing the mapping of sales data.
+ */
 type SalesMapping = Map<string, number>;
 
+/**
+ * Interface representing items sold together.
+ */
 interface SoldTogether {
     count: number;
     item1: Item;
     item2: Item;
 }
 
+/**
+ * Interface representing the sales data.
+ */
 interface ISalesData {
     productUsage: SalesMapping | undefined;
     excess: Ingredient[];
@@ -42,6 +54,9 @@ interface ISalesData {
     sales: SalesMapping | undefined;
 }
 
+/**
+ * Component for displaying sales trends.
+ */
 const SalesTrends = () => {
     const [data, setData] = useState<ISalesData>({
         productUsage: undefined,
@@ -57,19 +72,41 @@ const SalesTrends = () => {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [loading, setLoading] = useState(true);
 
+    /**
+     * Sets the product usage data in the state.
+     * @param productUsage - The product usage data.
+     */
     const setProductUsage = (productUsage : SalesMapping) => {
         setData(prevData => ({ ...prevData, productUsage, }));
     };
+
+    /**
+     * Sets the excess data in the state.
+     * @param excess - The excess data.
+     */
     const setExcess = (excess : Ingredient[]) => {
         setData(prevData => ({ ...prevData, excess, }));
     };
+
+    /**
+     * Sets the pair sells data in the state.
+     * @param pairSells - The pair sells data.
+     */
     const setPairSells = (pairSells : SoldTogether[]) => {
         setData(prevData => ({ ...prevData, pairSells, }));
     };
+
+    /**
+     * Sets the sales data in the state.
+     * @param sales - The sales data.
+     */
     const setSales = (sales : SalesMapping) => {
         setData(prevData => ({ ...prevData, sales, }));
     };
     
+    /**
+     * Fetches the sales data from the backend.
+     */
     async function fetchData() {
         setLoading(true);
         await Promise.all([
@@ -81,33 +118,52 @@ const SalesTrends = () => {
         setLoading(false);
     }
 
+    /**
+     * Fetches the product usage data from the backend.
+     * @param start - The start date.
+     * @param end - The end date.
+     */
     async function fetchProductUsage(start : Date, end : Date) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/inventoryUsed?start=${start.getTime()}&end=${end.getTime()}`);
         const usage = new Map<string, number>(Object.entries(await response.json())) as SalesMapping;
         console.log('product usage', usage);
         setProductUsage(usage);
-    };
+    }
     
+    /**
+     * Fetches the excess data from the backend.
+     * @param start - The start date.
+     */
     async function fetchExcess(start : Date) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ingredient/findExcess?start=${start.getTime()}`);
         const excess = await response.json() as Ingredient[];
         console.log('excess', excess);
         setExcess(excess);
-    };
+    }
     
+    /**
+     * Fetches the pair sells data from the backend.
+     * @param start - The start date.
+     * @param end - The end date.
+     */
     async function fetchPairSells(start : Date, end : Date) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/sellsTogether?start=${start.getTime()}&end=${end.getTime()}`);
         const pairSells = await response.json() as SoldTogether[];
         console.log('pair sells', pairSells);
         setPairSells(pairSells);
-    };
+    }
     
+    /**
+     * Fetches the sales report data from the backend.
+     * @param start - The start date.
+     * @param end - The end date.
+     */
     async function fetchSalesReport(start : Date, end : Date) {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/salesReport?start=${start.getTime()}&end=${end.getTime()}`);
         const report = new Map<string, number>(Object.entries(await response.json())) as SalesMapping;
         console.log('sales reports', report);
         setSales(report);
-    };
+    }
 
     useEffect(() => {
         getUserAuth("manager").then(setUserProfile).catch(console.error);
@@ -115,6 +171,7 @@ const SalesTrends = () => {
 
     useEffect(() => {
         fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         dates.pu.start,
         dates.pu.end,
@@ -123,6 +180,11 @@ const SalesTrends = () => {
         dates.ps.end,
     ]);
 
+    /**
+     * Handles the date change for a specific field.
+     * @param field - The date field.
+     * @param bound - The bound (start or end).
+     */
     const handleDateChange = (field : DateField, bound : 'start' | 'end') => (date : Date) => {
         setDates((prevDates) => ({
             ...prevDates,
@@ -133,22 +195,46 @@ const SalesTrends = () => {
         }));
     };
 
+    /**
+     * Checks if an object is an instance of SoldTogether.
+     * @param object - The object to check.
+     * @returns True if the object is an instance of SoldTogether, false otherwise.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function instanceOfSoldTogether(object : any) : object is SoldTogether {
         return 'item1' in object;
     }
+
+    /**
+     * Checks if an object is an instance of Ingredient.
+     * @param object - The object to check.
+     * @returns True if the object is an instance of Ingredient, false otherwise.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function instanceOfIngredient(object : any) : object is Ingredient {
         return 'quantity' in object;
     }
 
+    /**
+     * Maps the sales mapping to an array using the provided mapping function.
+     * @param mapping - The sales mapping.
+     * @param mapFn - The mapping function.
+     * @returns The mapped array.
+     */
     function mapSalesMapping<T>(mapping : SalesMapping, mapFn : (key : string, val : number) => T) {
         console.log('mapping for', mapping);
-        let mapped : T[] = [];
+        const mapped : T[] = [];
         mapping.forEach((val, key) => { 
             mapped.push(mapFn(key, val));
         });
         return mapped;
     }
 
+    /**
+     * Renders the table based on the data.
+     * @param data - The data to render.
+     * @returns The rendered table component.
+     */
     const renderTable = (data : Ingredient[] | SoldTogether[]) => ( data.length > 0 &&
         <TableContainer component={Paper} className="mb-4">
             <Table>

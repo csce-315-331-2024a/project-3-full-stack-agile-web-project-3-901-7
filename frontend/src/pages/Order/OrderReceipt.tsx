@@ -3,20 +3,26 @@ import { Item } from "../../types/dbTypes";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext, OrderContext } from "./Order";
-import { defaultOrder } from "../../types/defaults";
 
+/**
+ * Props for the OrderReceipt component.
+ */
 interface OrderReceiptProps {
     items: Item[];
 }
 
-// TODO: fix duplicate item in orderInfo
-
+/**
+ * Renders the order receipt.
+ * @param items - The list of items in the order.
+ * @returns The rendered OrderReceipt component.
+ */
 export default function OrderReceipt({items}: OrderReceiptProps) {
 
     const {setOpen, setModalMsg} = useContext(ModalContext);
     const {order, clearOrder} = useContext(OrderContext);
 
-    let receiptItem:any = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const receiptItem:any = []
     order.itemToQuantity.forEach((value, key) => {
         const itemName = items.map((item) => { if (item._id == key) return item.name }).filter((item) => item !== undefined).at(0)!;
         const itemPrice = items.map((item) => { if (item._id == key) return item.price}).filter((item) => item !== undefined).at(0)!;
@@ -26,14 +32,22 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
         }
     })
 
+    /**
+     * Converts a Map to an object.
+     * @param map - The Map to convert.
+     * @returns The converted object.
+     */
     function mapToObj(map: Map<number, number>) {
-        let obj = Object.create(null);
-        for (let [k,v] of map) {
+        const obj = Object.create(null);
+        for (const [k,v] of map) {
             obj[k] = v;
         }
         return obj;
     }
 
+    /**
+     * Sends the order to the backend.
+     */
     async function sendOrder() {
         const body = {
             numItems: order.numItems,
@@ -62,6 +76,7 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
 
             <div className="w-full flex flex-col gap-y-4">
                 {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     receiptItem.map((itemInfo:any) => {
                         return (
                             <OrderReceiptItem 
@@ -100,6 +115,9 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
     )
 }
 
+/**
+ * Props for the OrderReceiptItem component.
+ */
 interface OrderReceiptItemProps {
     id: number;
     itemPrice: number;
@@ -110,6 +128,17 @@ interface OrderReceiptItemProps {
     totalPrice: number;
 }
 
+/**
+ * Renders an item in the order receipt.
+ * @param id - The ID of the item.
+ * @param itemPrice - The price of the item.
+ * @param name - The name of the item.
+ * @param desc - The description of the item.
+ * @param qty - The quantity of the item.
+ * @param picture - The picture of the item.
+ * @param totalPrice - The total price of the item.
+ * @returns The rendered OrderReceiptItem component.
+ */
 function OrderReceiptItem({id, itemPrice, name, desc, qty, picture, totalPrice}: OrderReceiptItemProps) {
     
     const {order, addQty, subQty, inputHandler} = useContext(OrderContext);

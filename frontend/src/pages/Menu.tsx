@@ -3,6 +3,9 @@ import { useEffect, useState } from "react"
 import Navbar from "../components/Navbar";
 import Loading from '../components/Loading';
 
+/**
+ * Represents an item in the menu.
+ */
 interface Item {
     _id: number;
     name: string;
@@ -15,13 +18,18 @@ interface Item {
     itemDesc: string;
 }
 
+/**
+ * The menu page component.
+ */
 export default function Menu() {
     const [menuItems, setItems] = useState<Item[]>([]);
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-
+        /**
+         * Fetches the menu items from the backend API.
+         */
         async function fetchItems() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
@@ -79,12 +87,18 @@ export default function Menu() {
     );
 }
 
+/**
+ * Props for the ItemCard component.
+ */
 interface ItemCardProps {
     name: string;
     price: number;
     itemDesc: string;
 }
 
+/**
+ * Represents an item card in the menu.
+ */
 function ItemCard({name, price, itemDesc} : ItemCardProps) {
     return (
         <>

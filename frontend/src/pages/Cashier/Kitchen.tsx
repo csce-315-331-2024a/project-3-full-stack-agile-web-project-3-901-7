@@ -4,6 +4,9 @@ import { User } from "../../types/dbTypes";
 import Order from '../Order/Order';
 import Navbar from "../../components/Navbar";
 
+/**
+ * Represents an order.
+ */
 interface Order {
     _id: number;
     numItems: number;
@@ -14,18 +17,19 @@ interface Order {
     status: string; // 'received', 'in progress', or 'completed'
 }
 
-interface OrderCardProps {
-  order: Order;
-  onDeleteOrder: (id: number) => void; 
-}
-
+/**
+ * Represents a card displaying an order.
+ */
 const OrderCard : React.FC<{ order : Order, onChangeStatus: (id: number) => void }> = ({ order, onChangeStatus }) => {
     const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
 
     useEffect(() => {
+        /**
+         * Fetches the details of items in the order.
+         */
         async function fetchItemDetails() {
             const details: { [key: number]: { name: string, price: number } } = {};
-            for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
+            for (const [itemId] of Array.from(order.itemToQuantity)) {
                 try {
                     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/item/findOneById?itemId=${itemId}`);
                     if (!response.ok) {
@@ -76,7 +80,9 @@ const OrderCard : React.FC<{ order : Order, onChangeStatus: (id: number) => void
   );
 };
 
-
+/**
+ * Represents the Kitchen page.
+ */
 const Kitchen = () => {
 
     const [receivedOrders, setReceivedOrders] = useState<Order[]>([]);
@@ -84,12 +90,18 @@ const Kitchen = () => {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
 
     useEffect(() => {
+        /**
+         * Fetches the user authentication for the cashier.
+         */
         getUserAuth('cashier')
             .then(setUserProfile)
             .catch(console.error);
     }, []);
 
     useEffect(() => {
+        /**
+         * Fetches the received orders from the backend.
+         */
         async function fetchReceivedOrders() {
             try {
                 const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findByStatus?status=received');
@@ -101,6 +113,7 @@ const Kitchen = () => {
                 if (!Array.isArray(data)) {
                     throw new Error("Data is not an array");
                 }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
                     // Convert itemToQuantity from object to Map
                     const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
@@ -116,6 +129,9 @@ const Kitchen = () => {
                 console.error('Failed to fetch orders:', error);
             }
         }
+        /**
+         * Fetches the in-progress orders from the backend.
+         */
         async function fetchInProgressOrders() {
             try {
                 const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findByStatus?status=in%20progress');
@@ -127,6 +143,7 @@ const Kitchen = () => {
                 if (!Array.isArray(data)) {
                     throw new Error("Data is not an array");
                 }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
                     // Convert itemToQuantity from object to Map
                     const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
@@ -147,6 +164,10 @@ const Kitchen = () => {
         fetchInProgressOrders();
     }, []);
 
+    /**
+     * Handles the change in status of an order.
+     * @param id - The ID of the order.
+     */
     const handleChangeStatus = async (id: number) => {
         try {
             // Find the order with the given id
@@ -169,9 +190,10 @@ const Kitchen = () => {
                 setInProgressOrders(prevOrders => prevOrders.filter(order => order._id !== id));
             }
 
+            // eslint-disable-next-line no-inner-declarations
             function mapToObj(map: Map<number, number>) {
-                let obj = Object.create(null);
-                for (let [k,v] of map) {
+                const obj = Object.create(null);
+                for (const [k,v] of map) {
                     obj[k] = v;
                 }
                 return obj;

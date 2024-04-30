@@ -19,11 +19,11 @@ export default function EditOrderHistory() {
     });
     const { orderId } = useParams<{ orderId: string }>();
 
-    useEffect(() => {
-        getUserAuth()
-          .then(setUserProfile)
-          .catch(console.error);
-      }, [])
+    // useEffect(() => {
+    //     getUserAuth()
+    //       .then(setUserProfile)
+    //       .catch(console.error);
+    //   }, [])
 
     useEffect(() => {
 

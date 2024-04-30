@@ -1,17 +1,33 @@
 import React, { useContext } from "react";
 import { ModalContext } from "./Order";
 
-interface OrderHeader {
+/**
+ * Props for the OrderHeader component.
+ */
+interface OrderHeaderProps {
     categories: {name: string, icon: string}[];
     currCategory: string;
     setCurrCategory: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function OrderHeader({categories, currCategory, setCurrCategory}: OrderHeader) {
+/**
+ * The header component for the order page.
+ * 
+ * @param {OrderHeaderProps} props - The component props.
+ * @returns {JSX.Element} The rendered component.
+ */
+export default function OrderHeader({categories, currCategory, setCurrCategory}: OrderHeaderProps): JSX.Element {
 
     const {setOpen, setModalMsg} = useContext(ModalContext);
 
-    async function fetchHelpRequest() {
+    /**
+     * Fetches a help request from the backend.
+     * 
+     * @returns {Promise<any>} The response from the backend.
+     * @throws {Error} If the request fails.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function fetchHelpRequest(): Promise<any> {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/requestHelp`, { method: "POST", });
         const status = await response.json();
         
@@ -59,6 +75,9 @@ export default function OrderHeader({categories, currCategory, setCurrCategory}:
     )
 }
 
+/**
+ * Props for the OrderCategoryCard component.
+ */
 interface OrderCategoryCardProps {
     name: string;
     icon: string;
@@ -66,7 +85,13 @@ interface OrderCategoryCardProps {
     active: boolean;
 }
 
-function OrderCategoryCard({name, icon, active, setCurrentCategory}: OrderCategoryCardProps) {
+/**
+ * A card component for an order category.
+ * 
+ * @param {OrderCategoryCardProps} props - The component props.
+ * @returns {JSX.Element} The rendered component.
+ */
+function OrderCategoryCard({name, icon, active, setCurrentCategory}: OrderCategoryCardProps): JSX.Element {
     return (
     <button 
         className={`w-[136px] h-[112px] rounded-md flex flex-col justify-center items-center cursor-pointer border-2 hover:border-black/80 dark:hover:border-white/80 duration-300 ${(active) ? "shadow-lg" : "shadow-sm"}`}

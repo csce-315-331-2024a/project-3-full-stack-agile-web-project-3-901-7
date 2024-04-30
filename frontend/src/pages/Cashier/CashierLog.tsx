@@ -3,10 +3,25 @@ import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
 
+/**
+ * Component for displaying and managing cashier logs.
+ */
 export default function CashierLog() {
+    /**
+     * State variable for storing the user profile.
+     */
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
+    /**
+     * State variable for storing the cashier logs.
+     */
     const [cashierLogs, setCashierLogs] = useState<Worklog[]>([]);
+    /**
+     * State variable for storing the role ID.
+     */
     const [roleId, setRoleId] = useState<number>(-1);
+    /**
+     * State variable for storing the new log.
+     */
     const [newLog, setNewLog] = useState<Worklog>({
         log_id: -1,
         emp_id: roleId,
@@ -14,8 +29,14 @@ export default function CashierLog() {
         checkout: new Date().toISOString(),
         comments: "",
     });
+    /**
+     * State variable for storing the log being edited.
+     */
     const [editingLog, setEditingLog] = useState<Worklog | null>(null);
 
+    /**
+     * Fetches the user authentication information and sets the user profile state.
+     */
     useEffect(() => {
         const authenticateUser = async () => {
             const user = await getUserAuth('cashier');
@@ -32,6 +53,10 @@ export default function CashierLog() {
             .catch(console.error);
     }, []);
 
+    /**
+     * Fetches the role ID based on the user's email.
+     * @param email - The user's email.
+     */
     const fetchRoleId = async (email: string) => {
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/role/findByEmail?email=${email}`);
@@ -46,6 +71,9 @@ export default function CashierLog() {
         }
     };
 
+    /**
+     * Fetches the cashier logs based on the role ID.
+     */
     const fetchCashierLogs = async () => {
         if (roleId !== null) {
             try {
@@ -64,10 +92,18 @@ export default function CashierLog() {
         }
     }, [roleId]);
 
+    /**
+     * Sets the log being edited.
+     * @param log - The log to be edited.
+     */
     const handleEdit = (log: Worklog) => {
         setEditingLog(log);
     };
 
+    /**
+     * Handles the change event for the edit log form inputs.
+     * @param e - The change event.
+     */
     const handleEditLogChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -90,6 +126,9 @@ export default function CashierLog() {
         });
     };
 
+    /**
+     * Updates the log being edited.
+     */
     const handleUpdateLog = async () => {
         if (editingLog) {
             try {
@@ -114,8 +153,16 @@ export default function CashierLog() {
         }
     };
 
+    /**
+     * Array of header column names.
+     */
     const headerColumns = ["Check-in Time", "Check-out Time", "Comments"];
 
+    /**
+     * Formats the date and time string to a localized format.
+     * @param dateTimeString - The date and time string.
+     * @returns The formatted date and time string.
+     */
     const formatDateTime = (dateTimeString: string | null) => {
         if (!dateTimeString) return "-";
         const utcDateTime = new Date(dateTimeString);
@@ -124,6 +171,10 @@ export default function CashierLog() {
         return localDateTime.toLocaleString(undefined, options);
     };
 
+    /**
+     * Handles the change event for the new log form inputs.
+     * @param e - The change event.
+     */
     const handleNewLogChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
@@ -142,6 +193,9 @@ export default function CashierLog() {
         }
     };
 
+    /**
+     * Handles the addition of a new log.
+     */
     async function handleAddLog() {
         if (roleId <= 0) {
             alert("Invalid role ID. Please ensure you're logged in correctly.");

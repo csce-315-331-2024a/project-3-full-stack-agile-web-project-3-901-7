@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import {
-    WeatherData,
-    Condition,
-    Forecast,
-    ForecastDayData,
-    Current,
-} from "../types/weatherTypes"; // might implement other types later depending on what is needed
+import { WeatherData } from "../types/weatherTypes";
 import Loading from "../components/Loading";
 
+/**
+ * Weather component displays weather information for College Station, TX.
+ */
 const Weather: React.FC = () => {
     const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
     const [recommendation, setRecommendation] = useState<string>("");
@@ -17,6 +14,12 @@ const Weather: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
+        /**
+         * Returns a recommendation based on the temperature and weather condition.
+         * @param temperature - The current temperature in Fahrenheit.
+         * @param condition - The current weather condition.
+         * @returns The recommendation message.
+         */
         const getRecommendation = (
             temperature: number,
             condition: string
@@ -29,7 +32,12 @@ const Weather: React.FC = () => {
                 return "It's cool outside. Consider warming up with our Gig 'em Patty Melt";
             }
         };
-    
+
+        /**
+         * Returns the CSS background gradient class based on the weather condition.
+         * @param condition - The current weather condition.
+         * @returns The CSS background gradient class.
+         */
         const getBackgroundGradient = (condition: string): string => {
             if (condition.toLowerCase().includes("sun")) {
                 return "bg-gradient-to-r from-white via-yellow-100 to-white";
@@ -44,6 +52,9 @@ const Weather: React.FC = () => {
             }
         };
 
+        /**
+         * Fetches weather data from the API and updates the state variables.
+         */
         const fetchWeather = async () => {
             try {
                 const apiKey = import.meta.env.VITE_WEATHER_API_KEY;

@@ -3,11 +3,21 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { OrderContext } from "./Order";
 
+/**
+ * Props for the OrderItems component.
+ */
 interface OrderItemContainerProps {
     items: Item[];
     currCategory: string;
 }
 
+/**
+ * Renders a list of order items.
+ * 
+ * @param items - The list of items to display.
+ * @param currCategory - The current category of items to filter.
+ * @returns The rendered OrderItems component.
+ */
 export default function OrderItems({items, currCategory}: OrderItemContainerProps) {
     return (
         <div className="flex gap-8 flex-wrap h-fit">
@@ -28,6 +38,9 @@ export default function OrderItems({items, currCategory}: OrderItemContainerProp
     )
 }
 
+/**
+ * Props for the OrderItemCard component.
+ */
 interface ItemCardProps {
     id: number;
     name: string;
@@ -35,6 +48,15 @@ interface ItemCardProps {
     picture: string;
 }
 
+/**
+ * Renders an individual order item card.
+ * 
+ * @param id - The ID of the item.
+ * @param name - The name of the item.
+ * @param price - The price of the item.
+ * @param picture - The picture of the item.
+ * @returns The rendered OrderItemCard component.
+ */
 function OrderItemCard({id, name, price, picture} : ItemCardProps) {
 
     const {order, addQty, subQty, inputHandler} = useContext(OrderContext);

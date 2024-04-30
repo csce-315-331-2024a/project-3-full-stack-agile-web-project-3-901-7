@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Component representing the Cashier Help Queue.
+ */
 export default function CashierHelpQueue() {
     const [stations, setStations] = useState<boolean[]>([]);
     const [active, setActive] = useState<number>(-1);
 
+    /**
+     * Fetches the help stations from the backend API.
+     */
     const fetchHelpStations = async () => {
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/helpStations');
         setStations(await response.json());
     }
 
-    const resolveHelp = async (stationIdx : number) => {
+    /**
+     * Resolves the help request for a specific station.
+     * @param stationIdx - The index of the station to resolve the help request for.
+     * @throws Error if the help request could not be resolved.
+     */
+    const resolveHelp = async (stationIdx: number) => {
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/resolveHelp?station=' + stationIdx, { method: 'POST', });
         const status = await response.json();
 

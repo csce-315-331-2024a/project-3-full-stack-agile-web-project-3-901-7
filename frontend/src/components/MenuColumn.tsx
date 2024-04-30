@@ -1,11 +1,14 @@
 import React from "react";
-import { Item } from "./Menu";
+import { Item } from "../types/dbTypes";
 
 interface Props {
   category: string;
   items: Item[];
 }
-
+/**
+ * Menu Column Component 
+ * @returns Menu Column
+ */
 const MenuColumn: React.FC<Props> = ({ category, items }) => {
   return (
     <div className="menu-column flex flex-col">

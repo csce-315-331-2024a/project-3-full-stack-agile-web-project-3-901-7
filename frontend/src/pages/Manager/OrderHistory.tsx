@@ -8,64 +8,27 @@ import { User } from "../../types/dbTypes";
 import { Order } from "../../components/EditOrderPopUp";
 import Navbar from "../../components/Navbar";
 
-interface OrderCardProps {
+/**
+ * Represents a single order card.
+ */
+const OrderCard: React.FC<{
     order: Order;
-    onEdit: (order: Order) => void;
-    onDeleteOrder: (id: number) => void; 
-}
-
-const mockOrders: Order[] = [
-    {
-        _id: 1,
-        numItems: 2,
-        orderInfo: "Cheeseburger,Fries",
-        itemToQuantity: new Map([
-            [1, 2],
-            [2, 3],
-        ]),
-        total: 14.99,
-        dateTime: new Date('2024-12-12'),
-        status: 'received',
-    },
-    {
-        _id: 2,
-        numItems: 2,
-        orderInfo: "Cheeseburger,Fries",
-        itemToQuantity: new Map([
-            [1, 2],
-            [2, 3],
-        ]),
-        total: 14.99,
-        dateTime: new Date('2024-12-03'),
-        status: 'completed',
-    },
-    {
-        _id: 3,
-        numItems: 2,
-        orderInfo: "Cheeseburger,Fries",
-        itemToQuantity: new Map([
-            [1, 2],
-            [2, 3],
-        ]),
-        total: 14.99,
-        dateTime: new Date('2024-12-18'),
-        status: 'in progress',
-    },
-];
-
-const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.SetStateAction<Order[]>>
-    , deleteOrderCallback: (id: number) => void }> = ({order, setOrders, deleteOrderCallback}) => {
-    const [itemsDetails, setItemsDetails] = useState<{ [key: number]: { name: string, price: number } }>({});
+    setOrders: React.Dispatch<React.SetStateAction<Order[]>>;
+    deleteOrderCallback: (id: number) => void;
+}> = ({ order, setOrders, deleteOrderCallback }) => {
+    const [itemsDetails, setItemsDetails] = useState<{
+        [key: number]: { name: string; price: number };
+    }>({});
     const [showEditPopup, setShowEditPopup] = useState(false);
-    //const [showConfirmation, setShowConfirmation] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
+        /**
+         * Fetches the details of items in the order.
+         */
         async function fetchItemDetails() {
-            const details: { [key: number]: { name: string; price: number } } =
-                {};
+            const details: { [key: number]: { name: string; price: number } } = {};
 
-            for (const [itemId, quantity] of Array.from(order.itemToQuantity)) {
+            for (const [itemId] of Array.from(order.itemToQuantity)) {
                 try {
                     const response = await fetch(
                         `${
@@ -147,7 +110,6 @@ const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.Set
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState<Order[]>([]);
-    const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
@@ -173,6 +135,7 @@ const OrderHistory = () => {
                 if (!Array.isArray(data)) {
                     throw new Error("Data is not an array");
                 }
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
                     // Log the raw itemToQuantity object from the data
                     console.log(order.itemToQuantity);

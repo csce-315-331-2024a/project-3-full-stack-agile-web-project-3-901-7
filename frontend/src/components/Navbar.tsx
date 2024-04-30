@@ -7,11 +7,21 @@ import { GoPlus } from "react-icons/go";
 import { useTextSize } from "../TextSizeContext";
 
 import { FaMoon } from "react-icons/fa";
+
+/**
+ * Props for the Navbar component.
+ */
 interface NavbarProps {
     userInfo?: User;
     userType?: string;
 }
 
+/**
+ * Navbar component.
+ * @param userInfo - User information.
+ * @param userType - User type.
+ * @returns The Navbar component.
+ */
 export default function Navbar({userInfo, userType}: NavbarProps) {
 
     const navigate = useNavigate();
@@ -59,6 +69,10 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
             initialButtonWidth.current = buttonRef.current.offsetWidth;
         }
 
+        /**
+         * Handle click outside of the dropdown.
+         * @param event - The mouse event.
+         */
         function handleClickOutside(event: MouseEvent) {
             if (
                 buttonRef.current &&
@@ -93,6 +107,9 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
         }
     }, [isDropdownOpen]);
 
+    /**
+     * Toggle the theme between light and dark mode.
+     */
     function toggleTheme() {
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') {

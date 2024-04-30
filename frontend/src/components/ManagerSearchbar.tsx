@@ -3,7 +3,7 @@ import React, { useState } from "react";
 interface ISearchbarAction {
   title: string;
   callback: () => void;
-};
+}
 
 interface ISearchbarCondition {
   title: string;
@@ -17,20 +17,32 @@ interface IManagerSearchbarProps {
   conditions: ISearchbarCondition[];
   fill?: boolean;
 }
+/**
+ * Renders a search bar component for the manager.
+ * @param {IManagerSearchbarProps} props - The component props.
+ * @returns {JSX.Element} - The rendered component.
+ */
+const ManagerSearchbar: React.FC<IManagerSearchbarProps> = (props) => {
 
-const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
-
+  /**
+   * Represents the status of each condition.
+   */
   const [conditionStatus, setConditionStatus] = useState<boolean[]>(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     props.conditions.map(_ => false)
   );
 
-  const toggleCondition = (i : number) => {
+  /**
+   * Toggles the condition status at the specified index.
+   * @param {number} i - The index of the condition.
+   */
+  const toggleCondition = (i: number) => {
     setConditionStatus(oldState => {
       props.conditions[i].callback(!oldState[i]);
       oldState[i] = !oldState[i];
       return oldState;
     });
-  } 
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -51,7 +63,6 @@ const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
         </div>
 
         {/* Conditions */}
-
         {props.conditions.map((condition, i) => (
           <button
             onClick={() => toggleCondition(i)}
@@ -62,7 +73,6 @@ const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
             {condition.title}
           </button>
         ))}
-        
 
         {/* Reorder Stock Button */}
         {props.actions.map((action) => (
@@ -73,7 +83,6 @@ const ManagerSearchbar : React.FC<IManagerSearchbarProps> = (props) => {
             {action.title}
           </button>
         ))}
-
       </div>
     </div>
   )
