@@ -3,6 +3,7 @@ import { Item } from "../../types/dbTypes";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext, OrderContext } from "./Order";
+import { defaultOrder } from "../../types/defaults";
 
 interface OrderReceiptProps {
     items: Item[];
@@ -13,7 +14,7 @@ interface OrderReceiptProps {
 export default function OrderReceipt({items}: OrderReceiptProps) {
 
     const {setOpen, setModalMsg} = useContext(ModalContext);
-    const {order} = useContext(OrderContext);
+    const {order, clearOrder} = useContext(OrderContext);
 
     let receiptItem:any = []
     order.itemToQuantity.forEach((value, key) => {
@@ -44,10 +45,13 @@ export default function OrderReceipt({items}: OrderReceiptProps) {
         }
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/order/insert", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
         const data = await response.json();
-        if(data.success === true)
+        if(data.success === true) {
             setModalMsg("Order successfully submitted!")
-        else
-        setModalMsg("Uh oh something went wrong :(, contact staff for help.")
+            clearOrder()
+        }
+        else {
+            setModalMsg("Uh oh something went wrong :(, contact staff for help.")
+        }
         setOpen(true);
     }
 

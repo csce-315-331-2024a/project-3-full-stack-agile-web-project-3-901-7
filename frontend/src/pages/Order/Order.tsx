@@ -14,6 +14,7 @@ interface OrderContextProps {
     addQty: (itemPrice: number, name: string, id: number) => void;
     subQty: (itemPrice: number, name: string, id: number) => void;
     inputHandler: (e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) => void;
+    clearOrder: () => void;
 }
 
 interface ModalContextProps {
@@ -21,7 +22,7 @@ interface ModalContextProps {
     setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
 }
 
-export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}});
+export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}, clearOrder: () => {}});
 export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
 export default function Order() {
@@ -86,12 +87,22 @@ export default function Order() {
         })
     }
 
+    function clearOrder() {
+        setOrder({
+            numItems: 0,
+            total: 0,
+            orderInfo: "",
+            itemToQuantity: new Map<number, number>(),
+            date: new Date()
+        });
+    }
+
     return (
         <PageLayout>
             
             <Navbar/>
 
-            <OrderContext.Provider value={{order, addQty, subQty, inputHandler}}>
+            <OrderContext.Provider value={{order, addQty, subQty, inputHandler, clearOrder}}>
                 <ModalContext.Provider value={{setOpen, setModalMsg}}>
 
                     <OrderHeader 
