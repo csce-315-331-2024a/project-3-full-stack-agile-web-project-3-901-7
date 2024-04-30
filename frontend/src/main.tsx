@@ -33,6 +33,8 @@ import CashierHelpQueue from './components/CashierHelpQueue'
 
 import { TextSizeProvider } from './TextSizeContext'
 
+const currentTheme = localStorage.getItem('theme')
+document.documentElement.classList.add((currentTheme) ? currentTheme : '')
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
