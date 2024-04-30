@@ -5,9 +5,21 @@ import { vi } from "vitest";
 import MenuPage1 from "../pages/MenuPage1";
 import MenuPage2 from "../pages/MenuPage2";
 import MenuPage3 from "../pages/MenuPage3";
+import { TextSizeProvider } from "../TextSizeContext";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+const customRender = (ui:any, options?:any) => {
+    return render(
+        <BrowserRouter>
+            <TextSizeProvider>
+            {ui}
+            </TextSizeProvider>
+        </BrowserRouter>,
+        options
+    )
+}
 
 describe("Menu Page Tests", () => {
     beforeEach(() => {
@@ -54,10 +66,10 @@ describe("Menu Page Tests", () => {
     })
 
     it("should render menu without crashing", () => {
-        render(<Menu/>, { wrapper: BrowserRouter });
+        customRender(<Menu/>);
     })
     it("should render all menu category", async () => {
-        render(<Menu/>, { wrapper: BrowserRouter });
+        customRender(<Menu/>);
         
         await waitFor(() => {
             expect(screen.getByText("Test Name 1")).toBeTruthy();
@@ -69,7 +81,7 @@ describe("Menu Page Tests", () => {
 
     })
     it("should render all item details", async () => {
-        render(<Menu/>, { wrapper: BrowserRouter });
+        customRender(<Menu/>);
         await waitFor(() => {
             expect(screen.getByText("Test Name 1")).toBeTruthy();
             expect(screen.getByText("Test Description 1")).toBeTruthy();
@@ -85,10 +97,10 @@ describe("Menu Page Tests", () => {
         })
     })
     it("should render menu 1 without crashing", () => {
-        render(<MenuPage1/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage1/>);
     })
     it("should render all menu 1 item details", async () => {
-        render(<MenuPage1/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage1/>);
         await waitFor(() => {
             expect(screen.getByText("Test Name 1")).toBeTruthy();
         })
@@ -97,10 +109,10 @@ describe("Menu Page Tests", () => {
         expect(screen.getByText("$10.00")).toBeTruthy();
     })
     it("should render menu 2 without crashing", () => {
-        render(<MenuPage2/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage2/>);
     })
     it("should render all menu 2 item details", async () => {
-        render(<MenuPage2/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage2/>);
         await waitFor(() => {
             expect(screen.getByText("Test Name 2")).toBeTruthy();
         })
@@ -109,10 +121,10 @@ describe("Menu Page Tests", () => {
         expect(screen.getByText("$20.00")).toBeTruthy();
     })
     it("should render menu 3 without crashing", () => {
-        render(<MenuPage3/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage3/>);
     })
     it("should render all menu 3 item details", async () => {
-        render(<MenuPage3/>, { wrapper: BrowserRouter });
+        customRender(<MenuPage3/>);
         await waitFor(() => {
             expect(screen.getByText("Test Name 3")).toBeTruthy();
         })

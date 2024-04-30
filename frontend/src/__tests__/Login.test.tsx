@@ -2,12 +2,15 @@ import { render } from "@testing-library/react";
 import { Login } from "../pages/Login";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { TextSizeProvider } from "../TextSizeContext";
 
 const customRender = (ui:any, options?:any) => {
     return render(
         <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
             <BrowserRouter>
+                <TextSizeProvider>
                 {ui}
+                </TextSizeProvider>
             </BrowserRouter>
         </GoogleOAuthProvider>,
         options

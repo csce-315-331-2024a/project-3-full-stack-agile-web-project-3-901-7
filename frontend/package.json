@@ -8,7 +8,7 @@
         "build": "vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
-        "test": "vitest",
+        "test": "NODE_NO_WARNINGS=1 vitest",
         "coverage": "vitest run --coverage"
     },
     "dependencies": {
@@ -26,6 +26,7 @@
         "date-fns": "^3.6.0",
         "dayjs": "^1.11.10",
         "jsdom": "^24.0.0",
+        "matchmedia-polyfill": "^0.3.2",
         "react": "^18.2.0",
         "react-chartjs-2": "^5.2.0",
         "react-datepicker": "^6.7.0",
@@ -35,8 +36,9 @@
         "react-slick": "^0.30.2",
         "react-table": "^7.8.0",
         "recharts": "^2.12.5",
-        "vitest": "^1.5.2",
-        "slick-carousel": "^1.8.1"
+        "slick-carousel": "^1.8.1",
+        "tailwind-merge": "^2.3.0",
+        "vitest": "^1.5.2"
     },
     "devDependencies": {
         "@testing-library/react": "^14.3.1",
