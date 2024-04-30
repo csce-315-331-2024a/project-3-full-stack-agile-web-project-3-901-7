@@ -96,7 +96,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
     function toggleTheme() {
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') {
-            localStorage.setItem('theme', 'light');
+            localStorage.setItem('theme', '');
             document.documentElement.classList.remove('dark');
         } else {
             localStorage.setItem('theme', 'dark');
