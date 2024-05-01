@@ -224,7 +224,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-ptserif mb-2">Desription</label>
+                  <label className="block text-gray-700 font-ptserif mb-2">Description</label>
                   <input
                     type="text"
                     name="itemDesc"
