@@ -73,6 +73,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
       const items = await response.json() as Item[];
       const categories = items.map(item => item.category).filter(findUnique);
+      categories.push("Seasonal");
 
       setCategories(categories);
     }
