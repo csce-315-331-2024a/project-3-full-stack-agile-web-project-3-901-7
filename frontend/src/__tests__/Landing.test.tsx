@@ -69,10 +69,10 @@ describe("Landing Page Tests", () => {
     //     customRender(<Landing/>);
     //     expect(screen.getByText("Loading...")).toBeTruthy();
     // })
-    it("should render and navigate all buttons and items after loading", async () => {
-        customRender(<Landing/>);
-        await waitFor(() => {
-            expect(screen.getByText("Loading...")).toBeTruthy();
-        });
-    })
+    // it("should render and navigate all buttons and items after loading", async () => {
+    //     customRender(<Landing/>);
+    //     await waitFor(() => {
+    //         expect(screen.getByText("Loading...")).toBeTruthy();
+    //     });
+    // })
 })

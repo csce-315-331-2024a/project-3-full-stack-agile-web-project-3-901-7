@@ -24,7 +24,7 @@ export default defineConfig({
     setupFiles: ["./setupTest.ts"],
     include: ["src/**/*.test.tsx"],
     coverage: {
-      provider: "istanbul",
+      provider: "v8",
       reportsDirectory: "src/__tests__/coverage"
     },
     silent: true,
