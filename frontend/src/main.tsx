@@ -38,7 +38,8 @@ if (currentTheme) {
     document.documentElement.classList.add(currentTheme)
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+export default function Main() {
+    return (
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
         <React.StrictMode>
             <BrowserRouter>
@@ -89,5 +90,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </BrowserRouter>
         </React.StrictMode>
     </GoogleOAuthProvider>
-)
+)}
 
+ReactDOM.createRoot(document.getElementById('root')!).render(<Main/>);

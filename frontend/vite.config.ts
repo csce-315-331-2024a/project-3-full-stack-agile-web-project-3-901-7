@@ -23,8 +23,9 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./setupTest.ts"],
     include: ["src/**/*.test.tsx"],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/cypress/**', '**/.{idea,git,cache,output,temp}/**', '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*'],
     coverage: {
-      provider: "v8",
+      provider: "istanbul",
       reportsDirectory: "src/__tests__/coverage"
     },
     silent: true,
