@@ -1,11 +1,10 @@
 import '../../index.css';
-import { useEffect, useState } from "react"
-import ManagerNavbar from "../../components/ManagerNavbar";
+import Navbar from '../../components/Navbar';
 
 const EditInventory = () => {
     return (
         <div>
-        <ManagerNavbar />
+        <Navbar/>
         <h1>Edit Inventory</h1>
         </div>
     );

@@ -1,39 +1,41 @@
-import { useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import { Item, OrderType } from "../../types/dbTypes";
+import { defaultCategories, defaultOrder } from "../../types/defaults";
 import Navbar from "../../components/Navbar";
 import Loading from "../../components/Loading";
-import OrderCategoryCard from "./OrderCategoryCard";
-import OrderItemContainer from "./OrderItemContainer";
+import OrderHeader from "./OrderHeader";
+import OrderItems from "./OrderItems";
 import OrderReceipt from "./OrderReceipt";
+import Modal from "../../components/Modal";
+
+interface OrderContextProps {
+    order: OrderType;
+    addQty: (itemPrice: number, name: string, id: number) => void;
+    subQty: (itemPrice: number, name: string, id: number) => void;
+    inputHandler: (e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) => void;
+}
+
+interface ModalContextProps {
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
+}
+
+export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}});
+export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
 export default function Order() {
 
-    const categories = [
-        {name: "Burger", icon: "/icons/burger.png"},
-        {name: "Chicken", icon: "/icons/chicken.svg"},
-        {name: "Side", icon: "/icons/meal.svg"},
-        {name: "Salad", icon: "/icons/salad.svg"},
-        {name: "Snack", icon: "/icons/appetizer.svg"},
-        {name: "Beverage", icon: "/icons/beverages.svg"},
-        {name: "Dessert", icon: "/icons/treats.svg"},
-        {name: "Seasonal", icon: "/icons/seasonal.svg"}
-    ]
-
+    const categories = defaultCategories;
     const [items, setItems] = useState<Item[]>([]);
-    const [order, setOrder] = useState<OrderType>({
-        numItems: 0,
-        orderInfo: "",
-        itemToQuantity: new Map(),
-        total: 0,
-        date: new Date()
-    });
+    const [order, setOrder] = useState<OrderType>(defaultOrder);
     const [currCategory, setCurrCategory] = useState<string>("Burger");
-    const [getHelp, setGetHelp] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(false);
+    const [modalMsg, setModalMsg] = useState<string | JSX.Element>("");
 
     useEffect(() => {
 
         async function fetchItems() {
-            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
+            const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
         }
@@ -42,92 +44,79 @@ export default function Order() {
 
     }, [])
 
-    function updateOrder(id:number, name:string, price:number, action: string) {
-        if (action === "add") {
-            setOrder({
-                ...order,
-                numItems: order.numItems + 1,
-                total: order.total + price,
-                orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
-                itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
-            });
-        } else {
+    function addQty(itemPrice: number, name: string, id: number) {
+        setOrder({
+            ...order,
+            numItems: order.numItems + 1,
+            total: order.total + itemPrice,
+            orderInfo: order.orderInfo + name + (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, (order.itemToQuantity.has(id)) ? order.itemToQuantity.get(id)! + 1 : 1)
+        });
+    }
+
+    function subQty(itemPrice: number, name: string, id: number) {
+        if (order.itemToQuantity.get(id)! > 0) {
             setOrder({
                 ...order,
                 numItems: order.numItems - 1,
-                total: order.total - price,
+                total: order.total - itemPrice,
                 orderInfo: order.orderInfo.replace(name + " ", ""),
                 itemToQuantity: order.itemToQuantity.set(id, order.itemToQuantity.get(id)! - 1)
             })
         }
     }
 
+    function inputHandler(e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) {
+        const currentQty:number = (order.itemToQuantity.has(id) ? order.itemToQuantity.get(id)! : 0);
+        const input:string = e.target.value;
+        const value = (input === "") ? 0 : parseInt(e.target.value);
+        setOrder({
+            ...order,
+            numItems: order.numItems + value - currentQty,
+            total: order.total + itemPrice * value - itemPrice * currentQty,
+            orderInfo: order.orderInfo + name + "(" + value+")"+ (order.orderInfo === "" ? "," : ""),
+            itemToQuantity: order.itemToQuantity.set(id, value)
+        })
+    }
+
     return (
-        <div className="w-full h-full p-8 relative flex flex-col">
+        <div className="w-full h-full p-8 relative flex flex-col dark:bg-black text-black dark:text-white">
             
             <Navbar/>
 
-            {(items.length === 0) ? <Loading/> :
-            <> 
-                <div className="flex flex-wrap gap-6 mt-14">
-                    {categories.map((category, index) => {
-                        let isActive = false
-                        if (category.name === currCategory)
-                            isActive = true
-                        return (
-                            <OrderCategoryCard 
-                                key={index} 
-                                name={category.name} 
-                                icon={category.icon}
-                                setCurrentCategory={setCurrCategory}
-                                active={isActive}
-                            />
-                        )
-                    })}
-                    <button 
-                        type="button" 
-                        onClick={() => setGetHelp(true)} 
-                        className="px-4 py-3 rounded-md bg-[#FF4545] text-white font-bold font-inter hover:shadow-[inset_120px_0_0_0_rgba(255,255,255,1)] duration-500 border-2 border-[#FF4545] hover:text-[#FF4545]">
-                            Call Help
-                    </button>
-                </div>
+            <OrderContext.Provider value={{order, addQty, subQty, inputHandler}}>
+                <ModalContext.Provider value={{setOpen, setModalMsg}}>
+                {(items.length === 0) ? <Loading/> :
+                <> 
 
-                <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
+                    <OrderHeader 
+                        categories={categories} 
+                        currCategory={currCategory} 
+                        setCurrCategory={setCurrCategory}
+                    />
+
+                    <div className="flex justify-between mt-9 w-full h-full md:flex-row flex-col gap-8">
+                        
+                        <OrderItems
+                            items={items} 
+                            currCategory={currCategory}
+                        />
+
+                        <OrderReceipt
+                            items={items}
+                        />
                     
-                    <OrderItemContainer 
-                        items={items} 
-                        currCategory={currCategory}
-                        order={order}
-                        updateOrder={updateOrder}
-                    />
+                    </div>
+                </>
+                }
+                </ModalContext.Provider>
+            </OrderContext.Provider>
 
-                    <OrderReceipt
-                        items={items}
-                        order={order}
-                        updateOrder={updateOrder}
-                    />
-                
-                </div>
-            </>
-            }
-
-            <div className={`w-screen h-screen fixed left-0 top-0 bg-black/80 backdrop-blur-md flex justify-center items-center ${(getHelp) ? "flex":"hidden"}`}>
-
-
-                <div className="bg-white rounded-md p-4 flex flex-col font-ptserif font-bold text-lg gap-y-4">
-                    An employee will be with you shortly.
-                    <br/>
-                    Please wait...
-                    <button 
-                        type="button" 
-                        onClick={() => setGetHelp(false)}
-                        className="px-3 py-2 font-inter text-white bg-red-400 rounded-md hover:bg-red-500 duration-500 transition"
-                    >
-                        cancel
-                    </button>
-                </div>
-
-            </div>
+            <Modal
+                message={modalMsg}
+                open={open}
+                setOpen={setOpen}
+            />
 
         </div>
     )

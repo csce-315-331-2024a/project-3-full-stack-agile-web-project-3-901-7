@@ -120,6 +120,7 @@ public class Order {
                 ", total=" + total +
                 ", dateTime='" + dateTime + '\'' +
                 ", orderInfo='" + orderInfo + '\'' +
+                ", status='" + status +
                 '}';
     }
 }

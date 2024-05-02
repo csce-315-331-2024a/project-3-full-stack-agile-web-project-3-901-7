@@ -27,9 +27,9 @@ import Cashier from './pages/Cashier/Cashier'
 import Kitchen from './pages/Cashier/Kitchen'
 import Admin from './pages/Admin/Admin'
 import AdminRoles from './pages/Admin/AdminRoles'
-import { MdKitchen } from 'react-icons/md'
-
-import GoogleTranslate from './components/GoogleTranslate';
+import CashierLog from './pages/Cashier/CashierLog'
+import ManagerLog from './pages/Manager/ManagerLog'
+import CashierHelpQueue from './components/CashierHelpQueue'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -37,7 +37,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <React.StrictMode>
             <BrowserRouter>
                 <div>
-                    <GoogleTranslate />
                     <Routes>
 
                         {/* Landing */}
@@ -55,7 +54,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/cashier" element={<Cashier/>}/>
                         <Route path="/cashier/signup" element={<Login type="cashier" signup/>}/>
                         <Route path="/cashier/login" element={<Login type="cashier"/>}/>
-                        <Route path="/cashier/kitchen" element={<Kitchen/>}/>
+                        <Route path="/cashier/log" element={<CashierLog />}/>
+                        <Route path="/cashier/help" element={<CashierHelpQueue />}/>
+                        <Route path="/cashier/kitchen" element={<Kitchen />}/>
 
                         {/* Manager-side */}
                         <Route path="/manager" element={<Manager/>}/>
@@ -69,6 +70,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/manager/orders/edit" element={<EditOrderHistory/>}/>
                         <Route path="/manager/orders/new" element={<AdminOrder/>}/>
                         <Route path="/manager/salestrends" element={<SalesTrends/>}/>
+                        <Route path="/manager/logs" element={<ManagerLog />}/>
 
                         {/* Admin-side */}
                         <Route path="/admin" element={<Admin/>}/>

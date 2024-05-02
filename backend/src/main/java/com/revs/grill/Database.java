@@ -12,6 +12,18 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+class SoldTogether {
+    public int count;
+    public Item item1;
+    public Item item2;
+
+    public SoldTogether(int count, Item item1, Item item2) {
+        this.count = count;
+        this.item1 = item1;
+        this.item2 = item2;
+    }
+}
+
 @Configuration
 @PropertySource("classpath:application.properties")
 public class Database {
@@ -88,13 +100,13 @@ public class Database {
 
             if (fillIngredients) {
                 PreparedStatement ingStatement = connection.prepareStatement(
-                        "SELECT * \n" +
+                        "SELECT item.name as itemname, item.itemid as itemid2, ing.* \n" +
                                 "FROM \n" +
-                                "Items i \n" +
-                                "JOIN ItemIngredient_Junction ii ON i.itemId = ii.itemId \n" +
+                                "Items item \n" +
+                                "JOIN ItemIngredient_Junction ii ON item.itemid = ii.itemId \n" +
                                 "JOIN Ingredients ing ON ii.ingredientId = ing.ingredientId \n" +
                                 "WHERE \n" +
-                                "i.name = ?;");
+                                "item.name = ?;");
                 ingStatement.setString(1, item.name);
                 item.ingredients = runIngredientQuery(ingStatement);
             }
@@ -159,6 +171,31 @@ public class Database {
         queryStatement.close();
 
         return roles;
+    }
+
+    private static List<WorkLog> runWorkLogQuery(PreparedStatement queryStatement)
+            throws SQLException {
+        if (connection == null) {
+            createConnection();
+        }
+        List<WorkLog> log = new ArrayList<>();
+
+        ResultSet resultSet = queryStatement.executeQuery();
+
+        while (resultSet.next()) {
+            WorkLog wl = new WorkLog();
+            wl.log_id = resultSet.getInt("log_id");
+            wl.emp_id = resultSet.getInt("id");
+            wl.checkin = resultSet.getTimestamp("check_in_time");
+            wl.checkout = resultSet.getTimestamp("check_out_time");
+            wl.comments = resultSet.getString("comments");
+            log.add(wl);
+        }
+
+        resultSet.close();
+        queryStatement.close();
+
+        return log;
     }
 
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
@@ -394,10 +431,115 @@ public class Database {
         }
     }
 
+    public static List<WorkLog> getAllWorkLogs() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM cashier_work_log;");
+            return runWorkLogQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int insertWorkLog(WorkLog wl) {
+        try {
+            String logInsertQuery = "INSERT INTO cashier_work_log (id, check_in_time, check_out_time, comments) VALUES (?, ?, ?, ?);";
+            PreparedStatement logInsertStatement = connection.prepareStatement(logInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            logInsertStatement.setInt(1, wl.emp_id);
+            logInsertStatement.setTimestamp(2, wl.checkin);
+            logInsertStatement.setTimestamp(3, wl.checkout);
+            logInsertStatement.setString(4, wl.comments);
+            logInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = logInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                logInsertStatement.close();
+                return -1;
+            }
+
+            int logId = generatedKeys.getInt(1);
+            return logId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static List<WorkLog> getLogById(List<Integer> ids) {
+        try {
+            String query = "SELECT * FROM cashier_work_log WHERE id IN " + buildPlaceholderString(ids.size());
+            PreparedStatement statement = connection.prepareStatement(query);
+
+            int index = 1;
+            for (Integer id : ids) {
+                statement.setInt(index++, id);
+            }
+
+            return runWorkLogQuery(statement);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int editWorkLog(WorkLog wl) {
+        try {
+            String roleInsertQuery = "UPDATE cashier_work_log SET check_in_time = ?, check_out_time = ?, comments = ? WHERE log_id = ?;";
+            PreparedStatement roleInsertStatement = connection.prepareStatement(roleInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
+
+            roleInsertStatement.setTimestamp(1, wl.checkin);
+            roleInsertStatement.setTimestamp(2, wl.checkout);
+            roleInsertStatement.setString(3, wl.comments);
+            roleInsertStatement.setInt(4, wl.log_id);
+
+            roleInsertStatement.executeUpdate();
+
+            // get generated id of item in database
+            ResultSet generatedKeys = roleInsertStatement.getGeneratedKeys();
+
+            if (!generatedKeys.next()) {
+                roleInsertStatement.close();
+                return -1;
+            }
+
+            int roleId = generatedKeys.getInt(1);
+            return roleId;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+
     public static List<Item> getAllItems() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
             return runItemQuery(statement, true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Item> getAllAvailableItems() {
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
+            List<Item> items = runItemQuery(statement, true);
+            List<Item> avail = new ArrayList<>();
+            for (Item item: items) {
+                if (item.isAvailable()) { avail.add(item); }
+            }
+            return avail;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -976,8 +1118,8 @@ public class Database {
         }
     }
 
-    public static List<MutablePair<MutablePair<Item, Item>, Integer>> getSellsTog(Date start, Date end) {
-        List<MutablePair<MutablePair<Item, Item>, Integer>> sellsTog = new ArrayList<>();
+    public static List<SoldTogether> getSellsTog(Date start, Date end) {
+        List<SoldTogether> sellsTog = new ArrayList<>();
         try {
             String sql = "" +
                     "WITH OrderItems AS ( \n" +
@@ -1019,8 +1161,7 @@ public class Database {
                 int item2Id = resultSet.getInt("item2");
                 int frequency = resultSet.getInt("frequency");
 
-                sellsTog.add(new MutablePair<>(new MutablePair<>(Item.findOneById(item1Id), Item.findOneById(item2Id)),
-                        frequency));
+                sellsTog.add(new SoldTogether(frequency, Item.findOneById(item1Id), Item.findOneById(item2Id)));
             }
 
         } catch (Exception e) {
