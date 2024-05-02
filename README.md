@@ -914,3 +914,344 @@ In our previous session, we addressed the pressing need to finalize all pending 
 | Set up frontend testing             | Warren      | 3            | high     | 20                  | Incomplete |
 | Write tests for each component      | Warren      | 3            | high     | 40                  | Incomplete |
 
+
+### Sprint 3 SCRUM Standup Meeting 1
+
+**Date:** 4/15/2024  
+**Time:** 7:00pm  
+**Location:** Northpoint Crossing  
+
+**Meeting Agenda Items:**  
+- Standup  
+- Discuss any features and ways to implement them  
+- Discuss sprint planning  
+
+**Status Update Since Last Meeting:**  
+**Accomplishments:**  
+- Completed sprint 2 and demoed successfully  
+- Discuss sprint 3 planning and schedule  
+
+**Tasks Completed:**  
+- **Task Description:** Discuss when to meet for sprint 3 planning  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Sprint 3 retrospective scheduled  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+
+**Before The Next Meeting:**  
+**Plans:**  
+- Think of any new features to implement  
+
+**Minutes from Previous Meeting:**  
+- Through the meeting, each member discussed various things they did to ensure the success of sprint 2. We discussed the reasons why we were successful and able to get all our tasks done on time and made sure everyone would follow the same work ethic for a successful sprint 3. This was utilized to brainstorm and make logistical and planning decisions for sprint 3. For sprint 3, we decided to implement all of our accessibility features, improve the UI of various pages, and ensure smooth navigation.  
+
+---
+
+### Sprint 3 SCRUM Standup Meeting 2
+
+**Date:** 4/18/2024  
+**Time:** 7:00pm  
+**Location:** Northpoint Crossing  
+
+**Meeting Agenda Items:**  
+- Discuss tasks completed so far  
+- Discuss roadblocks on tasks if there are any  
+- Discuss what to focus on until next meeting  
+
+**Status Update Since Last Meeting:**  
+**Accomplishments:**  
+- Fixed the backend issue from sprint 2  
+- Started securing login  
+
+**Tasks Completed:**  
+- **Task Description:** Fix the backend for order history - itemToQuantity attribute  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Add cashier login functionality  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Add non google oauth login functionality  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+
+**Before The Next Meeting:**  
+**Plans:**  
+- Start sprint tasks  
+- Implement data validation  
+- Add more login functionality  
+
+**Task Assignments:**  
+- **Task Description:** data validation for quantity, min quantity, and price  
+  - **Assigned to:** Sua  
+- **Task Description:** implement edit for other inventory attributes  
+  - **Assigned to:** Sua  
+- **Task Description:** add a confirmation pop-up for deleting an ingredient  
+  - **Assigned to:** Sua  
+- **Task Description:** Allow user to directly input quantity (so user doesn't have to click + 50 times)  
+  - **Assigned to:** Warren  
+- **Task Description:** Add search functionality to cashier ordering page  
+  - **Assigned to:** Warren  
+- **Task Description:** List IDs for each item and even spacing for item elements  
+  - **Assigned to:** Warren  
+- **Task Description:** Update styling to look appealing  
+  - **Assigned to:** Shweta  
+- **Task Description:** Secure the database password and change the .env  
+  - **Assigned to:** Shweta  
+- **Task Description:** Connect to cashier home or manager home depending on login type  
+  - **Assigned to:** Surya  
+- **Task Description:** Set up admin home  
+  - **Assigned to:** Surya  
+- **Task Description:** Implement admin add cashier/manager backend edit  
+  - **Assigned to:** Surya  
+- **Task Description:** Recommend Menu item based on weather  
+  - **Assigned to:** Andrew  
+
+**Minutes from Previous Meeting:**  
+- Through this sprint meeting, the team went through the tasks that were given. Some issues from sprint 2 have been resolved to start sprint 3. Login functionality concerns were raised last meeting and progress has been made. We hope to fix the data validation issues by the next meeting and finish details. Everyone is confident in finishing all tasks.
+
+### Sprint 3 SCRUM Standup Meeting 3
+
+**Date:** 4/23/2024  
+**Time:** 7:00pm  
+**Location:** Northpoint Crossing  
+
+**Meeting Agenda Items:**  
+- Discuss progress on tasks  
+- Discuss roadblocks  
+- Discuss future plans for manager side pages and features  
+
+**Status Update Since Last Meeting:**  
+**Accomplishments:**  
+- Implement data validation  
+- Fixes in ordering page and new functionalities  
+- Update styling  
+- Security implementations  
+
+**Tasks Completed:**  
+- **Task Description:** data validation for quantity, min quantity, and price  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** implement edit for other inventory attributes  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** add a confirmation pop-up for deleting an ingredient  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Allow user to directly input quantity (so user doesn't have to click + 50 times)  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Add search functionality to cashier ordering page  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** List IDs for each item and even spacing for item elements  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Update styling to look appealing  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Secure the database password and change the .env  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Connect to cashier home or manager home depending on login type  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Set up admin home  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Implement admin add cashier/manager backend edit  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Recommend Menu item based on weather  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+
+**Before The Next Meeting:**  
+**Plans:**  
+- Implement table sorting  
+- Implement date filters  
+- Implement translation  
+- Implement help ticker  
+- Update styling and consolidate navigation bars  
+
+**Minutes from Previous Meeting:**  
+- We were able to finish a good amount of tasks, but we saw that there were still quite a few tasks pending in our backlog. To finish on time, we scheduled to set out many tasks and start working on the implementation of features suggested in the demo. We also are set to start working on the cook page and discussed the layout and details of that. Thus, through planning, we are confident to finish tasks.
+
+---
+
+### Sprint 3 SCRUM Standup Meeting 4
+
+**Date:** 4/25/2024  
+**Time:** 7:00pm  
+**Location:** Northpoint Crossing  
+
+**Meeting Agenda Items:**  
+- Discuss completed tasks  
+- Discuss progress on ongoing tasks  
+- Discuss plans moving forward for backend and frontend integration  
+
+**Status Update Since Last Meeting:**  
+**Accomplishments:**  
+- Sorting options  
+- Google translate  
+- Date filters  
+- Order updates  
+- Help ticket  
+- Styling, navbar  
+
+**Tasks Completed:**  
+- **Task Description:** sort option to sort ingredient list - every column in the table  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** add a confirmation pop-up for updating an ingredient  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Implement translation button functionality  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Implement Google translate  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Run accessibility checker -- add tasks to support good things  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** put start date after end date  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** sort option to sort ingredient list (medium, 20 min, incomplete, 4)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** A table with a list of orders with its attributes (medium, 20 min, incomplete, 4)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Update order (medium, 20 min, incomplete, 3)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Delete order (medium, 20 min, incomplete, 3)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Add manager navbar component to cashier ordering page  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Send help ticker when help button is clicked  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Add quick ordering via IDs functionality  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Update styling to look appealing  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Implement admin delete cashier/manager backend edit  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+
+**Before The Next Meeting:**  
+**Plans:**  
+- Confirmation pop-ups  
+- Accessibility features - dark mode, enlarge text  
+- Menu manager view  
+- Clock in and clock out pages  
+- Testing  
+- Cook page  
+
+**Minutes from Previous Meeting:**  
+- We were able to finish a good amount of tasks and fixes to ensure that we finish accessibility and kitchen features. The team finished table styling, data validation, and security tasks. We hope to finish all of these tasks by the end of the sprint. We are aware there are a few days left, however, the team is pretty confident. Details about the kitchen and cook page were sorted out and are off to implementation. Additionally, accessibility features are planned to be made and tested.
+
+---
+
+### Sprint 3 SCRUM Standup Meeting 5
+
+**Date:** 4/17/2024  
+**Time:** 7:00pm  
+**Location:** Northpoint Crossing  
+
+**Meeting Agenda Items:**  
+- Discuss completed tasks  
+- Backend issue with Order History  
+- Discuss plans for sprint 3  
+
+**Status Update Since Last Meeting:**  
+**Accomplishments:**  
+- Confirmation pop-ups  
+- Accessibility features - dark mode, enlarge text  
+- Menu manager view  
+- Clock in and clock out pages  
+- Testing  
+- Cook page  
+
+**Tasks Completed:**  
+- **Task Description:** add a confirmation pop-up for updating an order (medium, 20 min, incomplete, 4)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** add a confirmation pop-up for deleting an order (medium, 20 min, incomplete, 4)  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+- **Task Description:** Run accessibility checker -- add tasks to support good things  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Enlarge Text  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Dark Mode  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Add confirmation to delete menu item  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Sort for every column in the table  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Validate inputs to new and update menu item  
+  - **Assigned to:** Surya  
+  - **Completed?:** yes  
+- **Task Description:** Update styling to look appealing  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** a profile page for cashier w clock in and out  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** a profile page for manager w cashier management thing  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** implement clock for timesheets  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Set up backend testing  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Write unit test for each endpoint  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Write edge cases (invalid input) for each endpoint  
+  - **Assigned to:** Andrew  
+  - **Completed?:** yes  
+- **Task Description:** Set up frontend testing  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Write tests for each component  
+  - **Assigned to:** Warren  
+  - **Completed?:** yes  
+- **Task Description:** Edit Orders table in database  
+  - **Assigned to:** Shweta  
+  - **Completed?:** yes  
+- **Task Description:** Create cook page that shows  
+  - **Assigned to:** Sua  
+  - **Completed?:** yes  
+
+**Before The Next Meeting:**  
+**Plans:**  
+- Complete the few holdover tasks that may emerge upon demo and retro meeting  
+- Plan for presentation  
+
+**Task Assignments:**  
+- **Task Description:** Look to add any more tasks  
+  - **Assigned to:** Andrew  
+- **Task Description:** Plan for presentation  
+  - **Assigned to:** Andrew  
+
+**Minutes from Previous Meeting:**  
+- The team is wrapping up final details and tasks and has completed the sprint tasks. Accessibility was tested. However, a critical issue arose due to the Google translate. This is an issue the scrum master plans to bring up. Beyond that, other features were implemented and the system was tested.  
+
+
+
