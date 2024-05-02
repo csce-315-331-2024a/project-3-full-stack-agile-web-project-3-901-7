@@ -138,25 +138,21 @@ const Kitchen = () => {
 
     const handleChangeStatus = async (id: number) => {
         try {
-            // Find the order with the given id
             const orderToUpdate = orders.find(order => order._id === id);
-
+    
             if (!orderToUpdate) {
                 console.error('Order not found');
                 return;
             }
-
-            // Determine the new status based on the current status
+    
             const newStatus = orderToUpdate.status === 'received' ? 'in progress' : 'completed';
-
-            // Update the order status locally
+    
             setOrders(prevOrders =>
                 prevOrders.map(order =>
                     order._id === id ? { ...order, status: newStatus } : order
                 )
             );
-
-            // Send a request to update the order status in the database
+    
             const response = await fetch('http://localhost:8080/order/edit', {
                 method: 'POST',
                 headers: {
@@ -165,22 +161,21 @@ const Kitchen = () => {
                 },
                 body: JSON.stringify({ _id: id, status: newStatus })
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to update order status');
             }
-
+    
             console.log('Order status updated successfully');
         } catch (error) {
             console.error('Error updating order status:', error);
         }
-    };
+    };    
 
     if (!userProfile) {
-        return null; // Return null or a loading indicator while user profile is being fetched
+        return null; 
     }
 
-    // Separate orders into received and in progress
     const receivedOrders = orders.filter(order => order.status === 'received');
     const inProgressOrders = orders.filter(order => order.status === 'in progress');
 

@@ -7,7 +7,7 @@ export interface Order {
     itemToQuantity: Map<number, number>;
     total: number;
     dateTime: Date;
-    status?: string;  // Assuming status might be optional or required based on your backend needs
+    status?: string;  
 }
 
 interface ItemDetails {
