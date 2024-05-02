@@ -1251,7 +1251,69 @@ In our previous session, we addressed the pressing need to finalize all pending 
   - **Assigned to:** Andrew  
 
 **Minutes from Previous Meeting:**  
-- The team is wrapping up final details and tasks and has completed the sprint tasks. Accessibility was tested. However, a critical issue arose due to the Google translate. This is an issue the scrum master plans to bring up. Beyond that, other features were implemented and the system was tested.  
+- The team is wrapping up final details and tasks and has completed the sprint tasks. Accessibility was tested. However, a critical issue arose due to the Google translate. This is an issue the scrum master plans to bring up. Beyond that, other features were implemented and the system was tested.
+
+
+**Sprint 3 Retrospective Meeting Agenda**
+
+**Date:** 4/29
+**Time:** 7:00pm
+**Location:** Northpoint Crossing
+ 
+
+**Agenda:**
+
+1. **Conclusion of Spring 1 Discussion**
+   - Discussion about the conclusion of sprint 3
+
+2. **Review of Tasks completed**
+   - Goals set for Sprint 3
+   - Review of what was completed
+   - Review the project overall
+
+3. **Successes and Challenges**
+   - What did we do successfully?
+   - Did we encounter any major challenges?
+
+4. **Product Backlog Changes**
+   - Review of changes
+   - Why did we change?
+
+5. **Conclusion**
+   - Key takeaways
+   - Final thoughts about sprint 3
+
+
+**Sprint 3 Retrospective Meeting Minutes**
+
+**Attendees:**
+- Sua Bae
+- Andrew Beketov
+- Surya Jasper
+- Shweta Kumaran
+- Warren Wu
+
+**1. Conclusion of Sprint 1 Discussion:**
+- Discussion about the conclusion of Sprint 3
+- We found that we were successful in what we wanted to get done
+- Everyone did a good job in communication and task completion
+
+**2. Review of Tasks Completed:**
+- Goals set for Sprint 3 were reviewed
+- We were able to complete all the tasks we wanted to
+
+**3. Successes and Challenges:**
+- We were able to complete all the tasks we set up for ourselves
+- Couple issues with database crashing but was all fixed
+
+**4. Product Backlog Changes:**
+- View completed product
+- Check completed product against our planned completed product
+- Everything planned was implemented and we had additional stuff
+
+**5. Conclusion:**
+- Summarized all key takeaways and Sprint 3 items
+- Expressed our final thoughts about Sprint 3 and the project overall
 
 
 
