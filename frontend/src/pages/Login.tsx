@@ -99,13 +99,14 @@ const LoginButton: React.FC<ILoginButtonProps> = (props) => {
     return (
         <button
             type={props.isSubmit ? "submit" : "button"}
-            className={`w-full text-white bg-black group relative flex justify-center py-2 px-4 border border-black text-lg font-medium rounded-m bg-${
-                props.color || "gray"
-            }-300 hover:bg-${
-                props.color || "gray"
-            }-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${
-                props.color || "gray"
-            }-500`}
+            // className={`w-full text-white bg-black group relative flex justify-center py-2 px-4 border border-black text-lg font-medium rounded-m bg-${
+            //     props.color || "gray"
+            // }-300 hover:bg-${
+            //     props.color || "gray"
+            // }-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${
+            //     props.color || "gray"
+            // }-500`}
+            className={`w-full text-white bg-black dark:bg-white dark:text-black dark:border-white group relative flex justify-center py-2 px-4 border border-black text-lg font-medium rounded-md focus:ring-2 focus:ring-offset-2 focus:ring-${props.color || "gray"}-500 hover:bg-white duration-500 hover:text-black dark:hover:bg-black dark:hover:text-white`}
             onClick={() => props.onClick && props.onClick()}
         >
             <span className="flex items-center">
@@ -203,11 +204,11 @@ export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
     };
 
     return (
-        <div className="w-full h-screen p-8 relative bg-white overflow-hidden">
+        <div className="w-full h-screen p-8 relative overflow-hidden">
             <Navbar />
-            <div className="min-w-screen flex items-center justify-center bg-white py-12 h-full">
+            <div className="min-w-screen flex items-center justify-center py-12 h-full">
                 <div className="h-full w-3/4 space-y-8 flex">
-                    <div className="w-1/2 pr-4">
+                    <div className="w-1/2 pr-4 flex items-center">
                         <img
                             className="shadow-md rounded-3xl h-4/5 w-full object-cover"
                             src="/icons/loginsquiggle.png"
@@ -216,7 +217,7 @@ export const Login: React.FC<ILoginProps> = (props : ILoginProps) => {
                     </div>
                     <div className="items-center w-1/2 pl-4 flex flex-col justify-center">
                         <div>
-                            <h2 className="font-ptserif text-center text-3xl font-extrabold text-gray-900">
+                            <h2 className="font-ptserif text-center text-3xl font-extrabold">
                                 {props.signup ? "Sign Up For" : "Login To"} Your {toTitleCase(props.type)} Account
                             </h2>
                         </div>

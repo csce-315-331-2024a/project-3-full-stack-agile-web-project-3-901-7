@@ -4,8 +4,9 @@ import CookieManager from "../utils/CookieManager"
 import { useEffect, useRef, useState } from "react";
 import GoogleTranslate from "./GoogleTranslate";
 import { GoPlus } from "react-icons/go";
-import { FaMoon } from "react-icons/fa";
+import { useTextSize } from "../TextSizeContext";
 
+import { FaMoon } from "react-icons/fa";
 interface NavbarProps {
     userInfo?: User;
     userType?: string;
@@ -19,6 +20,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const initialButtonWidth = useRef<number | null>(null);
+    const { enlargeText, resetTextSize } = useTextSize();
 
     useEffect(() => {
         if (userType === "admin") {
@@ -31,7 +33,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
             setRoutes([
                 {name: "create order", path: "/manager/orders/new"},
                 {name: "order history", path: "/manager/orders"},
-                {name: "reports", path: "/manager/salestrend"},
+                {name: "reports", path: "/manager/salestrends"},
                 {name: "inventory", path: "/manager/inventory"},
                 {name: "menu", path: "/manager/menu"},
                 {name: "log", path: "/manager/logs"},
@@ -94,7 +96,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
     function toggleTheme() {
         const currentTheme = localStorage.getItem('theme');
         if (currentTheme === 'dark') {
-            localStorage.setItem('theme', 'light');
+            localStorage.setItem('theme', '');
             document.documentElement.classList.remove('dark');
         } else {
             localStorage.setItem('theme', 'dark');
@@ -120,7 +122,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                         CookieManager.delete('tokenResponse');
                         navigate('/cashier/login');
                         }}
-                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300"
+                        className="flex gap-x-2 items-center border-2 border-black dark:border-white hover:bg-black hover:text-white px-4 py-2 rounded-sm transition-all duration-300 dark:hover:bg-white dark:hover:text-black"
                     >
                         <img
                             src={userInfo.picture || "/icons/profile.png"} 
@@ -147,13 +149,15 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                       <GoogleTranslate />
                     </button>
                     <button
-                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white"
+                        aria-label="dark-mode"
+                        className="p-2 border-2 border-black dark:border-white rounded-sm transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                         onClick={toggleTheme}
                     >
                         <FaMoon/>
                     </button>
                     <div className="relative">
                         <button
+                            aria-label="dropdown-button"
                             ref={buttonRef}
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                             className="border-2 border-black dark:border-white px-4 py-2 ml-2 rounded-sm text-lg font-medium font-ptserif transition-all duration-300 flex items-center justify-center "
@@ -176,6 +180,18 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                                 >
                                     Weather
                                 </a>
+                                <button
+                                    onClick={enlargeText}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Enlarge Text
+                                </button>
+                                <button
+                                    onClick={resetTextSize}
+                                    className="block w-full text-left px-4 py-2 text-black hover:bg-gray-100"
+                                >
+                                    Reset Text Size
+                                </button>
                             </div>
                         )}
                     </div>
@@ -187,7 +203,7 @@ export default function Navbar({userInfo, userType}: NavbarProps) {
                     <Link 
                         key={index}
                         to={route.path}
-                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white"
+                        className="px-4 py-2 border-2 border-black dark:border-white rounded-sm text-lg font-bold font-ptserif transition-all duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                     >
                         {route.name}
                     </Link>

@@ -92,7 +92,7 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
     
         console.log('Sending updated order data to server:', JSON.stringify(updatedOrder));
     
-        fetch('http://localhost:8080/order/edit', {
+        fetch(import.meta.env.VITE_BACKEND_URL + '/order/edit', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getUserAuth } from "../Login";
 import { User, Worklog } from "../../types/dbTypes";
 import Navbar from "../../components/Navbar";
+import { FaSmileWink } from "react-icons/fa";
 
 export default function CashierLog() {
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
@@ -74,7 +75,7 @@ export default function CashierLog() {
         setEditingLog(prevLog => {
             if (!prevLog) return null;
 
-            if (name === 'checkin' || name === 'checkout') {
+            if ((name === 'checkin' || name === 'checkout')) {
                 const localDateTime = new Date(value);
                 const utcDateTime = new Date(localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)).toISOString();
                 return {
@@ -153,6 +154,11 @@ export default function CashierLog() {
             checkout: newLog.checkout,
             comments: newLog.comments
         };
+        if (newLog.checkin > newLog.checkout) 
+        {
+            alert("Uh oh something went wrong :(")
+            return;
+        }
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/log/insert", { method: "POST", body: JSON.stringify(body), headers: { "Content-Type": "application/json" } });
         const data = await response.json();
         if (data.success === true) {

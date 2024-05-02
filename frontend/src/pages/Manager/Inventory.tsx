@@ -313,19 +313,26 @@ const Inventory = () => {
     );
   };
 
-  const handleRestock = () => {
-    const restockedIngredients = ingredients.map(ingredient => {
+  const handleRestock = async () => {
+    const restockedIngredients = await Promise.all(ingredients.map(async (ingredient) => {
       if (ingredient.quantity < ingredient.minQuantity) {
+        // update backend
+        const body = {...ingredient, quantity: ingredient.minQuantity};
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/ingredient/edit", {method: "POST",  body: JSON.stringify(body), headers: {"Content-Type": "application/json"}});
+        const data = await response.json();
+        if (!data.success) {
+          console.log(`error restocking ingredient id: ${ingredient._id}`)
+        }
         return { ...ingredient, quantity: ingredient.minQuantity };
       }
       return ingredient;
-    });
+    }));
     setIngredients(restockedIngredients);
   };
 
   const filteredIngredients = ingredients
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
+    .filter(ingredient => !showLowStock || ingredient.quantity < ingredient.minQuantity);
 
   return (userProfile &&
     <div className="p-4">
