@@ -164,7 +164,7 @@ const Kitchen = () => {
             // Update the order status locally
             if (newStatus === 'in progress') {
                 setReceivedOrders(prevOrders => prevOrders.filter(order => order._id !== id));
-                setInProgressOrders(prevOrders => [...prevOrders, orderToUpdate]);
+                setInProgressOrders(prevOrders => [...prevOrders, {...orderToUpdate, status: newStatus}]);
             } else if (newStatus === 'completed') {
                 setInProgressOrders(prevOrders => prevOrders.filter(order => order._id !== id));
             }
