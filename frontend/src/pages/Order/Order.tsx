@@ -7,12 +7,14 @@ import OrderHeader from "./OrderHeader";
 import OrderItems from "./OrderItems";
 import OrderReceipt from "./OrderReceipt";
 import Modal from "../../components/Modal";
+import PageLayout from "../../layouts/PageLayout";
 
 interface OrderContextProps {
     order: OrderType;
     addQty: (itemPrice: number, name: string, id: number) => void;
     subQty: (itemPrice: number, name: string, id: number) => void;
     inputHandler: (e: React.ChangeEvent<HTMLInputElement>, id: number, itemPrice: number, name: string) => void;
+    clearOrder: () => void;
 }
 
 interface ModalContextProps {
@@ -20,7 +22,7 @@ interface ModalContextProps {
     setModalMsg: React.Dispatch<React.SetStateAction<string | JSX.Element>>;
 }
 
-export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}});
+export const OrderContext = createContext<OrderContextProps>({order: defaultOrder, addQty: () => {}, subQty: () => {}, inputHandler: () => {}, clearOrder: () => {}});
 export const ModalContext = createContext<ModalContextProps>({setOpen: () => {}, setModalMsg: () => {}});
 
 export default function Order() {
@@ -31,6 +33,7 @@ export default function Order() {
     const [currCategory, setCurrCategory] = useState<string>("Burger");
     const [open, setOpen] = useState<boolean>(false);
     const [modalMsg, setModalMsg] = useState<string | JSX.Element>("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -38,11 +41,16 @@ export default function Order() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
+            setIsLoading(false);
         }
 
         fetchItems();
 
     }, [])
+
+    if (isLoading) {
+        return <Loading/>;
+    }
 
     function addQty(itemPrice: number, name: string, id: number) {
         setOrder({
@@ -79,15 +87,23 @@ export default function Order() {
         })
     }
 
+    function clearOrder() {
+        setOrder({
+            numItems: 0,
+            total: 0,
+            orderInfo: "",
+            itemToQuantity: new Map<number, number>(),
+            date: new Date()
+        });
+    }
+
     return (
-        <div className="w-full h-full p-8 relative flex flex-col dark:bg-black text-black dark:text-white">
+        <PageLayout>
             
             <Navbar/>
 
-            <OrderContext.Provider value={{order, addQty, subQty, inputHandler}}>
+            <OrderContext.Provider value={{order, addQty, subQty, inputHandler, clearOrder}}>
                 <ModalContext.Provider value={{setOpen, setModalMsg}}>
-                {(items.length === 0) ? <Loading/> :
-                <> 
 
                     <OrderHeader 
                         categories={categories} 
@@ -107,8 +123,7 @@ export default function Order() {
                         />
                     
                     </div>
-                </>
-                }
+
                 </ModalContext.Provider>
             </OrderContext.Provider>
 
@@ -118,6 +133,6 @@ export default function Order() {
                 setOpen={setOpen}
             />
 
-        </div>
+        </PageLayout>
     )
 }

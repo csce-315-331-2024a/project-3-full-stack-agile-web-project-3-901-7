@@ -1,6 +1,7 @@
 import '../index.css';
 import { useEffect, useState } from "react"
 import Navbar from "../components/Navbar";
+import Loading from '../components/Loading';
 
 interface Item {
     _id: number;
@@ -17,6 +18,7 @@ interface Item {
 export default function Menu() {
     const [menuItems, setItems] = useState<Item[]>([]);
     const [groupedItems, setGroupedItems] = useState<Record<string, Item[]>>({});
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
 
@@ -24,6 +26,7 @@ export default function Menu() {
             const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAllAvailable");
             const data = await response.json();
             setItems(data);
+            setIsLoading(false);
         }
 
         fetchItems();
@@ -40,6 +43,10 @@ export default function Menu() {
 
         setGroupedItems(grouped);
     }, [menuItems]);
+
+    if (isLoading) {
+        return <Loading/>
+    }
 
     return (
         <div className="w-full h-full p-8 relative dark:bg-black text-black dark:text-white border-black dark:border-white">
@@ -72,7 +79,13 @@ export default function Menu() {
     );
 }
 
-function ItemCard({name, price, itemDesc} : Item) {
+interface ItemCardProps {
+    name: string;
+    price: number;
+    itemDesc: string;
+}
+
+function ItemCard({name, price, itemDesc} : ItemCardProps) {
     return (
         <>
             <div className="flex justify-between">

@@ -1,17 +1,8 @@
 import { useEffect, useState } from "react";
-import { getUserAuth } from "../pages/Login";
-import { User } from "../types/dbTypes";
 
 export default function CashierHelpQueue() {
-    const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [stations, setStations] = useState<boolean[]>([]);
     const [active, setActive] = useState<number>(-1);
-
-    useEffect(() => {
-        getUserAuth('cashier')
-            .then(setUserProfile)
-            .catch(console.error);
-    }, [])
 
     const fetchHelpStations = async () => {
         const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/helpStations');

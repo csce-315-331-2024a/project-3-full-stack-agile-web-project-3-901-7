@@ -31,12 +31,18 @@ import CashierLog from './pages/Cashier/CashierLog'
 import ManagerLog from './pages/Manager/ManagerLog'
 import CashierHelpQueue from './components/CashierHelpQueue'
 
+import { TextSizeProvider } from './TextSizeContext'
+
+const currentTheme = localStorage.getItem('theme')
+if (currentTheme) {
+    document.documentElement.classList.add(currentTheme)
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
         <React.StrictMode>
             <BrowserRouter>
-                <div>
+            <TextSizeProvider>
                     <Routes>
 
                         {/* Landing */}
@@ -79,7 +85,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/admin/roles" element={<AdminRoles/>}/>
 
                     </Routes>
-                </div>
+                </TextSizeProvider>
             </BrowserRouter>
         </React.StrictMode>
     </GoogleOAuthProvider>

@@ -138,7 +138,7 @@ const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.Set
           </div>
           <div className="mt-2 pt-2 border-t flex justify-between">
               <span className="font-bold">total: ${order.total.toFixed(2)}</span>
-              <span>{order.dateTime.toString()}</span>
+              <span>{order.dateTime.toLocaleDateString()}</span>
           </div>
       </div>
   );
@@ -146,14 +146,12 @@ const OrderCard : React.FC<{ order : Order, setOrders : React.Dispatch<React.Set
 
 
 const OrderHistory = () => {
+    const [allOrders, setAllOrders] = useState<Order[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
-    const [sortDirection, setSortDirection] = useState<string>('asc');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [userProfile, setUserProfile] = useState<User | undefined>(undefined);
     const [confirmDeleteOrderId, setConfirmDeleteOrderId] = useState<number | null>(null);
-
-    
 
     useEffect(() => {
         getUserAuth('manager')
@@ -164,34 +162,23 @@ const OrderHistory = () => {
     useEffect(() => {
         async function fetchOrders() {
             try {
-                const response = await fetch('http://localhost:8080/order/findAll?limit=5');
+                const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findAll?limit=5');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                // Ensure the data is an array before proceeding
                 if (!Array.isArray(data)) {
                     throw new Error("Data is not an array");
                 }
-                const ordersWithMaps = Array.isArray(data) ? data.map((order: any) => {
-                    // Log the raw itemToQuantity object from the data
-                    console.log(order.itemToQuantity);
-                    
-                    // Convert itemToQuantity from object to Map
+                const ordersWithMaps = data.map((order: any) => {
                     const itemToQuantityMap = new Map(Object.entries(order.itemToQuantity));
-                
-                    // Log the date from the data
-                    console.log("date:", order.dateTime);
-                
-                    // Construct and return the new order object
                     return {
                         ...order,
                         itemToQuantity: itemToQuantityMap,
-                        date: new Date(order.dateTime) // Convert string to Date object
+                        dateTime: new Date(order.dateTime)
                     };
-                }) : [];
-                
-                
+                });
+                setAllOrders(ordersWithMaps);
                 setOrders(ordersWithMaps);
             } catch (error) {
                 console.error('Failed to fetch orders:', error);
@@ -200,37 +187,10 @@ const OrderHistory = () => {
     
         fetchOrders();
     }, []);
-    
-    const handleDeleteOrder = async (id: number) => {
-        setConfirmDeleteOrderId(id);
-    };
-
-    const handleCancelDeleteOrder = () => {
-        setConfirmDeleteOrderId(null);
-    };
-
-    const handleConfirmDeleteOrder = async (id: number) => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
-              method: 'POST',
-            });
-            const data = await response.json();
-            if (data) {
-                const updatedOrders = orders.filter(order => order._id !== id);
-                setOrders(updatedOrders);
-                setConfirmDeleteOrderId(null);
-            } else {
-                throw new Error('Failed to delete the order');
-            }
-        } catch (error) {
-            console.error('Delete order error:', error);
-            alert('Failed to delete the order. Please try again.');
-        }
-    };
 
     const filterByDateRange = () => {
         if (startDate && endDate) {
-            setOrders(orders.filter(order => {
+            setOrders(allOrders.filter(order => {
                 const orderDate = new Date(order.dateTime);
                 return orderDate >= startDate && orderDate <= endDate;
             }));
@@ -239,10 +199,32 @@ const OrderHistory = () => {
 
     useEffect(() => {
         filterByDateRange();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [startDate, endDate]);
+    }, [startDate, endDate, allOrders]);
 
-    return (userProfile &&
+    const handleDeleteOrder = async (id: number) => {
+        setConfirmDeleteOrderId(id);
+    };
+
+    const handleConfirmDeleteOrder = async (id: number) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/order/deleteById?orderId=${id}`, {
+              method: 'POST',
+            });
+            if (!response.ok) {
+                throw new Error('Failed to delete the order');
+            }
+            const updatedOrders = allOrders.filter(order => order._id !== id);
+            setAllOrders(updatedOrders);
+            setOrders(updatedOrders);
+            setConfirmDeleteOrderId(null);
+        } catch (error) {
+            console.error('Delete order error:', error);
+            alert('Failed to delete the order. Please try again.');
+        }
+    };
+
+    return (
+      userProfile &&
       <div className="p-4">
         <Navbar userType="manager" userInfo={userProfile}/>
         <div className="flex flex-col sm:flex-row items-center justify-between">
@@ -272,7 +254,7 @@ const OrderHistory = () => {
         </div>
         {confirmDeleteOrderId !== null && (
             <DeleteConfirmation
-                onCancel={handleCancelDeleteOrder}
+                onCancel={() => setConfirmDeleteOrderId(null)}
                 onConfirm={() => handleConfirmDeleteOrder(confirmDeleteOrderId)}
             />
         )}
