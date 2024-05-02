@@ -852,6 +852,9 @@ public class Database {
     public static boolean editOrder(Order order) {
         try {
             // update order table
+            if (order.numItems == 0)
+                return false;
+
             String orderUpdateQuery = "UPDATE Orders SET numItems = ?, total = ?, orderInfo = ?, status = ? WHERE orderId = ?";
             PreparedStatement orderUpdateStatement = connection.prepareStatement(orderUpdateQuery);
             orderUpdateStatement.setInt(1, order.numItems);
