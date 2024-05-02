@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- *
+ * Represents a pair of items that are sold together, along with the count of
+ * how many times they are sold together.
  */
 class SoldTogether {
     public int count;
@@ -21,9 +22,11 @@ class SoldTogether {
     public Item item2;
 
     /**
-     * @param count
-     * @param item1
-     * @param item2
+     * Constructs a new SoldTogether instance with the specified count and items.
+     *
+     * @param count the count of how many times the items are sold together
+     * @param item1 the first item in the pair
+     * @param item2 the second item in the pair
      */
     public SoldTogether(int count, Item item1, Item item2) {
         this.count = count;
@@ -33,7 +36,10 @@ class SoldTogether {
 }
 
 /**
- *
+ * The Database class represents a connection to the database and provides
+ * methods for executing queries and retrieving data.
+ * It uses the PostgreSQL database and requires the application.properties file
+ * to be present in the classpath.
  */
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -47,7 +53,11 @@ public class Database {
     private static String databasePassword;
 
     /**
-     *
+     * Creates a connection to the database if one does not already exist.
+     * This method uses the application.properties file to retrieve the database
+     * name, user, and password.
+     * It then establishes a connection to the PostgreSQL database using the
+     * retrieved information.
      */
     public static void createConnection() {
         if (connection != null)
@@ -67,9 +77,12 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @return
-     * @throws SQLException
+     * Executes the provided ingredient query statement and returns a list of
+     * ingredients.
+     *
+     * @param queryStatement the prepared statement for the ingredient query
+     * @return a list of Ingredient objects retrieved from the database
+     * @throws SQLException if an error occurs while executing the query
      */
     private static List<Ingredient> runIngredientQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
@@ -97,10 +110,13 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @param fillIngredients
-     * @return
-     * @throws SQLException
+     * Executes a query to retrieve a list of items from the database.
+     * 
+     * @param queryStatement  The prepared statement for the query.
+     * @param fillIngredients A boolean value indicating whether to fill the
+     *                        ingredients for each item.
+     * @return A list of Item objects retrieved from the database.
+     * @throws SQLException If an error occurs while executing the query.
      */
     private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients)
             throws SQLException {
@@ -146,9 +162,14 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @return
-     * @throws SQLException
+     * Executes the provided query statement and retrieves a list of User objects
+     * from the result set.
+     *
+     * @param queryStatement the prepared statement containing the query to be
+     *                       executed
+     * @return a list of User objects retrieved from the result set
+     * @throws SQLException if an error occurs while executing the query or
+     *                      processing the result set
      */
     private static List<User> runUserQuery(PreparedStatement queryStatement)
             throws SQLException {
@@ -180,9 +201,13 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @return
-     * @throws SQLException
+     * Executes a role query using the provided prepared statement and returns a
+     * list of roles.
+     *
+     * @param queryStatement the prepared statement containing the role query
+     * @return a list of Role objects representing the roles retrieved from the
+     *         database
+     * @throws SQLException if an error occurs while executing the query
      */
     private static List<Role> runRoleQuery(PreparedStatement queryStatement)
             throws SQLException {
@@ -209,9 +234,13 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @return
-     * @throws SQLException
+     * Executes a work log query using the provided PreparedStatement and returns a
+     * list of WorkLog objects.
+     * 
+     * @param queryStatement the PreparedStatement containing the query to be
+     *                       executed
+     * @return a list of WorkLog objects retrieved from the executed query
+     * @throws SQLException if a database access error occurs
      */
     private static List<WorkLog> runWorkLogQuery(PreparedStatement queryStatement)
             throws SQLException {
@@ -239,9 +268,11 @@ public class Database {
     }
 
     /**
-     * @param queryStatement
-     * @return
-     * @throws SQLException
+     * Executes a query to retrieve a list of orders from the database.
+     * 
+     * @param queryStatement the prepared statement for the query
+     * @return a list of Order objects retrieved from the database
+     * @throws SQLException if an error occurs while executing the query
      */
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
@@ -289,7 +320,10 @@ public class Database {
     }
 
     /**
-     * @return
+     * Retrieves a list of all users from the database.
+     *
+     * @return a list of User objects representing all users in the database, or
+     *         null if an error occurs
      */
     public static List<User> getAllUsers() {
         try {
@@ -303,12 +337,16 @@ public class Database {
     }
 
     /**
-     * @param userIds
-     * @return
+     * Retrieves a list of User objects based on the provided user IDs.
+     *
+     * @param userIds the list of user IDs to retrieve
+     * @return a list of User objects matching the provided user IDs, or null if an
+     *         error occurs
      */
     public static List<User> getUsersById(List<Integer> userIds) {
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE userId IN " + buildPlaceholderString(userIds.size()));
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM Users WHERE userId IN " + buildPlaceholderString(userIds.size()));
             int index = 1;
             for (Integer userId : userIds) {
                 statement.setInt(index++, userId);
@@ -323,9 +361,11 @@ public class Database {
     }
 
     /**
-     * @param user
-     * @param password
-     * @return
+     * Inserts a new user into the database.
+     *
+     * @param user     The User object representing the user to be inserted.
+     * @param password The password for the user.
+     * @return The generated ID of the inserted user, or -1 if an error occurred.
      */
     public static int insertUser(User user, String password) {
         try {
@@ -368,13 +408,16 @@ public class Database {
     }
 
     /**
-     * @param email
-     * @param password
-     * @return
+     * Authenticates a user with the provided email and password.
+     * 
+     * @param email    The email of the user to authenticate.
+     * @param password The password of the user to authenticate.
+     * @return The authenticated User object, or null if the user could not be
      */
     public static User authenticateUser(String email, String password) {
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email='" + email + "';");
+            PreparedStatement statement = connection
+                    .prepareStatement("SELECT * FROM users WHERE email='" + email + "';");
             List<User> users = runUserQuery(statement);
             if (users.size() < 1) {
                 return null;
@@ -392,7 +435,10 @@ public class Database {
     }
 
     /**
-     * @return
+     * Retrieves all roles from the database.
+     *
+     * @return a list of Role objects representing all roles in the database, or
+     *         null if an error occurs
      */
     public static List<Role> getAllRoles() {
         try {
@@ -406,8 +452,11 @@ public class Database {
     }
 
     /**
-     * @param email
-     * @return
+     * Retrieves a role based on the provided email.
+     * 
+     * @param email The email of the user to retrieve the role for.
+     * @return The Role object representing the role of the user with the provided
+     *         email, or null if an error occurs
      */
     public static Role getRoleByEmail(String email) {
         try {
@@ -425,8 +474,11 @@ public class Database {
     }
 
     /**
-     * @param role
-     * @return
+     * Edits the role in the database with the provided information.
+     * 
+     * @param role The Role object containing the updated role information.
+     * @return The ID of the edited role in the database, or -1 if an error
+     *         occurred.
      */
     public static int editRole(Role role) {
         try {
@@ -458,8 +510,10 @@ public class Database {
     }
 
     /**
-     * @param role
-     * @return
+     * Inserts a new role into the database.
+     * 
+     * @param role The Role object containing the email and type of the role.
+     * @return The generated ID of the inserted role, or -1 if an error occurred.
      */
     public static int insertRole(Role role) {
         try {
@@ -490,8 +544,10 @@ public class Database {
     }
 
     /**
-     * @param role
-     * @return
+     * Deletes a role from the database.
+     *
+     * @param role the role to be deleted
+     * @return true if the role is successfully deleted, false otherwise
      */
     public static boolean deleteRole(Role role) {
         try {
@@ -513,7 +569,10 @@ public class Database {
     }
 
     /**
-     * @return
+     * Retrieves all work logs from the database.
+     *
+     * @return a list of WorkLog objects representing all work logs in the database,
+     *         or null if an error occurs
      */
     public static List<WorkLog> getAllWorkLogs() {
         try {
@@ -527,8 +586,11 @@ public class Database {
     }
 
     /**
-     * @param wl
-     * @return
+     * Inserts a work log into the database.
+     *
+     * @param wl the WorkLog object containing the details of the work log to be
+     *           inserted
+     * @return the generated ID of the inserted work log, or -1 if an error occurs
      */
     public static int insertWorkLog(WorkLog wl) {
         try {
@@ -560,8 +622,11 @@ public class Database {
     }
 
     /**
-     * @param ids
-     * @return
+     * Retrieves a list of work logs based on the provided list of IDs.
+     *
+     * @param ids The list of IDs to retrieve work logs for.
+     * @return A list of WorkLog objects corresponding to the provided IDs, or null
+     *         if an error occurs.
      */
     public static List<WorkLog> getLogById(List<Integer> ids) {
         try {
@@ -582,8 +647,10 @@ public class Database {
     }
 
     /**
-     * @param wl
-     * @return
+     * Edits a work log entry in the database.
+     * 
+     * @param wl The WorkLog object containing the updated information.
+     * @return The ID of the edited work log entry, or -1 if an error occurred.
      */
     public static int editWorkLog(WorkLog wl) {
         try {
@@ -615,9 +682,11 @@ public class Database {
         }
     }
 
-
     /**
-     * @return
+     * Retrieves all items from the database.
+     *
+     * @return a list of Item objects representing all items in the database, or
+     *         null if an error occurs
      */
     public static List<Item> getAllItems() {
         try {
@@ -631,15 +700,19 @@ public class Database {
     }
 
     /**
-     * @return
+     * Retrieves a list of all available items from the database.
+     *
+     * @return a list of available items
      */
     public static List<Item> getAllAvailableItems() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
             List<Item> items = runItemQuery(statement, true);
             List<Item> avail = new ArrayList<>();
-            for (Item item: items) {
-                if (item.isAvailable()) { avail.add(item); }
+            for (Item item : items) {
+                if (item.isAvailable()) {
+                    avail.add(item);
+                }
             }
             return avail;
 
@@ -650,8 +723,11 @@ public class Database {
     }
 
     /**
-     * @param itemIds
-     * @return
+     * Retrieves a list of items from the database based on the provided item IDs.
+     *
+     * @param itemIds The list of item IDs to retrieve.
+     * @return A list of Item objects matching the provided item IDs, or null if an
+     *         error occurs.
      */
     public static List<Item> getItemsById(List<Integer> itemIds) {
         try {
@@ -672,8 +748,11 @@ public class Database {
     }
 
     /**
-     * @param category
-     * @return
+     * Retrieves a list of items from the database based on the specified category.
+     *
+     * @param category the category of items to retrieve
+     * @return a list of items matching the specified category, or null if an error
+     *         occurs
      */
     public static List<Item> getItemsByCategory(String category) {
         try {
@@ -688,8 +767,10 @@ public class Database {
     }
 
     /**
-     * @param order
-     * @return
+     * Inserts an order into the database.
+     * 
+     * @param order the Order object representing the order to be inserted
+     * @return the generated ID of the inserted order, or -1 if the insertion fails
      */
     public static int insertOrder(Order order) {
         if (order.numItems <= 0) {
@@ -763,8 +844,10 @@ public class Database {
     }
 
     /**
-     * @param order
-     * @return
+     * Updates an existing order in the database.
+     *
+     * @param order The Order object representing the updated order.
+     * @return true if the order was successfully updated, false otherwise.
      */
     public static boolean editOrder(Order order) {
         try {
@@ -809,8 +892,12 @@ public class Database {
     }
 
     /**
-     * @param order
-     * @return
+     * Deletes an order from the database.
+     * This method removes the specified order from the Orders table and also
+     * removes any existing order-item junctions associated with the order.
+     *
+     * @param order the order to be deleted
+     * @return true if the order was successfully deleted, false otherwise
      */
     public static boolean deleteOrder(Order order) {
         try {
@@ -839,8 +926,11 @@ public class Database {
     }
 
     /**
-     * @param item
-     * @return
+     * Inserts an item into the database.
+     *
+     * @param item The item to be inserted.
+     * @return The generated ID of the inserted item in the database, or -1 if the
+     *         insertion failed.
      */
     public static int insertItem(Item item) {
         int itemId = -1;
@@ -848,7 +938,8 @@ public class Database {
         try {
             // insert item into database
             String itemInsertQuery = "INSERT INTO Items (name, price, category, ingredients, startDate, endDate, picture, itemDesc) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement itemInsertStatement = connection.prepareStatement(itemInsertQuery,
+                    Statement.RETURN_GENERATED_KEYS);
             itemInsertStatement.setString(1, item.name);
             itemInsertStatement.setDouble(2, item.price);
             itemInsertStatement.setString(3, item.category);
@@ -907,8 +998,13 @@ public class Database {
     }
 
     /**
-     * @param item
-     * @return
+     * Updates an item in the database with the provided information.
+     * This method updates the item's name, price, category, ingredients, start
+     * date, end date,
+     * picture, and item description.
+     *
+     * @param item The item object containing the updated information.
+     * @return true if the item was successfully updated, false otherwise.
      */
     public static boolean editItem(Item item) {
         try {
@@ -957,8 +1053,10 @@ public class Database {
     }
 
     /**
-     * @param itemId
-     * @return
+     * Deletes an item from the database based on the provided item ID.
+     *
+     * @param itemId the ID of the item to be deleted
+     * @return true if the item was successfully deleted, false otherwise
      */
     public static boolean deleteItem(int itemId) {
         try {
@@ -987,7 +1085,11 @@ public class Database {
     }
 
     /**
-     * @return
+     * Retrieves all ingredients from the database.
+     *
+     * @return a list of Ingredient objects representing all ingredients in the
+     *         database,
+     *         or null if an error occurs during the database operation
      */
     public static List<Ingredient> getAllIngredients() {
         try {
@@ -1001,8 +1103,11 @@ public class Database {
     }
 
     /**
-     * @param ingredientIds
-     * @return
+     * Retrieves a list of ingredients based on the provided ingredient IDs.
+     *
+     * @param ingredientIds A list of ingredient IDs to retrieve.
+     * @return A list of Ingredient objects matching the provided ingredient IDs, or
+     *         null if an error occurs.
      */
     public static List<Ingredient> getIngredientsById(List<Integer> ingredientIds) {
         try {
@@ -1024,8 +1129,11 @@ public class Database {
     }
 
     /**
-     * @param testName
-     * @return
+     * Retrieves a list of ingredients from the database that match the given name.
+     *
+     * @param testName the name to search for (can be a partial match)
+     * @return a list of Ingredient objects that match the given name, or null if an
+     *         error occurs
      */
     public static List<Ingredient> getIngredientsByName(String testName) {
         try {
@@ -1042,8 +1150,11 @@ public class Database {
     }
 
     /**
-     * @param ingredient
-     * @return
+     * Inserts an ingredient into the database.
+     *
+     * @param ingredient the ingredient to be inserted
+     * @return the generated ID of the inserted ingredient in the database, or -1 if
+     *         the insertion failed
      */
     public static int insertIngredient(Ingredient ingredient) {
         int ingredientId = -1;
@@ -1076,8 +1187,10 @@ public class Database {
     }
 
     /**
-     * @param ingredient
-     * @return
+     * Updates an ingredient in the database with the provided information.
+     * 
+     * @param ingredient The Ingredient object containing the updated information.
+     * @return true if the ingredient was successfully updated, false otherwise.
      */
     public static boolean editIngredient(Ingredient ingredient) {
         try {
@@ -1100,8 +1213,11 @@ public class Database {
     }
 
     /**
-     * @param ingredientId
-     * @return
+     * Deletes an ingredient from the database and its relevant correlations in the
+     * junction table.
+     * 
+     * @param ingredientId the ID of the ingredient to be deleted
+     * @return true if the ingredient was successfully deleted, false otherwise
      */
     public static boolean deleteIngredient(int ingredientId) {
         try {
@@ -1130,8 +1246,11 @@ public class Database {
     }
 
     /**
-     * @param limit
-     * @return
+     * Retrieves a list of all orders from the database.
+     *
+     * @param limit The maximum number of orders to retrieve.
+     * @return A list of Order objects representing the retrieved orders.
+     *         Returns null if an error occurs during the retrieval process.
      */
     public static List<Order> getAllOrders(int limit) {
         try {
@@ -1147,9 +1266,12 @@ public class Database {
     }
 
     /**
-     * @param start
-     * @param end
-     * @return
+     * Retrieves a list of orders within a specified date range.
+     *
+     * @param start the start date of the range
+     * @param end   the end date of the range
+     * @return a list of orders within the specified date range, or null if an error
+     *         occurs
      */
     public static List<Order> getOrdersByDateRange(Date start, Date end) {
         try {
@@ -1166,8 +1288,11 @@ public class Database {
     }
 
     /**
-     * @param orderIds
-     * @return
+     * Retrieves a list of orders based on the provided order IDs.
+     *
+     * @param orderIds A list of order IDs to retrieve orders for.
+     * @return A list of Order objects matching the provided order IDs, or null if
+     *         an error occurs.
      */
     public static List<Order> getOrdersById(List<Integer> orderIds) {
         try {
@@ -1188,8 +1313,11 @@ public class Database {
     }
 
     /**
-     * @param status
-     * @return
+     * Retrieves a list of orders with the specified status from the database.
+     *
+     * @param status the status of the orders to retrieve
+     * @return a list of orders with the specified status, or null if an error
+     *         occurs
      */
     public static List<Order> getOrdersByStatus(String status) {
         try {
@@ -1205,9 +1333,13 @@ public class Database {
     }
 
     /**
-     * @param start
-     * @param end
-     * @return
+     * Retrieves the amount of inventory used between the specified start and end
+     * dates.
+     * 
+     * @param start the start date
+     * @param end   the end date
+     * @return a map containing the names of ingredients as keys and the total
+     *         amount used as values
      */
     public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end) {
         Map<String, Integer> inventoryUsed = new HashMap<>();
@@ -1237,9 +1369,12 @@ public class Database {
     }
 
     /**
-     * @param start
-     * @param end
-     * @return
+     * Retrieves the sales report for a given time period.
+     *
+     * @param start the start date of the time period
+     * @param end   the end date of the time period
+     * @return a map containing the item names as keys and their corresponding total
+     *         sales as values
      */
     public static Map<String, Double> getSalesReport(Date start, Date end) {
         Map<String, Double> sales = new HashMap<>();
@@ -1268,8 +1403,12 @@ public class Database {
     }
 
     /**
-     * @param start
-     * @return
+     * Retrieves a list of excess ingredients based on the specified start date.
+     * Excess ingredients are those that have been consumed less than 10% between
+     * the start date and the current date.
+     *
+     * @param start the start date to filter the ingredients
+     * @return a list of excess ingredients
      */
     public static List<Ingredient> getExcessIngredients(Date start) {
         try {
@@ -1310,9 +1449,13 @@ public class Database {
     }
 
     /**
-     * @param start
-     * @param end
-     * @return
+     * Retrieves a list of items that are frequently sold together within a
+     * specified date range.
+     *
+     * @param start The start date of the range.
+     * @param end   The end date of the range.
+     * @return A list of SoldTogether objects representing the items that are
+     *         frequently sold together.
      */
     public static List<SoldTogether> getSellsTog(Date start, Date end) {
         List<SoldTogether> sellsTog = new ArrayList<>();
@@ -1368,8 +1511,11 @@ public class Database {
     }
 
     /**
-     * @param numParameters
-     * @return
+     * Builds a placeholder string with the specified number of parameters.
+     *
+     * @param numParameters The number of parameters to include in the placeholder
+     *                      string.
+     * @return The placeholder string with the specified number of parameters.
      */
     private static String buildPlaceholderString(int numParameters) {
         String str = "(";
