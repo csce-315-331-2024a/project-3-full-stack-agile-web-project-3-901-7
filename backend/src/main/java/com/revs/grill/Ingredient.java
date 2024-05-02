@@ -9,6 +9,9 @@ public class Ingredient {
     public double unitPrice;
     public String supplier;
 
+    /**
+     *
+     */
     public Ingredient() {
         this._id = -1;
         this.name = "";
@@ -18,6 +21,13 @@ public class Ingredient {
         this.supplier = "";
     }
 
+    /**
+     * @param name
+     * @param quantity
+     * @param minQuantity
+     * @param unitPrice
+     * @param supplier
+     */
     public Ingredient(String name, int quantity, int minQuantity, double unitPrice, String supplier) {
         this.name = name;
         this.quantity = quantity;
@@ -25,31 +35,62 @@ public class Ingredient {
         this.unitPrice = unitPrice;
         this.supplier = supplier;
     }
-    
+
+    /**
+     * @return
+     */
     public boolean lowStock() {
         return (this.minQuantity >= this.quantity);
     }
-    
+
+    /**
+     * @param id
+     * @return
+     */
     public static Ingredient findOneById(int id) {
         return findById(Arrays.asList(id)).get(0);
     }
-    
+
+    /**
+     * @param ids
+     * @return
+     */
     public static List<Ingredient> findById(List<Integer> ids) {
         return Database.getIngredientsById(ids);
     }
-    
+
+    /**
+     * @param searchName
+     * @return
+     */
     public static List<Ingredient> findByName(String searchName) {
         return Database.getIngredientsByName(searchName);
     }
-    
+
+    /**
+     * @param ingredientId
+     * @return
+     */
     public static boolean removeById(int ingredientId) {
         return Database.deleteIngredient(ingredientId);
     }
-    
+
+    /**
+     *
+     */
     public void write() {
         this._id = Database.insertIngredient(this);
     }
-    
+
+    /**
+     * @param itemId
+     * @param nameStr
+     * @param quantityStr
+     * @param minQuantityStr
+     * @param unitPriceStr
+     * @param supplierStr
+     * @return
+     */
     public static boolean updateById(int itemId, String nameStr, String quantityStr, String minQuantityStr, String unitPriceStr, String supplierStr) {
         Ingredient currIngredient = findOneById(itemId);
 
@@ -66,11 +107,17 @@ public class Ingredient {
         
         return Database.editIngredient(currIngredient);
     }
-    
+
+    /**
+     * @return
+     */
     public boolean update() {
         return Database.editIngredient(this);
     }
 
+    /**
+     * @return
+     */
     @Override
     public String toString() {
         return "Ingredient{" +

@@ -3,6 +3,9 @@ package com.revs.grill;
 import java.util.*;
 import java.sql.Date;
 
+/**
+ *
+ */
 public class Order {
     public int _id;
     public int numItems;
@@ -12,6 +15,9 @@ public class Order {
     public java.sql.Date dateTime;
     public String status; // completed, in progress, received, null
 
+    /**
+     *
+     */
     public Order() {
         this._id = -1;
         this.numItems = 0;
@@ -21,10 +27,21 @@ public class Order {
         this.status = null;
     }
 
+    /**
+     * @return
+     */
     public Order orderConstructor() {
         return new Order();
     }
 
+    /**
+     * @param id
+     * @param numItems
+     * @param orderInfo
+     * @param itemToQuantity
+     * @param total
+     * @param status
+     */
     public Order(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity, double total, String status) {
         this._id = id;
         this.numItems = numItems;
@@ -34,11 +51,23 @@ public class Order {
         this.status = status;
     }
 
+    /**
+     * @param id
+     * @param numItems
+     * @param orderInfo
+     * @param itemToQuantity
+     * @param total
+     * @param status
+     * @return
+     */
     public Order orderConstrutor2(int id, int numItems, String orderInfo, Map<Integer, Integer> itemToQuantity,
             double total, String status) {
         return new Order(id, numItems, orderInfo, itemToQuantity, total, status);
     }
 
+    /**
+     *
+     */
     public void serializeOrderInfo() {
         List<Integer> itemIds = new ArrayList<>(itemToQuantity.keySet());
         this.numItems = 0;
@@ -52,6 +81,10 @@ public class Order {
         this.orderInfo = String.join(",", itemNames);
     }
 
+    /**
+     * @param itemId
+     * @param addQuantity
+     */
     public void addItem(int itemId, int addQuantity) {
         Item newItem = Item.findOneById(itemId);
         this.total += newItem.price;
@@ -61,6 +94,10 @@ public class Order {
         itemToQuantity.put(itemId, currQuantity + addQuantity);
     }
 
+    /**
+     * @param itemId
+     * @return
+     */
     public int getItemQuantity(int itemId) {
         if (this.itemToQuantity.containsKey(itemId))
             return this.itemToQuantity.get(itemId);
@@ -68,20 +105,35 @@ public class Order {
             return 0;
     }
 
+    /**
+     *
+     */
     public void write() {
         this.serializeOrderInfo();
         this.dateTime = new java.sql.Date(System.currentTimeMillis());
         this._id = Database.insertOrder(this);
     }
 
+    /**
+     * @param limit
+     * @return
+     */
     public static List<Order> findAll(int limit) {
         return Database.getAllOrders(limit);
     }
 
+    /**
+     * @param orderIds
+     * @return
+     */
     public static List<Order> findById(List<Integer> orderIds) {
         return Database.getOrdersById(orderIds);
     }
 
+    /**
+     * @param orderId
+     * @return
+     */
     public static Order findOneById(int orderId) {
         return findById(Arrays.asList(orderId)).get(0);
     }
@@ -90,10 +142,21 @@ public class Order {
         return Database.getOrdersByDateRange(start, end);
     }
 
+    /**
+     * @param status
+     * @return
+     */
     public static List<Order> findByStatus(String status) {
         return Database.getOrdersByStatus(status);
     }
 
+    /**
+     * @param orderId
+     * @param numItems
+     * @param orderInfo
+     * @param total
+     * @return
+     */
     public static boolean updateById(int orderId, String numItems, String orderInfo, String total) {
         Order order = findOneById(orderId);
 
@@ -107,10 +170,17 @@ public class Order {
         return Database.editOrder(order);
     }
 
+    /**
+     * @param orderId
+     * @return
+     */
     public static boolean removeById(int orderId) {
         return Database.deleteOrder(Order.findOneById(orderId));
     }
 
+    /**
+     * @return
+     */
     @Override
     public String toString() {
         return "Order{" +

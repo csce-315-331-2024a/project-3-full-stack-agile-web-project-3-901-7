@@ -12,11 +12,19 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+/**
+ *
+ */
 class SoldTogether {
     public int count;
     public Item item1;
     public Item item2;
 
+    /**
+     * @param count
+     * @param item1
+     * @param item2
+     */
     public SoldTogether(int count, Item item1, Item item2) {
         this.count = count;
         this.item1 = item1;
@@ -24,6 +32,9 @@ class SoldTogether {
     }
 }
 
+/**
+ *
+ */
 @Configuration
 @PropertySource("classpath:application.properties")
 public class Database {
@@ -35,6 +46,9 @@ public class Database {
 
     private static String databasePassword;
 
+    /**
+     *
+     */
     public static void createConnection() {
         if (connection != null)
             return;
@@ -52,6 +66,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param queryStatement
+     * @return
+     * @throws SQLException
+     */
     private static List<Ingredient> runIngredientQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
             createConnection();
@@ -77,6 +96,12 @@ public class Database {
         return ingredients;
     }
 
+    /**
+     * @param queryStatement
+     * @param fillIngredients
+     * @return
+     * @throws SQLException
+     */
     private static List<Item> runItemQuery(PreparedStatement queryStatement, boolean fillIngredients)
             throws SQLException {
         if (connection == null) {
@@ -120,6 +145,11 @@ public class Database {
         return items;
     }
 
+    /**
+     * @param queryStatement
+     * @return
+     * @throws SQLException
+     */
     private static List<User> runUserQuery(PreparedStatement queryStatement)
             throws SQLException {
         if (connection == null) {
@@ -149,6 +179,11 @@ public class Database {
         return users;
     }
 
+    /**
+     * @param queryStatement
+     * @return
+     * @throws SQLException
+     */
     private static List<Role> runRoleQuery(PreparedStatement queryStatement)
             throws SQLException {
         if (connection == null) {
@@ -173,6 +208,11 @@ public class Database {
         return roles;
     }
 
+    /**
+     * @param queryStatement
+     * @return
+     * @throws SQLException
+     */
     private static List<WorkLog> runWorkLogQuery(PreparedStatement queryStatement)
             throws SQLException {
         if (connection == null) {
@@ -198,6 +238,11 @@ public class Database {
         return log;
     }
 
+    /**
+     * @param queryStatement
+     * @return
+     * @throws SQLException
+     */
     private static List<Order> runOrderQuery(PreparedStatement queryStatement) throws SQLException {
         if (connection == null) {
             createConnection();
@@ -243,6 +288,9 @@ public class Database {
         return orders;
     }
 
+    /**
+     * @return
+     */
     public static List<User> getAllUsers() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users");
@@ -254,6 +302,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param userIds
+     * @return
+     */
     public static List<User> getUsersById(List<Integer> userIds) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Users WHERE userId IN " + buildPlaceholderString(userIds.size()));
@@ -270,6 +322,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param user
+     * @param password
+     * @return
+     */
     public static int insertUser(User user, String password) {
         try {
             if (password.length() > 0) {
@@ -310,6 +367,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param email
+     * @param password
+     * @return
+     */
     public static User authenticateUser(String email, String password) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email='" + email + "';");
@@ -329,6 +391,9 @@ public class Database {
         return null;
     }
 
+    /**
+     * @return
+     */
     public static List<Role> getAllRoles() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles;");
@@ -340,6 +405,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param email
+     * @return
+     */
     public static Role getRoleByEmail(String email) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Roles WHERE email = ?;");
@@ -355,6 +424,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param role
+     * @return
+     */
     public static int editRole(Role role) {
         try {
             String roleInsertQuery = "UPDATE Roles SET email = ?, type = ? WHERE roleId = ?;";
@@ -384,6 +457,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param role
+     * @return
+     */
     public static int insertRole(Role role) {
         try {
             String roleInsertQuery = "INSERT INTO Roles (email, type) VALUES (?, ?);";
@@ -412,6 +489,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param role
+     * @return
+     */
     public static boolean deleteRole(Role role) {
         try {
             String roleDeleteQuery = "DELETE FROM Roles WHERE roleId = ?;";
@@ -431,6 +512,9 @@ public class Database {
         }
     }
 
+    /**
+     * @return
+     */
     public static List<WorkLog> getAllWorkLogs() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM cashier_work_log;");
@@ -442,6 +526,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param wl
+     * @return
+     */
     public static int insertWorkLog(WorkLog wl) {
         try {
             String logInsertQuery = "INSERT INTO cashier_work_log (id, check_in_time, check_out_time, comments) VALUES (?, ?, ?, ?);";
@@ -471,6 +559,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param ids
+     * @return
+     */
     public static List<WorkLog> getLogById(List<Integer> ids) {
         try {
             String query = "SELECT * FROM cashier_work_log WHERE id IN " + buildPlaceholderString(ids.size());
@@ -489,6 +581,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param wl
+     * @return
+     */
     public static int editWorkLog(WorkLog wl) {
         try {
             String roleInsertQuery = "UPDATE cashier_work_log SET check_in_time = ?, check_out_time = ?, comments = ? WHERE log_id = ?;";
@@ -520,6 +616,9 @@ public class Database {
     }
 
 
+    /**
+     * @return
+     */
     public static List<Item> getAllItems() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
@@ -531,6 +630,9 @@ public class Database {
         }
     }
 
+    /**
+     * @return
+     */
     public static List<Item> getAllAvailableItems() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items");
@@ -547,6 +649,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param itemIds
+     * @return
+     */
     public static List<Item> getItemsById(List<Integer> itemIds) {
         try {
             String query = "SELECT * FROM Items WHERE itemId IN " + buildPlaceholderString(itemIds.size());
@@ -565,6 +671,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param category
+     * @return
+     */
     public static List<Item> getItemsByCategory(String category) {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Items WHERE category = ?");
@@ -577,6 +687,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param order
+     * @return
+     */
     public static int insertOrder(Order order) {
         if (order.numItems <= 0) {
             return -1;
@@ -648,6 +762,10 @@ public class Database {
 
     }
 
+    /**
+     * @param order
+     * @return
+     */
     public static boolean editOrder(Order order) {
         try {
             // update order table
@@ -690,6 +808,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param order
+     * @return
+     */
     public static boolean deleteOrder(Order order) {
         try {
             // delete order from order table
@@ -716,6 +838,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param item
+     * @return
+     */
     public static int insertItem(Item item) {
         int itemId = -1;
 
@@ -780,6 +906,10 @@ public class Database {
         return itemId;
     }
 
+    /**
+     * @param item
+     * @return
+     */
     public static boolean editItem(Item item) {
         try {
             // insert item into database
@@ -826,6 +956,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param itemId
+     * @return
+     */
     public static boolean deleteItem(int itemId) {
         try {
             // delete item from database
@@ -852,6 +986,9 @@ public class Database {
         return true;
     }
 
+    /**
+     * @return
+     */
     public static List<Ingredient> getAllIngredients() {
         try {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Ingredients");
@@ -863,6 +1000,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param ingredientIds
+     * @return
+     */
     public static List<Ingredient> getIngredientsById(List<Integer> ingredientIds) {
         try {
             String query = "SELECT * FROM Ingredients WHERE ingredientId IN "
@@ -882,6 +1023,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param testName
+     * @return
+     */
     public static List<Ingredient> getIngredientsByName(String testName) {
         try {
             String query = "SELECT * FROM Ingredients WHERE name LIKE ?";
@@ -896,6 +1041,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param ingredient
+     * @return
+     */
     public static int insertIngredient(Ingredient ingredient) {
         int ingredientId = -1;
 
@@ -926,6 +1075,10 @@ public class Database {
         return ingredientId;
     }
 
+    /**
+     * @param ingredient
+     * @return
+     */
     public static boolean editIngredient(Ingredient ingredient) {
         try {
             String ingredientEditQuery = "UPDATE Ingredients SET name = ?, quantity = ?, minQuantity = ?, unitPrice = ?, supplier = ? WHERE ingredientId = ?";
@@ -946,6 +1099,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param ingredientId
+     * @return
+     */
     public static boolean deleteIngredient(int ingredientId) {
         try {
             // delete item from database
@@ -972,6 +1129,10 @@ public class Database {
         return true;
     }
 
+    /**
+     * @param limit
+     * @return
+     */
     public static List<Order> getAllOrders(int limit) {
         try {
             PreparedStatement statement = connection
@@ -985,6 +1146,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param start
+     * @param end
+     * @return
+     */
     public static List<Order> getOrdersByDateRange(Date start, Date end) {
         try {
             PreparedStatement statement = connection
@@ -999,6 +1165,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param orderIds
+     * @return
+     */
     public static List<Order> getOrdersById(List<Integer> orderIds) {
         try {
             String query = "SELECT * FROM Orders WHERE orderId IN " + buildPlaceholderString(orderIds.size());
@@ -1017,6 +1187,10 @@ public class Database {
         }
     }
 
+    /**
+     * @param status
+     * @return
+     */
     public static List<Order> getOrdersByStatus(String status) {
         try {
             PreparedStatement statement = connection
@@ -1030,6 +1204,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param start
+     * @param end
+     * @return
+     */
     public static Map<String, Integer> getAmtInventoryUsed(Date start, Date end) {
         Map<String, Integer> inventoryUsed = new HashMap<>();
         try {
@@ -1057,6 +1236,11 @@ public class Database {
         return inventoryUsed;
     }
 
+    /**
+     * @param start
+     * @param end
+     * @return
+     */
     public static Map<String, Double> getSalesReport(Date start, Date end) {
         Map<String, Double> sales = new HashMap<>();
         try {
@@ -1083,6 +1267,10 @@ public class Database {
         return sales;
     }
 
+    /**
+     * @param start
+     * @return
+     */
     public static List<Ingredient> getExcessIngredients(Date start) {
         try {
             Date end = new Date(System.currentTimeMillis());
@@ -1121,6 +1309,11 @@ public class Database {
         }
     }
 
+    /**
+     * @param start
+     * @param end
+     * @return
+     */
     public static List<SoldTogether> getSellsTog(Date start, Date end) {
         List<SoldTogether> sellsTog = new ArrayList<>();
         try {
@@ -1174,6 +1367,10 @@ public class Database {
         return sellsTog;
     }
 
+    /**
+     * @param numParameters
+     * @return
+     */
     private static String buildPlaceholderString(int numParameters) {
         String str = "(";
         for (int i = 0; i < numParameters; i++) {

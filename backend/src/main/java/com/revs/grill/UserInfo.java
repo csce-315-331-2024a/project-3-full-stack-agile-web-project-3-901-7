@@ -1,5 +1,8 @@
 package com.revs.grill;
 
+/**
+ *
+ */
 public class UserInfo {
     public int _id;
     public String email;
@@ -8,6 +11,9 @@ public class UserInfo {
     public String family_name;
     public String picture;
 
+    /**
+     *
+     */
     public UserInfo() {
         this._id = -1;
         this.email = "";
@@ -17,6 +23,14 @@ public class UserInfo {
         this.picture = "";
     }
 
+    /**
+     * @param _id
+     * @param email
+     * @param name
+     * @param given_name
+     * @param family_name
+     * @param picture
+     */
     public UserInfo(int _id, String email, String name, String given_name, String family_name, String picture) {
         this._id = _id;
         this.email = email;
@@ -26,10 +40,20 @@ public class UserInfo {
         this.picture = picture;
     }
 
+    /**
+     * @param email
+     * @param name
+     * @param given_name
+     * @param family_name
+     * @param picture
+     */
     public UserInfo(String email, String name, String given_name, String family_name, String picture) {
         this(-1, email, name, given_name, family_name, picture);
     }
 
+    /**
+     * @return
+     */
     @Override
     public String toString() {
         return email + "," + name;
