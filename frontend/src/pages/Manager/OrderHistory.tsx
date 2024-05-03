@@ -162,7 +162,7 @@ const OrderHistory = () => {
     useEffect(() => {
         async function fetchOrders() {
             try {
-                const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findAll?limit=5');
+                const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/order/findAll?limit=20');
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
