@@ -21,6 +21,7 @@
         "@react-oauth/google": "^0.12.1",
         "@testing-library/jest-dom": "^6.4.2",
         "@types/jest": "^29.5.12",
+        "@vercel/analytics": "^1.2.2",
         "@vitest/coverage-istanbul": "^1.5.2",
         "axios": "^1.6.8",
         "chart.js": "^4.4.2",
