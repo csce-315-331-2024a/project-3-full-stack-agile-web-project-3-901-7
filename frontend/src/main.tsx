@@ -30,6 +30,7 @@ import AdminRoles from './pages/Admin/AdminRoles'
 import CashierLog from './pages/Cashier/CashierLog'
 import ManagerLog from './pages/Manager/ManagerLog'
 import CashierHelpQueue from './components/CashierHelpQueue'
+import OrderStatus from './pages/Order/OrderStatus'
 
 import { TextSizeProvider } from './TextSizeContext'
 
@@ -55,6 +56,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                         <Route path="/menu3" element={<MenuPage3/>}/>
                         <Route path="/order" element={<Order/>}/>
                         <Route path="/weather" element={<Weather/>}/>
+                        <Route path="/currentorders" element={<OrderStatus/>}/>
 
                         {/* Cashier-side */}
                         <Route path="/cashier" element={<Cashier/>}/>
