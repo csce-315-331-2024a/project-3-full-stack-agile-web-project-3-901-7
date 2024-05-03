@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig, PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -15,6 +16,17 @@ const ReferrerPlugin : PluginOption = {
 export default defineConfig({
   plugins: [
     ReferrerPlugin,
-    react(), 
+    react(),
   ],
-})
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./setupTest.ts"],
+    include: ["src/**/*.test.tsx"],
+    coverage: {
+      provider: "v8",
+      reportsDirectory: "src/__tests__/coverage"
+    },
+    silent: true,
+  }
+});
