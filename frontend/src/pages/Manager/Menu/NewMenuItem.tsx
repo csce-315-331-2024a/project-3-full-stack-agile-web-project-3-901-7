@@ -73,6 +73,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/item/findAll");
       const items = await response.json() as Item[];
       const categories = items.map(item => item.category).filter(findUnique);
+      categories.push("Seasonal");
 
       setCategories(categories);
     }
@@ -223,7 +224,7 @@ const NewMenuItemPage : React.FC<{itemId?: number}> = ({itemId}) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-ptserif mb-2">Desription</label>
+                  <label className="block text-gray-700 font-ptserif mb-2">Description</label>
                   <input
                     type="text"
                     name="itemDesc"

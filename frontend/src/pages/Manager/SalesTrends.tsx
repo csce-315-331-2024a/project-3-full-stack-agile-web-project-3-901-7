@@ -19,7 +19,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
-import ArrowCircleUpRoundedIcon from '@mui/icons-material/ArrowCircleUpRounded';
+import { FaArrowAltCircleUp } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { getUserAuth } from "../Login";
@@ -396,7 +396,7 @@ const SalesTrends = () => {
                             zIndex: 1000
                         }}
                     >
-                        <ArrowCircleUpRoundedIcon />
+                        <FaArrowAltCircleUp />
                     </IconButton>
                 )}
            </div>

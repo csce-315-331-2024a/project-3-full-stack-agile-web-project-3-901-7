@@ -1,9 +1,8 @@
-// src/TextSizeContext.tsx
 import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 
 type TextSizeContextType = {
   enlargeText: () => void;
-  resetTextSize: () => void;  // Adding a reset function
+  resetTextSize: () => void;
 };
 
 const TextSizeContext = createContext<TextSizeContextType | undefined>(undefined);
@@ -20,17 +19,17 @@ interface TextSizeProviderProps {
   children: ReactNode;
 }
 
-const defaultTextSize = '1rem'; // Define the default text size
+const defaultTextSize = '1rem'; 
 
 export const TextSizeProvider: React.FC<TextSizeProviderProps> = ({ children }) => {
   useEffect(() => {
-    // Load initial text size from localStorage or use default
     const initialSize = localStorage.getItem('textSize') || defaultTextSize;
     document.documentElement.style.setProperty('--text-size', initialSize);
   }, []);
 
   const enlargeText = () => {
     const currentSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--text-size'));
+    if( currentSize >= 2) return;
     const newSize = `${currentSize + 0.1}rem`;
     document.documentElement.style.setProperty('--text-size', newSize);
     localStorage.setItem('textSize', newSize);

@@ -42,7 +42,7 @@ export default function ManagerLog() {
     setEditingLog(prevLog => {
       if (!prevLog) return null;
 
-      if (name === 'checkin' || name === 'checkout') {
+      if ((name === 'checkin' || name === 'checkout') && (prevLog.checkin < prevLog.checkout)) {
         const localDateTime = new Date(value);
         const utcDateTime = new Date(localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)).toISOString();
         return {

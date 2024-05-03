@@ -332,7 +332,7 @@ const Inventory = () => {
 
   const filteredIngredients = ingredients
     .filter(ingredient => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter(ingredient => !showLowStock || ingredient.quantity <= ingredient.minQuantity);
+    .filter(ingredient => !showLowStock || ingredient.quantity < ingredient.minQuantity);
 
   return (userProfile &&
     <div className="p-4">
