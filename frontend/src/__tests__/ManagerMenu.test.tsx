@@ -1,8 +1,10 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import EditMenuItemPage from "../pages/Manager/Menu/EditMenuItem";
 import { BrowserRouter } from "react-router-dom";
 import { vi } from "vitest";
 import NewMenuItemPage from "../pages/Manager/Menu/NewMenuItem";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { TextSizeProvider } from "../TextSizeContext";
 
 
 describe("EditMenuItem.tsx", () => {
@@ -32,6 +34,16 @@ describe("EditMenuItem.tsx", () => {
 })
 
 describe("NewMenuItem.tsx", () => {
+    vi.mock("../pages/Login", () => ({
+        getUserAuth: vi.fn().mockResolvedValue({
+            _id: 123,
+            email: "weiwu@tamu.edu",
+            name: "Warren Wu",
+            given_name: "Warren",
+            family_name: "Wu",
+            picture: "https://lh3.googleusercontent.com/a/ACg8ocL9v0n1KM6ZOtKSYKkwg7IdtlwYGUmKlK4uJnx5WYunJuKQ06ao=s96-c",
+        })
+    }))
     const testItem = {
         _id: 1,
         name: "Bacon Cheeseburger",
@@ -75,6 +87,18 @@ describe("NewMenuItem.tsx", () => {
     ]
     const mockFetch = vi.fn();
     global.fetch = mockFetch;
+    const customRender = (ui:any, options?:any) => {
+        return render(
+            <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
+                <BrowserRouter>
+                    <TextSizeProvider>
+                    {ui}
+                    </TextSizeProvider>
+                </BrowserRouter>
+            </GoogleOAuthProvider>,
+            options
+        )
+    }
     beforeEach(() => {
         vi.mock("../pages/Login", () => ({
             getUserAuth: vi.fn().mockResolvedValue({
@@ -90,7 +114,7 @@ describe("NewMenuItem.tsx", () => {
     afterEach(() => {
         vi.clearAllMocks();
     })
-    it("should render without crashing", () => {
+    it("should render without crashing", async () => {
         mockFetch.mockResolvedValueOnce({
             json: async () => testItem
         }).mockResolvedValueOnce({
@@ -98,6 +122,58 @@ describe("NewMenuItem.tsx", () => {
         }).mockResolvedValueOnce({
             json: async () => [testItem]
         })
-        render(<NewMenuItemPage itemId={1} />);
+        customRender(<NewMenuItemPage itemId={1} />);
+        await waitFor(() => {
+            expect(mockFetch).toHaveBeenCalledTimes(3);
+        })
+    })
+    it("input fields work", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => testIngredients
+        }).mockResolvedValueOnce({
+            json: async () => [testItem]
+        })
+        customRender(<NewMenuItemPage />);
+        await waitFor(() => {
+            expect(mockFetch).toHaveBeenCalledTimes(2);
+        })
+        const inputFields = screen.getAllByRole("textbox");
+        const name = inputFields[0];
+        const price = inputFields[1];
+        const desc = inputFields[2];
+        const category = screen.getByDisplayValue("Burger");
+        const ingredient = screen.getByDisplayValue("grilled chicken");
+        fireEvent.change(name, { target: { value: "New Item" }});
+        fireEvent.change(price, { target: { value: "10.99" }});
+        fireEvent.change(desc, { target: { value: "New Item Description" }});
+        fireEvent.change(category, { target: { checked: true }});
+        fireEvent.change(ingredient, { target: { checked: true }});
+    })
+    it("check cancel button works", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => testIngredients
+        }).mockResolvedValueOnce({
+            json: async () => [testItem]
+        })
+        customRender(<NewMenuItemPage />);
+        await waitFor(() => {
+            expect(mockFetch).toHaveBeenCalledTimes(2);
+        })
+        fireEvent.click(screen.getByText("Cancel"));
+    })
+    it("update item works as expected", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => testItem
+        }).mockResolvedValueOnce({
+            json: async () => testIngredients
+        }).mockResolvedValueOnce({
+            json: async () => [testItem]
+        })
+        customRender(<NewMenuItemPage itemId={1} />);
+        await waitFor(() => {
+            expect(mockFetch).toHaveBeenCalledTimes(3);
+        })
+        fireEvent.click(screen.getByText("Update Item"));
+        fireEvent.click(screen.getByText("Confirm"));
     })
 })

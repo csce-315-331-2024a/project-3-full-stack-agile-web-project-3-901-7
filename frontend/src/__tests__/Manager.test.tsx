@@ -8,6 +8,10 @@ import { vi } from "vitest";
 import { TextSizeProvider } from "../TextSizeContext";
 import ManagerTable from "../pages/Manager/Menu/ManagerTable";
 import { Order } from "../components/EditOrderPopUp";
+import Manager from "../pages/Manager/Manager";
+import ManagerLog from "../pages/Manager/ManagerLog";
+import EditOrderHistory from "../pages/Manager/EditOrderHistory";
+import EditInventory from "../pages/Manager/EditInventory";
 
 vi.mock("../pages/Login", () => ({
     getUserAuth: vi.fn().mockResolvedValue({
@@ -245,6 +249,92 @@ describe("NewOrder.tsx", () => {
             fireEvent.click(addBtn);
             fireEvent.click(subBtn);
             fireEvent.change(inputField, {target: {value: "5"}});
+        })
+    })
+})
+
+describe("Manager.tsx", () => {
+    it("render with auth", () => {
+        customRender(<Manager />);
+    })
+})
+
+describe("ManagerLog.tsx", () => {
+    const testLogData = [
+        {
+          log_id: 27,
+          emp_id: 1,
+          checkin: "2024-04-29T02:35:16.172+00:00",
+          checkout: "2024-04-29T02:35:16.172+00:00",
+          comments: ""
+        }
+    ]
+    it("fetch log data", () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => testLogData
+        })
+        customRender(<ManagerLog />);
+    })
+    it("edit button works properly", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => testLogData
+        })
+        customRender(<ManagerLog />);
+        await waitFor(() => {
+            fireEvent.click(screen.getByText("Edit"));
+        })
+    })
+})
+
+describe("EditInventory.tsx", () => {
+    it("renders properly", () => {
+        customRender(<EditInventory/>)
+    })
+})
+
+describe("EditOrderHistory.tsx", () => {
+    vi.mock("../pages/Login", () => ({
+        getUserAuth: vi.fn().mockResolvedValue({
+            _id: 123,
+            email: "weiwu@tamu.edu",
+            name: "Warren Wu",
+            given_name: "Warren",
+            family_name: "Wu",
+            picture: "https://lh3.googleusercontent.com/a/ACg8ocL9v0n1KM6ZOtKSYKkwg7IdtlwYGUmKlK4uJnx5WYunJuKQ06ao=s96-c",
+        })
+    }))
+    const mockData = [
+        {
+            _id: 1,
+            name: "Bacon Cheeseburger",
+            price: 8.29,
+            category: "Burger",
+            ingredientInfo: "bacon",
+            ingredients: [
+              {
+                _id: 1,
+                name: "bacon",
+                quantity: 10,
+                minQuantity: 10,
+                unitPrice: 5.59,
+                supplier: "BaconSupplier"
+              }
+            ],
+            startDate: "2022-02-01",
+            endDate: null,
+            picture: "https://clipart-library.com/images_k/transparent-cheeseburger/transparent-cheeseburger-12.png",
+            itemDesc: "itemDesc",
+            available: false,
+            id: 1
+        }
+    ]
+    it("fetches data and renders properly", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => mockData
+        })
+        customRender(<EditOrderHistory/>)
+        await waitFor(() => {
+            fireEvent.click(screen.getByText("submit order"))
         })
     })
 })
