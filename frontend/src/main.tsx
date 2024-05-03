@@ -33,6 +33,7 @@ import CashierHelpQueue from './components/CashierHelpQueue'
 import OrderStatus from './pages/Order/OrderStatus'
 
 import { TextSizeProvider } from './TextSizeContext'
+import { Analytics } from '@vercel/analytics/react';
 
 export default function Main() {
 
@@ -92,6 +93,7 @@ export default function Main() {
 
                     </Routes>
                 </TextSizeProvider>
+                <Analytics/>
             </BrowserRouter>
         </React.StrictMode>
     </GoogleOAuthProvider>
