@@ -55,15 +55,6 @@ const EditOrderPopup: React.FC<{ order: Order, onSave:(updatedOrder : Order) => 
         return total;
     };
 
-    const transformItemsToMap = () => {
-        const itemsMap = new Map<number, number>();
-        items.forEach((item, itemId) => {
-            itemsMap.set(itemId, item.quantity);
-        });
-        return itemsMap;
-    };
-
-
     const handleSave = () => {
         const itemToQuantityObject: Map<number, number> = new Map<number, number>();
         let numItems = 0;

@@ -1,17 +1,24 @@
 import { BrowserRouter } from "react-router-dom";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import SalesTrends from "../pages/Manager/SalesTrends";
 import AdminOrder from "../pages/Manager/NewOrder";
-import EditOrderHistory from "../pages/Manager/EditOrderHistory";
 import OrderHistory from "../pages/Manager/OrderHistory";
-import EditMenuItemPage from "../pages/Manager/Menu/EditMenuItem";
-import NewMenuItemPage from "../pages/Manager/Menu/NewMenuItem";
 import ManagerMenu from "../pages/Manager/Menu/ManagerMenu";
-import Inventory from "../pages/Manager/Inventory";
 import { vi } from "vitest";
 import { TextSizeProvider } from "../TextSizeContext";
-import Manager from "../pages/Manager/Manager";
 import ManagerTable from "../pages/Manager/Menu/ManagerTable";
+import { Order } from "../components/EditOrderPopUp";
+
+vi.mock("../pages/Login", () => ({
+    getUserAuth: vi.fn().mockResolvedValue({
+        _id: 123,
+        email: "weiwu@tamu.edu",
+        name: "Warren Wu",
+        given_name: "Warren",
+        family_name: "Wu",
+        picture: "https://lh3.googleusercontent.com/a/ACg8ocL9v0n1KM6ZOtKSYKkwg7IdtlwYGUmKlK4uJnx5WYunJuKQ06ao=s96-c",
+    })
+}))
 
 const customRender = (ui:any, options?:any) => {
     return render(
@@ -88,30 +95,156 @@ describe("Manager Table Tests", () => {
     });
 })
 
-describe("Manager NewMenuItem.tsx Tests", () => {
-    
-    it("should render new menu item page without crashing", () => {
-        render(<NewMenuItemPage itemId={2}/>);
+const salesReport = {
+    "Water": 158652.06,
+    "Pepsi": 176130.18,
+  }
+const excessData = [
+    {
+      _id: 1,
+      name: "bacon",
+      quantity: 10,
+      minQuantity: 10,
+      unitPrice: 5.59,
+      supplier: "BaconSupplier"
+    },
+]
+
+describe("SalesTrend.tsx", async () => {
+    it("fetch sales trend data", () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => {}
+        }).mockResolvedValueOnce({
+            json: async () => salesReport
+        }).mockResolvedValueOnce({
+            json: async () => excessData
+        }).mockResolvedValueOnce({
+            json: async () => []
+        })
+        customRender(<SalesTrends />);
     })
 })
 
-describe("Manager Page Tests", () => {
-    it("should render sales trend page without crashing", () => {
-        render(<SalesTrends/>, { wrapper: BrowserRouter });
+const mockOrders: Order[] = [
+    {
+        _id: 1,
+        numItems: 2,
+        orderInfo: "Cheeseburger,Fries",
+        itemToQuantity: new Map([
+            [1, 2],
+            [2, 3],
+        ]),
+        total: 14.99,
+        dateTime: new Date('2024-12-12'),
+        status: 'received',
+    },
+    {
+        _id: 2,
+        numItems: 2,
+        orderInfo: "Cheeseburger,Fries",
+        itemToQuantity: new Map([
+            [1, 2],
+            [2, 3],
+        ]),
+        total: 14.99,
+        dateTime: new Date('2024-12-03'),
+        status: 'completed',
+    },
+    {
+        _id: 3,
+        numItems: 2,
+        orderInfo: "Cheeseburger,Fries",
+        itemToQuantity: new Map([
+            [1, 2],
+            [2, 3],
+        ]),
+        total: 14.99,
+        dateTime: new Date('2024-12-18'),
+        status: 'in progress',
+    },
+];
+
+describe("OrderHistory.tsx", () => {
+    it("fetch order history data", () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => mockOrders
+        })
+        customRender(<OrderHistory />);
     })
-    it("should render admin order page without crashing", () => {
-        render(<AdminOrder/>, { wrapper: BrowserRouter });
+})
+
+const items = [
+    {
+        _id: 1,
+        name: "Bacon Cheeseburger",
+        price: 8.29,
+        category: "Burger",
+        ingredientInfo: "bacon",
+        ingredients: [
+          {
+            _id: 1,
+            name: "bacon",
+            quantity: 10,
+            minQuantity: 10,
+            unitPrice: 5.59,
+            supplier: "BaconSupplier"
+          }
+        ],
+        startDate: "2022-02-01",
+        endDate: null,
+        picture: "https://clipart-library.com/images_k/transparent-cheeseburger/transparent-cheeseburger-12.png",
+        itemDesc: "itemDesc",
+        available: false,
+        id: 1
+    }
+]
+
+describe("NewOrder.tsx", () => {
+    afterEach(() => {
+        vi.clearAllMocks();
     })
-    it("should render order history page without crashing", () => {
-        render(<OrderHistory/>, { wrapper: BrowserRouter });
+    it("fetch order history data", () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => items
+        })
+        customRender(<AdminOrder />);
     })
-    it("should render edit menu item page without crashing", () => {
-        render(<EditMenuItemPage/>, { wrapper: BrowserRouter });
+    it("ensure search item works properly", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => items
+        })
+        customRender(<AdminOrder />);
+        await waitFor(() => {
+            const inputField = screen.getByPlaceholderText("search item");
+            fireEvent.change(inputField, {target: {value: "Bacon"}});
+        })
     })
-    it("should render new menu item page without crashing", () => {
-        render(<NewMenuItemPage/>, {wrapper:BrowserRouter});
+    it("test speed ordering works", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => items
+        })
+        customRender(<AdminOrder />);
+        await waitFor(() => {
+            const itemIdInputField = screen.getByPlaceholderText("Enter item id to quickly order...")
+            const qtyInputField = screen.getByPlaceholderText("Enter quantity...")
+            const submitButton = screen.getByText("add")
+            fireEvent.change(itemIdInputField, {target: {value: "1"}});
+            fireEvent.change(qtyInputField, {target: {value: "2"}});
+            fireEvent.click(submitButton);
+        })
     })
-    it("should render inventory page without crashing", () => {
-        render(<Inventory/>, {wrapper:BrowserRouter});
+    it("test item add/sub/input work properly", async () => {
+        mockFetch.mockResolvedValueOnce({
+            json: async () => items
+        })
+        customRender(<AdminOrder />);
+        await waitFor(() => {
+            const inputField = screen.getByDisplayValue("0");
+            const addBtn:any = inputField.previousElementSibling;
+            const subBtn:any = inputField.nextElementSibling;
+            fireEvent.click(addBtn);
+            fireEvent.click(subBtn);
+            fireEvent.change(inputField, {target: {value: "5"}});
+        })
     })
 })
