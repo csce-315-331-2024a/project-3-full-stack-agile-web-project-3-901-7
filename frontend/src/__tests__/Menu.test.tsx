@@ -133,3 +133,4 @@ describe("Menu Page Tests", () => {
         expect(screen.getByText("$30.00")).toBeTruthy();
     })
 });
+

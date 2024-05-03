@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -33,12 +33,16 @@ import CashierHelpQueue from './components/CashierHelpQueue'
 
 import { TextSizeProvider } from './TextSizeContext'
 
-const currentTheme = localStorage.getItem('theme')
-if (currentTheme) {
-    document.documentElement.classList.add(currentTheme)
-}
+export default function Main() {
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+    useEffect(() => {
+        const currentTheme = localStorage.getItem('theme')
+        if (currentTheme) {
+            document.documentElement.classList.add(currentTheme)
+        }
+    }, [])
+
+    return (
     <GoogleOAuthProvider clientId="12221267435-lsk9h3j605atjq4n35dvpsf2gun7dh6a.apps.googleusercontent.com">
         <React.StrictMode>
             <BrowserRouter>
@@ -89,5 +93,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             </BrowserRouter>
         </React.StrictMode>
     </GoogleOAuthProvider>
-)
+)}
 
+ReactDOM.createRoot(document.getElementById('root')!).render(<Main/>);

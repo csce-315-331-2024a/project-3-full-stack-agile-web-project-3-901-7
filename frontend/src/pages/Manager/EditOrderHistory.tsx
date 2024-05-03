@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Item, OrderType } from "../../types/dbTypes";
 import { FaMinus, FaPlus, FaSearch } from "react-icons/fa";
 import Navbar from '../../components/Navbar';
+import { getUserAuth } from '../Login';
 
 export default function EditOrderHistory() {
 
@@ -18,9 +19,10 @@ export default function EditOrderHistory() {
         date: new Date()
     });
     const { orderId } = useParams<{ orderId: string }>();
+    const [userProfile, setUserProfile] = useState<any>();
 
     useEffect(() => {
-        getUserAuth()
+        getUserAuth("manager")
           .then(setUserProfile)
           .catch(console.error);
       }, [])
